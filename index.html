@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Discipline Tracker</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#F4EFE4;font-family:Georgia,serif;color:#1A1A1A;min-height:100vh}
+/* Header */
+.hdr{background:#1A1A1A;color:#F4EFE4;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;position:sticky;top:0;z-index:200}
+.logo{font-size:17px;font-weight:bold;letter-spacing:5px;text-transform:uppercase}
+.logo span{color:#4EC9C4}
+.tabs{display:flex;gap:4px;background:rgba(255,255,255,0.08);padding:4px;border-radius:6px}
+.tab{background:none;border:none;color:rgba(255,255,255,0.55);padding:6px 16px;cursor:pointer;border-radius:4px;font-family:Georgia,serif;font-size:12px;letter-spacing:1px;transition:.2s}
+.tab.on{background:#F4EFE4;color:#1A1A1A;font-weight:bold}
+.tab:hover:not(.on){color:#fff}
+.nav{display:flex;align-items:center;gap:8px}
+.nbtn{background:none;border:1px solid rgba(255,255,255,0.3);color:#F4EFE4;padding:3px 11px;cursor:pointer;border-radius:4px;font-size:17px;transition:.15s}
+.nbtn:hover{background:rgba(255,255,255,0.15)}
+.mlbl{font-size:13px;font-weight:bold;min-width:156px;text-align:center;letter-spacing:1px}
+/* Tracker */
+#tv{padding:16px}
+.tlay{display:flex;gap:16px;max-width:1060px;margin:0 auto;flex-wrap:wrap;align-items:flex-start}
+.tc-h{flex:1 1 180px;min-width:165px}
+.tc-t{flex-shrink:0;display:flex;justify-content:center}
+.tc-n{flex:1 1 160px;min-width:150px}
+.sec{font-weight:bold;text-transform:uppercase;letter-spacing:2px;font-size:11px;border-bottom:2px solid #1A1A1A;padding-bottom:5px;margin-bottom:10px}
+/* Habit rows */
+.hr{display:flex;align-items:center;gap:5px;margin-bottom:6px}
+.dot{width:12px;height:12px;border-radius:2px;flex-shrink:0;cursor:pointer;transition:transform .15s,box-shadow .15s}
+.dot:hover{transform:scale(1.35);box-shadow:0 0 0 2px #fff,0 0 0 3.5px #1A1A1A}
+.hn{flex:1;font-size:12px;cursor:text;line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hni{flex:1;font-size:12px;font-family:Georgia,serif;background:transparent;border:none;border-bottom:1px solid #C5BAA8;outline:none;color:#1A1A1A}
+.dbtn{background:none;border:none;cursor:pointer;color:#bbb;font-size:14px;padding:0 1px;line-height:1;flex-shrink:0}
+.dbtn:hover{color:#C8442A}
+.gbtn{background:none;border:none;cursor:pointer;color:#bbb;font-size:13px;padding:0 1px;line-height:1;flex-shrink:0}
+.gbtn:hover{color:#4EC9C4}
+/* Habit type badge */
+.htype{font-size:9px;padding:1px 5px;border-radius:3px;font-weight:bold;letter-spacing:.3px;flex-shrink:0}
+.htype.s{background:#EDE9FE;color:#7C3AED}
+.htype.w{background:#FEF3C7;color:#B45309}
+/* Weekly mini-progress */
+.wprog{font-size:9px;color:#888;white-space:nowrap;flex-shrink:0}
+.wprog.hit{color:#059669;font-weight:bold}
+.rnum{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;font-size:8px;font-weight:bold;background:#1A1A1A;color:#F4EFE4;flex-shrink:0;margin-right:1px}
+/* Settings panel */
+.sconf{background:#F0EDE5;border:1px solid #D4C9B0;border-radius:6px;padding:10px 12px;margin-bottom:8px;font-size:11px}
+.sconf select,.sconf input[type=number],.sconf input[type=text]{font-family:Georgia,serif;font-size:11px;border:1px solid #C5BAA8;border-radius:3px;padding:3px 6px;background:#FEFAF0;color:#1A1A1A;outline:none}
+.sconf label{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:3px}
+.sconf-row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-top:8px}
+.sconf-save{background:#1A1A1A;color:#fff;border:none;padding:4px 12px;cursor:pointer;border-radius:3px;font-size:10px;font-family:Georgia,serif;letter-spacing:.5px}
+.sconf-cancel{background:none;border:1px solid #C5BAA8;color:#888;padding:4px 10px;cursor:pointer;border-radius:3px;font-size:10px;font-family:Georgia,serif}
+/* Add habit row */
+.ar{display:flex;gap:5px;margin-top:8px}
+.ai{flex:1;font-size:12px;font-family:Georgia,serif;background:transparent;border:1px solid #C5BAA8;padding:5px 8px;border-radius:4px;outline:none;color:#1A1A1A}
+.ai::placeholder{color:#aaa}
+.abtn{background:#1A1A1A;color:#fff;border:none;padding:5px 12px;cursor:pointer;border-radius:4px;font-size:17px;line-height:1}
+/* Progress bars */
+.pbg{height:3px;background:#DDD5C2;border-radius:2px;margin-top:2px}
+.pb{height:100%;border-radius:2px;transition:width .4s}
+/* Notes */
+.nota{width:100%;background:transparent;border:none;border-bottom:1px solid #C5BAA8;resize:none;font-family:Georgia,serif;font-size:12px;line-height:2;outline:none;color:#1A1A1A}
+.cell{cursor:pointer;transition:opacity .1s}
+.cell:hover{opacity:.55}
+.qbox{margin-top:16px;border-left:3px solid #1A1A1A;padding-left:11px}
+.qt{font-size:12px;font-style:italic;color:#555;line-height:1.75}
+/* Session picker overlay */
+#sesPicker{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#FEFAF0;border:1px solid #D4C9B0;border-radius:10px;padding:0;z-index:500;min-width:300px;max-width:380px;box-shadow:0 8px 40px rgba(0,0,0,.18)}
+#sesPicker.hidden{display:none}
+.sp-hdr{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #E8E0D0}
+.sp-title{font-size:13px;font-weight:bold;letter-spacing:.5px}
+.sp-close{background:none;border:none;cursor:pointer;font-size:18px;color:#888;line-height:1}
+.sp-row{display:flex;align-items:center;gap:8px;padding:8px 16px;border-bottom:1px solid #F0EDE5}
+.sp-row:last-child{border-bottom:none}
+.sp-name{flex:1;font-size:12px;color:#555;min-width:70px}
+.sp-btns{display:flex;gap:4px}
+.sp-btn{border:1px solid #D4C9B0;background:#fff;border-radius:5px;padding:5px 10px;font-size:11px;cursor:pointer;transition:.15s;white-space:nowrap}
+.sp-btn:hover{background:#F0EDE5}
+.sp-btn.v1{background:#D1FAE5;border-color:#6EE7B7;color:#065F46;font-weight:bold}
+.sp-btn.v2{background:#FEF3C7;border-color:#FCD34D;color:#92400E;font-weight:bold}
+.sp-btn.v0{background:#FEE2E2;border-color:#FCA5A5;color:#991B1B;font-weight:bold}
+.sp-foot{padding:10px 16px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid #E8E0D0;font-size:11px;color:#888}
+.sp-overlay{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:499}
+#spOverlay{display:none}
+#spOverlay.show{display:block}
+/* Dashboard */
+#dv{padding:22px;max-width:1140px;margin:0 auto}
+.sum-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px}
+.sc{background:#FEFAF0;border:1px solid #D4C9B0;border-radius:8px;padding:15px 18px}
+.sc.teal{border-top:3px solid #4EC9C4}.sc.blue{border-top:3px solid #60A5FA}
+.sc.amber{border-top:3px solid #FB923C}.sc.purple{border-top:3px solid #A78BFA}
+.sc.green{border-top:3px solid #34D399}.sc.red{border-top:3px solid #F87171}
+.slbl{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:#888;margin-bottom:4px}
+.sval{font-size:28px;font-weight:bold;line-height:1.1}
+.ssub{font-size:11px;color:#888;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ins-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:18px}
+.ins{background:#FEFAF0;border:1px solid #D4C9B0;border-radius:7px;padding:12px 14px;font-size:12px;color:#444;line-height:1.6;display:flex;gap:9px;align-items:flex-start}
+.ins .ico{font-size:19px;line-height:1;flex-shrink:0;margin-top:1px}
+.ins.fire{border-left:3px solid #FB923C}.ins.ok{border-left:3px solid #4EC9C4}
+.ins.warn{border-left:3px solid #F59E0B}.ins.info{border-left:3px solid #60A5FA}
+.ins strong{display:block;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:2px}
+.cc{background:#FEFAF0;border:1px solid #D4C9B0;border-radius:8px;padding:16px 18px;margin-bottom:18px}
+.ctitle{font-size:10px;font-weight:bold;text-transform:uppercase;letter-spacing:2px;color:#999;margin-bottom:14px}
+.cwrap{position:relative;height:190px}
+.two-col{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px;margin-bottom:18px}
+.hgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:11px;margin-bottom:18px}
+.hc{background:#FEFAF0;border:1px solid #D4C9B0;border-radius:8px;padding:14px}
+.hc.dimmed{opacity:.35}
+.hc-top{display:flex;align-items:center;gap:10px;margin-bottom:11px}
+.hc-ring{position:relative;width:62px;height:62px;flex-shrink:0}
+.hc-ring canvas{width:62px!important;height:62px!important}
+.hc-pct{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:12px;font-weight:bold;color:#1A1A1A}
+.hc-meta{flex:1;min-width:0}
+.hc-name{font-size:12px;font-weight:bold;margin-bottom:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hc-row{display:flex;justify-content:space-between;font-size:11px;color:#888;line-height:1.9}
+.hc-row b{color:#1A1A1A}
+.trend-up{color:#4EC9C4;font-weight:bold}.trend-dn{color:#E8674A;font-weight:bold}
+.minical{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-top:8px}
+.md{height:9px;border-radius:1px;background:#E0D8C8}
+.md.td{box-shadow:0 0 0 1.5px #2563EB}
+/* Stat mini-pills in habit card */
+.sp-stats{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap}
+.sp-stat{font-size:9px;padding:2px 6px;border-radius:3px;font-weight:bold}
+.sp-stat.g{background:#D1FAE5;color:#065F46}
+.sp-stat.o{background:#FEF3C7;color:#92400E}
+.sp-stat.r{background:#FEE2E2;color:#991B1B}
+/* Filter bar */
+.fbar{background:#FEFAF0;border:1px solid #D4C9B0;border-radius:8px;padding:12px 16px;margin-bottom:18px;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.fbar-label{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:#888;flex-shrink:0}
+.fbar-chips{display:flex;flex-wrap:wrap;gap:5px;flex:1}
+.fchip{border:1px solid #C5BAA8;background:transparent;border-radius:20px;padding:3px 11px;font-size:11px;font-family:Georgia,serif;cursor:pointer;color:#888;transition:.15s;white-space:nowrap}
+.fchip.on{color:#fff;border-color:transparent}
+.fchip:hover:not(.on){background:#E8E0D0}
+.fbar-sep{width:1px;height:24px;background:#D4C9B0;flex-shrink:0}
+.fbar-year{display:flex;align-items:center;gap:6px}
+.fynbtn{background:none;border:1px solid #C5BAA8;color:#888;padding:1px 8px;cursor:pointer;border-radius:4px;font-size:14px;line-height:1.4}
+.fynbtn:hover{background:#E8E0D0}
+.fylbl{font-size:12px;font-weight:bold;min-width:38px;text-align:center}
+/* Section header */
+.sec-hdr{font-weight:bold;text-transform:uppercase;letter-spacing:3px;font-size:10px;color:#888;padding:4px 0 12px 0;display:flex;align-items:center;gap:10px}
+.sec-hdr::after{content:"";flex:1;height:1px;background:#D4C9B0}
+/* Hbar */
+.hbar-row{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.hbar-name{font-size:11px;min-width:130px;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#555}
+.hbar-track{flex:1;height:13px;background:#E8E0D0;border-radius:6px;overflow:hidden;position:relative}
+.hbar-fill{height:100%;border-radius:6px;transition:width .5s}
+.hbar-fill2{position:absolute;top:0;left:0;height:100%;opacity:.45;border-radius:6px}
+.hbar-pct{font-size:11px;font-weight:bold;min-width:34px;text-align:right;color:#1A1A1A}
+/* Heatmap */
+.heatmap-wrap{overflow-x:auto;padding:4px 0}
+.heatmap-grid{display:grid;grid-template-rows:repeat(7,14px);grid-auto-flow:column;grid-auto-columns:14px;gap:2px;width:max-content}
+.hm-cell{width:14px;height:14px;border-radius:2px;cursor:default}
+.hm-wrap{display:flex;align-items:flex-start}
+.hm-dow{display:grid;grid-template-rows:repeat(7,14px);gap:2px;margin-right:6px;font-size:9px;color:#999;line-height:14px;text-align:right;flex-shrink:0}
+.hm-months{display:flex;margin-bottom:4px;margin-left:30px;font-size:9px;color:#999}
+/* Pills */
+.pill{display:inline-block;font-size:9px;padding:2px 7px;border-radius:10px;font-weight:bold}
+.pill.up{background:#D1FAE5;color:#059669}
+.pill.dn{background:#FEE2E2;color:#DC2626}
+.pill.eq{background:#E5E7EB;color:#6B7280}
+/* Heatmap habit tabs */
+.hm-tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px}
+.hm-tab{border:1px solid #C5BAA8;background:transparent;border-radius:4px;padding:3px 10px;font-size:10px;font-family:Georgia,serif;cursor:pointer;color:#888;transition:.15s}
+.hm-tab.on{color:#fff;border-color:transparent}
+.hm-tab:hover:not(.on){background:#E8E0D0}
+
+/* Score tab */
+#scTable td{padding:8px;border-bottom:1px solid #F0EDE5;color:#555;vertical-align:middle}
+#scTable tr:last-child td{border-bottom:none}
+#scTable tr:hover td{background:#F8F5EE}
+.sg{display:inline-block;font-weight:bold;font-size:11px;padding:2px 9px;border-radius:4px;letter-spacing:.3px}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="logo">Discipline<span>.</span></div>
+  <div class="tabs">
+    <button class="tab on" onclick="switchTab('t')">&#9679; Tracker</button>
+    <button class="tab" onclick="switchTab('d')">&#9632; Dashboard</button>
+    <button class="tab" onclick="switchTab('s')">&#9650; Scores</button>
+  </div>
+  <div class="nav">
+    <button class="nbtn" id="pBtn">&#8249;</button>
+    <span class="mlbl" id="mLbl"></span>
+    <button class="nbtn" id="nBtn">&#8250;</button>
+  </div>
+</div>
+<!-- Session picker overlay -->
+<div id="spOverlay" class="sp-overlay" onclick="closeSesPicker()"></div>
+<div id="sesPicker" class="hidden">
+  <div class="sp-hdr">
+    <span class="sp-title" id="spTitle"></span>
+    <button class="sp-close" onclick="closeSesPicker()">&#215;</button>
+  </div>
+  <div id="spRows"></div>
+  <div class="sp-foot" id="spFoot"></div>
+</div>
+<!-- TRACKER -->
+<div id="tv">
+  <div class="tlay">
+    <div class="tc-h" id="colH"></div>
+    <div class="tc-t"><svg id="svg" width="440" height="440" viewBox="0 0 440 440" style="display:block;max-width:100%"></svg></div>
+    <div class="tc-n" id="colN"></div>
+  </div>
+</div>
+<!-- DASHBOARD -->
+<div id="dv" style="display:none">
+  <div id="filterBar" class="fbar"></div>
+  <div class="sum-row" id="sumRow"></div>
+  <div class="sum-row" id="sumRow2"></div>
+  <div class="ins-row" id="insRow"></div>
+  <div class="cc">
+    <div class="ctitle" id="dailyTitle">Daily completions</div>
+    <div class="cwrap"><canvas id="cDaily"></canvas></div>
+  </div>
+  <div class="hgrid" id="habGrid"></div>
+  <div class="cc">
+    <div class="ctitle">Habit comparison — this month</div>
+    <div id="habCompBars"></div>
+  </div>
+  <div class="two-col">
+    <div class="cc">
+      <div class="ctitle">7-day running average</div>
+      <div class="cwrap"><canvas id="cRunning"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ctitle" id="radarTitle">Habit radar</div>
+      <div class="cwrap" id="radarWrap"><canvas id="cRadar"></canvas></div>
+    </div>
+  </div>
+  <div class="sec-hdr" style="margin:10px 0 16px">Annual Analysis — <span id="yearLabel"></span></div>
+  <div class="cc">
+    <div class="ctitle" id="mVsMTitle">Month vs month</div>
+    <div class="cwrap"><canvas id="cMonthVsMonth"></canvas></div>
+  </div>
+  <div class="two-col">
+    <div class="cc">
+      <div class="ctitle">Week over week — 52 weeks</div>
+      <div class="cwrap"><canvas id="cWeekOW"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ctitle">Same day of week — all months</div>
+      <div class="cwrap"><canvas id="cDayOfWeekYear"></canvas></div>
+    </div>
+  </div>
+  <div class="two-col">
+    <div class="cc">
+      <div class="ctitle">Weekly pattern — strongest day?</div>
+      <div class="cwrap"><canvas id="cWeekly"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ctitle">6-month trend</div>
+      <div class="cwrap"><canvas id="cTrend"></canvas></div>
+    </div>
+  </div>
+  <div class="cc">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+      <div class="ctitle" style="margin:0">Full year heatmap — <span id="hmYearLbl"></span></div>
+      <div class="hm-tabs" id="hmTabs"></div>
+    </div>
+    <div class="heatmap-wrap" id="yearHeatmap"></div>
+    <div style="display:flex;align-items:center;gap:6px;margin-top:10px;font-size:10px;color:#999">
+      <span>Less</span>
+      <div style="width:12px;height:12px;border-radius:2px;background:#E8E0D0"></div>
+      <div style="width:12px;height:12px;border-radius:2px;background:#A3E4DF"></div>
+      <div style="width:12px;height:12px;border-radius:2px;background:#4EC9C4"></div>
+      <div style="width:12px;height:12px;border-radius:2px;background:#2A9D96"></div>
+      <div style="width:12px;height:12px;border-radius:2px;background:#1A6B67"></div>
+      <span>More</span>
+    </div>
+  </div>
+</div>
+<!-- SCORES DASHBOARD -->
+<div id="sv" style="display:none">
+  <div class="sum-row" id="scSumRow"></div>
+  <div class="two-col" style="margin-bottom:18px">
+    <div class="cc">
+      <div class="ctitle" id="scWkTitle">Weekly scores</div>
+      <div class="cwrap"><canvas id="cWkScore"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ctitle" id="scMoTitle">Monthly scores</div>
+      <div class="cwrap"><canvas id="cMoScore"></canvas></div>
+    </div>
+  </div>
+  <div class="cc">
+    <div class="ctitle">Year vs year comparison</div>
+    <div class="cwrap" style="height:220px"><canvas id="cYrComp"></canvas></div>
+  </div>
+  <div class="cc">
+    <div class="ctitle">Score history — last 18 months</div>
+    <div class="cwrap" style="height:220px"><canvas id="cScHist"></canvas></div>
+  </div>
+  <div class="cc">
+    <div class="ctitle">Month-by-month scorecard</div>
+    <div id="scTable"></div>
+  </div>
+</div>
+<script>
+/* ════ CONSTANTS ════ */
+const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const COLORS=["#4EC9C4","#60A5FA","#A78BFA","#F472B6","#34D399","#FB923C","#F59E0B","#F87171","#6EE7B7","#818CF8"];
+const now=new Date();
+
+/* ════ STATE ════ */
+const S={
+  month:now.getMonth(), year:now.getFullYear(),
+  habits:[
+    {n:"Wake up 6:00 AM",c:"#4EC9C4"},
+    {n:"Fajr Prayer",c:"#4EC9C4",type:"sessions",freq:5,snames:["Fajr","Dhuhr","Asr","Maghrib","Isha"]},
+    {n:"Exercise",c:"#4EC9C4"},
+    {n:"Drink Water",c:"#60A5FA"},
+    {n:"Training",c:"#34D399",type:"weekly",wtarget:5},
+    {n:"Sleep by 11 PM",c:"#4EC9C4"}
+  ],
+  done:{}, notes:"", excuses:"", tab:"t",
+  filterIdx:[], annualYear:now.getFullYear(), hmHabit:-1,
+  openConf:-1  /* which habit has settings panel open */
+};
+const CR={};
+
+/* ════ HABIT HELPERS ════ */
+function hType(h){return h&&h.type||"simple"}
+/* Get done value; sessions returns array */
+function getDoneVal(hi,day){
+  const h=S.habits[hi];
+  const v=S.done[hi+"-"+day];
+  if(hType(h)==="sessions"){
+    const n=h.freq||1;
+    if(!v||!Array.isArray(v))return Array(n).fill(0);
+    const a=[...v];while(a.length<n)a.push(0);return a.slice(0,n);
+  }
+  return !!v;
+}
+/* Is a day "done" at all */
+function isDayDone(hi,day){
+  const h=S.habits[hi];const v=S.done[hi+"-"+day];
+  if(hType(h)==="sessions"){if(!v||!Array.isArray(v))return false;return v.some(s=>s>0);}
+  return !!v;
+}
+/* 0-1 completion ratio for a day */
+function dayRatio(hi,day){
+  const h=S.habits[hi];const v=S.done[hi+"-"+day];
+  if(hType(h)==="sessions"){
+    if(!v||!Array.isArray(v))return 0;
+    return v.filter(s=>s>0).length/(h.freq||1);
+  }
+  return v?1:0;
+}
+/* Blend two hex colors */
+function blendCol(a,b,t){
+  const p=s=>{const x=s.replace("#","");return[parseInt(x.slice(0,2),16),parseInt(x.slice(2,4),16),parseInt(x.slice(4,6),16)]};
+  const[r1,g1,b1]=p(a),[r2,g2,b2]=p(b);
+  return"#"+[Math.round(r1+(r2-r1)*t),Math.round(g1+(g2-g1)*t),Math.round(b1+(b2-b1)*t)].map(x=>x.toString(16).padStart(2,"0")).join("");
+}
+/* SVG cell fill color */
+function cellColor(h,hi,day,isFuture,isToday){
+  if(isFuture)return"#DDD5C2";
+  if(isToday&&!isDayDone(hi,day))return"#DBEAFE";
+  const v=S.done[hi+"-"+day];
+  if(hType(h)==="sessions"){
+    if(!v||!Array.isArray(v))return"#DDD5C2";
+    const done=v.filter(s=>s>0).length,late=v.filter(s=>s===2).length,n=h.freq||1;
+    if(done===0)return"#DDD5C2";
+    const ratio=done/n;
+    const base=late>0&&done===n?"#FB923C":h.c;
+    return blendCol("#DDD5C2",base,ratio);
+  }
+  return isDayDone(hi,day)?h.c:"#DDD5C2";
+}
+/* Weekly done count for current week containing a day */
+function weekDoneCount(hi,year,month,day){
+  const dt=new Date(year,month,day);
+  const dow=dt.getDay();
+  const weekStart=new Date(dt);weekStart.setDate(dt.getDate()-dow);
+  let count=0;
+  for(let i=0;i<7;i++){
+    const d=new Date(weekStart);d.setDate(weekStart.getDate()+i);
+    if(d>new Date())break;
+    if(d.getMonth()===month&&d.getFullYear()===year){
+      if(isDayDone(hi,d.getDate()))count++;
+    } else {
+      const md=getMonthDone(d.getFullYear(),d.getMonth());
+      if(isDayDoneFromDone(md,hi,d.getDate()))count++;
+    }
+  }
+  return count;
+}
+function isDayDoneFromDone(done,hi,day){
+  const h=S.habits[hi];const v=done[hi+"-"+day];
+  if(hType(h)==="sessions"){if(!v||!Array.isArray(v))return false;return v.some(s=>s>0);}
+  return !!v;
+}
+
+/* ════ PERSISTENCE ════ */
+function mkey(){return"ht-"+S.year+"-"+S.month}
+function save(){
+  try{
+    localStorage.setItem("ht2-habits",JSON.stringify(S.habits));
+    localStorage.setItem(mkey(),JSON.stringify({done:S.done,notes:S.notes,excuses:S.excuses}));
+  }catch(_){}
+}
+function load(){
+  try{const h=localStorage.getItem("ht2-habits");if(h)S.habits=JSON.parse(h);}catch(_){}
+  S.filterIdx=S.filterIdx.filter(i=>i<S.habits.length);
+  if(S.hmHabit>=S.habits.length)S.hmHabit=-1;
+  if(S.openConf>=S.habits.length)S.openConf=-1;
+  loadMonth();
+}
+function loadMonth(){
+  try{
+    const raw=localStorage.getItem(mkey());
+    if(raw){const p=JSON.parse(raw);S.done=p.done||{};S.notes=p.notes||"";S.excuses=p.excuses||"";}
+    else{S.done={};S.notes="";S.excuses="";}
+  }catch(_){S.done={};S.notes="";S.excuses="";}
+}
+
+/* ════ GENERAL HELPERS ════ */
+function esc(s){return(""+s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+function daysIn(m,y){return new Date(y,m+1,0).getDate()}
+function elapsed(m,y){const t=new Date();return(m===t.getMonth()&&y===t.getFullYear())?t.getDate():daysIn(m,y)}
+function destroyChart(id){if(CR[id]){try{CR[id].destroy()}catch(_){}delete CR[id]}}
+function mkChart(id,type,data,opts){destroyChart(id);const c=document.getElementById(id);if(!c)return;CR[id]=new Chart(c,{type,data,options:opts})}
+function weekNum(y,m,d){const date=new Date(y,m,d);const start=new Date(y,0,1);return Math.ceil(((date-start)/86400000+start.getDay()+1)/7)}
+function getMonthDone(y,m){
+  if(y===S.year&&m===S.month)return S.done;
+  try{const raw=localStorage.getItem("ht-"+y+"-"+m);return raw?JSON.parse(raw).done||{}:{}}catch(_){return{}}
+}
+function activeIdx(){return S.filterIdx.length===0?S.habits.map((_,i)=>i):S.filterIdx.filter(i=>i<S.habits.length)}
+/* Completion rate for a month (active habits, 0-100) */
+function monthRate(y,m,idxList){
+  const done=getMonthDone(y,m);const de=elapsed(m,y);
+  const idx=idxList||activeIdx();
+  if(!idx.length||de===0)return null;
+  const rates=idx.map(hi=>{
+    const h=S.habits[hi];
+    if(hType(h)==="sessions"){
+      const n=h.freq||1,total=de*n;
+      let c=0;
+      for(let d=1;d<=de;d++){const v=done[hi+"-"+d];if(Array.isArray(v))c+=v.filter(s=>s>0).length;}
+      return total>0?Math.round(c/total*100):0;
+    }
+    const c=Array.from({length:de},(_,d)=>isDayDoneFromDone(done,hi,d+1)).filter(Boolean).length;
+    return Math.round(c/de*100);
+  });
+  return Math.round(rates.reduce((a,b)=>a+b,0)/rates.length);
+}
+
+/* ════ SVG HELPERS ════ */
+function p2c(cx,cy,r,deg){const rad=(deg-90)*Math.PI/180;return[cx+r*Math.cos(rad),cy+r*Math.sin(rad)]}
+function arcP(cx,cy,r1,r2,a1,a2){
+  const[x1,y1]=p2c(cx,cy,r2,a1),[x2,y2]=p2c(cx,cy,r2,a2);
+  const[x3,y3]=p2c(cx,cy,r1,a2),[x4,y4]=p2c(cx,cy,r1,a1);
+  const lg=a2-a1>180?1:0,f=n=>n.toFixed(2);
+  return`M${f(x1)},${f(y1)} A${r2},${r2} 0 ${lg} 1 ${f(x2)},${f(y2)} L${f(x3)},${f(y3)} A${r1},${r1} 0 ${lg} 0 ${f(x4)},${f(y4)}Z`
+}
+
+/* ════ SESSION PICKER ════ */
+let SP={hi:-1,day:-1};
+function openSesPicker(hi,day){
+  SP={hi,day};
+  const h=S.habits[hi];
+  const snames=h.snames&&h.snames.length?h.snames:Array.from({length:h.freq||1},(_,i)=>`Session ${i+1}`);
+  const arr=getDoneVal(hi,day);
+  const d=new Date(S.year,S.month,day);
+  document.getElementById("spTitle").textContent=`${h.n} — ${MONTHS[S.month].slice(0,3)} ${day}`;
+  let rows="";
+  snames.forEach((sn,si)=>{
+    const v=arr[si]||0;
+    rows+=`<div class="sp-row">
+      <span class="sp-name">${esc(sn)}</span>
+      <div class="sp-btns">
+        <button class="sp-btn${v===1?" v1":""}" onclick="setSes(${si},1)">✅ On time</button>
+        <button class="sp-btn${v===2?" v2":""}" onclick="setSes(${si},2)">⏰ Late</button>
+        <button class="sp-btn${v===0?" v0":""}" onclick="setSes(${si},0)">❌</button>
+      </div>
+    </div>`;
+  });
+  document.getElementById("spRows").innerHTML=rows;
+  updateSpFoot();
+  document.getElementById("sesPicker").classList.remove("hidden");
+  document.getElementById("spOverlay").classList.add("show");
+}
+function setSes(si,val){
+  const{hi,day}=SP;
+  const h=S.habits[hi];
+  const arr=getDoneVal(hi,day);
+  arr[si]=val;
+  const allZero=arr.every(v=>v===0);
+  S.done[hi+"-"+day]=allZero?false:arr;
+  save();
+  /* re-render picker rows */
+  const snames=h.snames&&h.snames.length?h.snames:Array.from({length:h.freq||1},(_,i)=>`Session ${i+1}`);
+  const btns=document.querySelectorAll(".sp-row");
+  btns.forEach((row,rowIdx)=>{
+    row.querySelectorAll(".sp-btn").forEach((btn,bi)=>{
+      const vals=[1,2,0];
+      btn.className="sp-btn"+(arr[rowIdx]===vals[bi]?bi===0?" v1":bi===1?" v2":" v0":"");
+    });
+  });
+  updateSpFoot();
+  /* update SVG cell color directly */
+  const path=document.querySelector(`[data-hi="${hi}"][data-day="${day}"]`);
+  if(path){
+    const isTM=S.month===now.getMonth()&&S.year===now.getFullYear();
+    const isT=isTM&&day===now.getDate();
+    path.setAttribute("fill",cellColor(h,hi,day,false,isT));
+  }
+  /* update left col completion */
+  renderTrackerCompletion();
+  if(S.tab==="d")renderDashboard();
+}
+function updateSpFoot(){
+  const{hi,day}=SP;
+  const arr=getDoneVal(hi,day);
+  const done=arr.filter(v=>v>0).length,ontime=arr.filter(v=>v===1).length,late=arr.filter(v=>v===2).length,n=arr.length;
+  document.getElementById("spFoot").innerHTML=
+    `<span>✅ On time: <b>${ontime}</b></span><span>⏰ Late: <b>${late}</b></span><span>Total: <b>${done}/${n}</b></span>`;
+}
+function closeSesPicker(){
+  document.getElementById("sesPicker").classList.add("hidden");
+  document.getElementById("spOverlay").classList.remove("show");
+}
+
+/* ════ HABIT SETTINGS PANEL ════ */
+function openConf(hi){
+  S.openConf=S.openConf===hi?-1:hi;
+  renderTracker();
+}
+function saveConf(hi){
+  const typeEl=document.getElementById(`ct_${hi}`);
+  if(!typeEl)return;
+  const freqEl=document.getElementById(`cf_${hi}`);
+  const snEl=document.getElementById(`cs_${hi}`);
+  const wtEl=document.getElementById(`cw_${hi}`);
+  const h=S.habits[hi];
+  const newType=typeEl.value;
+  h.type=newType;
+  if(newType==="sessions"){
+    h.freq=Math.max(1,Math.min(20,freqEl?parseInt(freqEl.value)||1:h.freq||5));
+    h.snames=snEl?snEl.value.split(",").map(s=>s.trim()).filter(Boolean):(h.snames||[]);
+    delete h.wtarget;
+  } else if(newType==="weekly"){
+    h.wtarget=Math.max(1,Math.min(7,wtEl?parseInt(wtEl.value)||1:h.wtarget||5));
+    delete h.freq;delete h.snames;
+  } else {
+    delete h.freq;delete h.snames;delete h.wtarget;
+  }
+  S.openConf=-1;
+  save();renderAll();
+}
+
+/* ════ STATS ════ */
+function calcStats(){
+  const{month,year,habits,done}=S;
+  const idx=activeIdx();
+  const days=daysIn(month,year);
+  const de=elapsed(month,year);
+  const tod=new Date();
+
+  const hStats=habits.map((h,hi)=>{
+    const isActive=idx.includes(hi);
+    const t=hType(h);
+    let rate=0,ontimePct=0,latePct=0,weekHits=0,totalWeeks=0;
+
+    if(t==="sessions"){
+      const n=h.freq||1,total=de*n;
+      let c=0,ot=0,lt=0;
+      for(let d=1;d<=de;d++){
+        const v=done[hi+"-"+d];
+        if(Array.isArray(v)){c+=v.filter(s=>s>0).length;ot+=v.filter(s=>s===1).length;lt+=v.filter(s=>s===2).length;}
+      }
+      rate=total>0?Math.round(c/total*100):0;
+      ontimePct=c>0?Math.round(ot/c*100):0;
+      latePct=c>0?Math.round(lt/c*100):0;
+    } else {
+      const comp=Array.from({length:de},(_,d)=>isDayDoneFromDone(done,hi,d+1)).filter(Boolean).length;
+      rate=de>0?Math.round(comp/de*100):0;
+      if(t==="weekly"&&h.wtarget){
+        /* count complete weeks */
+        const wt=h.wtarget;
+        for(let wk=1;wk<=de;wk+=7){
+          const wend=Math.min(wk+6,de);
+          let wc=0;for(let d=wk;d<=wend;d++)if(isDayDoneFromDone(done,hi,d))wc++;
+          if(wend-wk+1>=wt){totalWeeks++;if(wc>=wt)weekHits++;}
+        }
+      }
+    }
+    let streak=0;
+    for(let d=de;d>=1;d--){if(isDayDone(hi,d))streak++;else break}
+    let maxS=0,cs=0;
+    for(let d=1;d<=days;d++){if(isDayDone(hi,d)){cs++;maxS=Math.max(maxS,cs)}else cs=0}
+    let lastRate=null;
+    try{
+      let lm=month-1,ly=year;if(lm<0){lm=11;ly--;}
+      const lraw=localStorage.getItem("ht-"+ly+"-"+lm);
+      if(lraw){
+        const lp=JSON.parse(lraw).done||{};const ld=daysIn(lm,ly);
+        if(t==="sessions"){
+          const n=h.freq||1,total=ld*n;
+          let c=0;for(let d=1;d<=ld;d++){const v=lp[hi+"-"+d];if(Array.isArray(v))c+=v.filter(s=>s>0).length;}
+          lastRate=total>0?Math.round(c/total*100):0;
+        } else {
+          const lc=Array.from({length:ld},(_,d)=>isDayDoneFromDone(lp,hi,d+1)).filter(Boolean).length;
+          lastRate=Math.round(lc/ld*100);
+        }
+      }
+    }catch(_){}
+    return{name:h.n,color:h.c,type:t,freq:h.freq,wtarget:h.wtarget,rate,ontimePct,latePct,weekHits,totalWeeks,streak,maxS,lastRate,isActive,idx:hi}
+  });
+
+  const activeHStats=hStats.filter(h=>h.isActive);
+  /* For daily totals, count a day as 1 if ANY active habit done (weighted by sessions ratio) */
+  const dailyTotals=Array.from({length:days},(_,d)=>{
+    return idx.filter(hi=>isDayDoneFromDone(done,hi,d+1)).length;
+  });
+  const maxPerDay=idx.length;
+  const perfectDays=Array.from({length:de},(_,d)=>dailyTotals[d]).filter(v=>v===maxPerDay&&v>0).length;
+  const zeroDays=Array.from({length:de},(_,d)=>dailyTotals[d]).filter(v=>v===0).length;
+  const wC=Array(7).fill(0),wT=Array(7).fill(0);
+  for(let d=1;d<=de;d++){
+    const dw=new Date(year,month,d).getDay();wT[dw]++;
+    idx.forEach(hi=>{if(isDayDoneFromDone(done,hi,d))wC[dw]++;});
+  }
+  const weeklyR=wT.map((t,i)=>t>0&&idx.length>0?Math.round(wC[i]/t/idx.length*100):0);
+  const overallRate=activeHStats.length>0?Math.round(activeHStats.reduce((s,h)=>s+h.rate,0)/activeHStats.length):0;
+  const bestStreak=activeHStats.length>0?activeHStats.reduce((a,b)=>a.streak>b.streak?a:b):null;
+  const isCurrMonth=month===tod.getMonth()&&year===tod.getFullYear();
+  const todayCount=isCurrMonth?idx.filter(hi=>isDayDone(hi,tod.getDate())).length:0;
+  const totalCheckIns=idx.reduce((sum,hi)=>{
+    const h=S.habits[hi];
+    if(hType(h)==="sessions"){let c=0;for(const k in done){if(k.startsWith(hi+"-")&&Array.isArray(done[k]))c+=done[k].filter(v=>v>0).length;}return sum+c;}
+    return sum+Object.keys(done).filter(k=>k.startsWith(hi+"-")&&done[k]).length;
+  },0);
+  return{hStats,activeHStats,dailyTotals,weeklyR,days,de,maxPerDay,overallRate,bestStreak,todayCount,isCurrMonth,perfectDays,zeroDays,totalCheckIns}
+}
+
+/* ════ INSIGHTS ════ */
+function genInsights(st){
+  const{activeHStats,overallRate,bestStreak,de,days,perfectDays,weeklyR}=st;
+  if(!activeHStats.length)return[];
+  const ins=[];
+  const best=activeHStats.reduce((a,b)=>a.rate>b.rate?a:b);
+  if(best.rate>0)ins.push({t:"ok",i:"🏆",h:"Best habit",b:`"${best.name}" — ${best.rate}% this month`});
+  if(bestStreak&&bestStreak.streak>=3)ins.push({t:"fire",i:"🔥",h:"Active streak",b:`${bestStreak.streak} days — "${bestStreak.name}"`});
+  const worst=activeHStats.reduce((a,b)=>a.rate<b.rate?a:b);
+  if(worst.rate<55&&de>4)ins.push({t:"warn",i:"⚠️",h:"Needs attention",b:`"${worst.name}" — only ${worst.rate}%`});
+  if(de<days&&overallRate>0)ins.push({t:"info",i:"📈",h:"Projection",b:`On pace for ~${overallRate}% this month`});
+  const improved=activeHStats.filter(h=>h.lastRate!==null&&h.rate>h.lastRate+5);
+  if(improved.length){const top=improved.reduce((a,b)=>(a.rate-a.lastRate)>(b.rate-b.lastRate)?a:b);ins.push({t:"ok",i:"📊",h:"Most improved",b:`"${top.name}" +${top.rate-top.lastRate}% vs last month`});}
+  if(perfectDays>0)ins.push({t:"fire",i:"⭐",h:"Perfect days",b:`${perfectDays} day${perfectDays>1?"s":""} with ALL habits done!`});
+  const prayerH=activeHStats.find(h=>h.type==="sessions"&&h.ontimePct>0);
+  if(prayerH)ins.push({t:"info",i:"🕌",h:"On-time sessions",b:`"${prayerH.name}": ${prayerH.ontimePct}% on time, ${prayerH.latePct}% late`});
+  const gymH=activeHStats.find(h=>h.type==="weekly"&&h.totalWeeks>0);
+  if(gymH)ins.push({t:gymH.weekHits/gymH.totalWeeks>=.7?"ok":"warn",i:"💪",h:"Weekly target",b:`"${gymH.name}": hit target ${gymH.weekHits}/${gymH.totalWeeks} weeks`});
+  const maxDow=weeklyR.indexOf(Math.max(...weeklyR));
+  if(weeklyR[maxDow]>0)ins.push({t:"info",i:"📅",h:"Strongest day",b:`${DOW[maxDow]} — ${weeklyR[maxDow]}% avg`});
+  return ins.slice(0,7);
+}
+
+/* ════ TRACKER RENDER ════ */
+function renderTracker(){
+  const{month,year,habits,done,notes,excuses}=S;
+  const days=daysIn(month,year);
+  const tod=new Date(),tD=tod.getDate(),tM=tod.getMonth(),tY=tod.getFullYear();
+  const isTM=month===tM&&year===tY;
+  const de=elapsed(month,year);
+
+  let hH=`<div class="sec">HABITS:</div>`;
+  habits.forEach((h,i)=>{
+    const t=hType(h);
+    /* type badge */
+    const badge=t==="sessions"?`<span class="htype s">${h.freq||1}×/day</span>`:t==="weekly"?`<span class="htype w">${h.wtarget||1}×/wk</span>`:"";
+    /* weekly progress */
+    let wprog="";
+    if(t==="weekly"&&h.wtarget&&isTM){
+      const wc=weekDoneCount(i,year,month,tD);
+      const hit=wc>=h.wtarget;
+      wprog=`<span class="wprog${hit?" hit":""}">${wc}/${h.wtarget}wk</span>`;
+    }
+    /* session today progress */
+    let sprogToday="";
+    if(t==="sessions"&&isTM){
+      const arr=getDoneVal(i,tD);
+      const done2=arr.filter(v=>v>0).length;
+      const ot=arr.filter(v=>v===1).length;
+      sprogToday=`<span class="wprog${done2===arr.length?" hit":""}">${done2}/${arr.length}</span>`;
+    }
+    hH+=`<div class="hr">
+      <span class="rnum" style="background:${h.c}">${i+1}</span>
+      <div class="dot" style="background:${h.c}" data-color="${i}" title="Change color"></div>
+      <input type="color" id="clr${i}" value="${h.c}" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none">
+      <span class="hn" data-edit="${i}" title="${esc(h.n)}">${esc(h.n)}</span>
+      ${badge}${wprog||sprogToday}
+      <button class="gbtn" data-conf="${i}" title="Settings">⚙</button>
+      <button class="dbtn" data-del="${i}">&times;</button>
+    </div>`;
+    /* settings panel */
+    if(S.openConf===i){
+      hH+=`<div class="sconf">
+        <label>Type</label>
+        <select id="ct_${i}" onchange="updateConfUI(${i})">
+          <option value="simple"${t==="simple"?" selected":""}>Simple (checkbox)</option>
+          <option value="sessions"${t==="sessions"?" selected":""}>Sessions (N× per day)</option>
+          <option value="weekly"${t==="weekly"?" selected":""}>Weekly target (N× per week)</option>
+        </select>
+        <div id="conf_extra_${i}" style="margin-top:8px">`;
+      if(t==="sessions"){
+        hH+=`<div class="sconf-row">
+          <div><label>Sessions per day</label><input type="number" id="cf_${i}" value="${h.freq||5}" min="1" max="20" style="width:60px"></div>
+          <div style="flex:1"><label>Session names (comma-separated)</label><input type="text" id="cs_${i}" value="${(h.snames||[]).join(", ")}" style="width:100%" placeholder="e.g. Fajr, Dhuhr, Asr, Maghrib, Isha"></div>
+        </div>`;
+      } else if(t==="weekly"){
+        hH+=`<div class="sconf-row">
+          <div><label>Days per week target</label><input type="number" id="cw_${i}" value="${h.wtarget||5}" min="1" max="7" style="width:60px"></div>
+        </div>`;
+      }
+      hH+=`</div>
+        <div class="sconf-row" style="margin-top:10px">
+          <button class="sconf-save" onclick="saveConf(${i})">Save</button>
+          <button class="sconf-cancel" onclick="S.openConf=-1;renderTracker()">Cancel</button>
+        </div>
+      </div>`;
+    }
+  });
+
+  hH+=`<div class="ar">
+    <input class="ai" id="nhi" placeholder="Add habit…" onkeydown="if(event.key==='Enter')addHabit()"/>
+    <button class="abtn" onclick="addHabit()">+</button>
+  </div>
+  <div style="margin-top:18px" id="compList">`;
+  hH+=renderCompletionHTML(habits,done,days,de);
+  hH+=`</div>`;
+
+  const colH=document.getElementById("colH");
+  colH.innerHTML=hH;
+
+  colH.querySelectorAll("[data-del]").forEach(b=>b.addEventListener("click",()=>{
+    const i=+b.dataset.del;
+    S.habits.splice(i,1);
+    S.filterIdx=S.filterIdx.filter(x=>x!==i).map(x=>x>i?x-1:x);
+    if(S.hmHabit===i)S.hmHabit=-1; else if(S.hmHabit>i)S.hmHabit--;
+    if(S.openConf===i)S.openConf=-1; else if(S.openConf>i)S.openConf--;
+    save();renderAll();
+  }));
+  colH.querySelectorAll("[data-edit]").forEach(sp=>sp.addEventListener("click",()=>{
+    const i=+sp.dataset.edit;
+    const inp=document.createElement("input");inp.className="hni";inp.value=S.habits[i].n;
+    sp.replaceWith(inp);inp.focus();
+    const fin=()=>{if(inp.value.trim())S.habits[i].n=inp.value.trim();save();renderAll();};
+    inp.addEventListener("blur",fin);inp.addEventListener("keydown",e=>e.key==="Enter"&&fin());
+  }));
+  colH.querySelectorAll("[data-conf]").forEach(b=>b.addEventListener("click",()=>openConf(+b.dataset.conf)));
+  colH.querySelectorAll("[data-color]").forEach(dot=>{
+    const i=+dot.dataset.color;const ci=document.getElementById("clr"+i);
+    dot.addEventListener("click",()=>ci.click());
+    ci.addEventListener("input",e=>{S.habits[i].c=e.target.value;dot.style.background=e.target.value;});
+    ci.addEventListener("change",e=>{S.habits[i].c=e.target.value;save();renderAll();});
+  });
+
+  renderSVG();
+
+  document.getElementById("colN").innerHTML=`
+  <div class="sec">NOTE &amp; REFLECTION</div>
+  <textarea class="nota" id="nta" rows="6" placeholder="Your thoughts…">${esc(notes)}</textarea>
+  <div class="sec" style="margin-top:20px">EXCUSES I OVERCAME</div>
+  <textarea class="nota" id="eta" rows="5" placeholder="What did you push through?" style="color:#C8442A">${esc(excuses)}</textarea>
+  <div class="qbox" style="margin-top:18px">
+    <div class="qt">"إذا وقعت، ارجع للانتظام"<br><span style="font-size:11px;color:#888">If you fall, return to discipline.</span></div>
+  </div>`;
+  document.getElementById("nta").oninput=e=>{S.notes=e.target.value;save();};
+  document.getElementById("eta").oninput=e=>{S.excuses=e.target.value;save();};
+}
+
+function renderCompletionHTML(habits,done,days,de){
+  let html=`<div style="font-weight:bold;text-transform:uppercase;letter-spacing:1px;font-size:9px;color:#888;border-bottom:1px solid #C5BAA8;padding-bottom:3px;margin-bottom:8px">COMPLETION THIS MONTH</div>`;
+  habits.forEach((h,i)=>{
+    const t=hType(h);
+    let pct=0;
+    if(t==="sessions"){
+      const n=h.freq||1,total=de*n;let c=0;
+      for(let d=1;d<=de;d++){const v=done[i+"-"+d];if(Array.isArray(v))c+=v.filter(s=>s>0).length;}
+      pct=total>0?Math.round(c/total*100):0;
+    } else {
+      const cnt=Array.from({length:days},(_,d)=>isDayDoneFromDone(done,i,d+1)).filter(Boolean).length;
+      pct=de>0?Math.round(cnt/de*100):0;
+    }
+    html+=`<div style="margin-bottom:7px">
+    <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px;color:#888">
+      <span style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(h.n)}</span>
+      <span style="font-weight:bold;color:#1A1A1A">${pct}%</span>
+    </div>
+    <div class="pbg"><div class="pb" style="width:${pct}%;background:${h.c}"></div></div></div>`;
+  });
+  return html;
+}
+function renderTrackerCompletion(){
+  const{habits,done}=S;const days=daysIn(S.month,S.year);const de=elapsed(S.month,S.year);
+  const el=document.getElementById("compList");
+  if(el)el.innerHTML=renderCompletionHTML(habits,done,days,de);
+}
+
+function updateConfUI(i){
+  const t=document.getElementById(`ct_${i}`).value;
+  const ex=document.getElementById(`conf_extra_${i}`);
+  if(!ex)return;
+  if(t==="sessions"){
+    ex.innerHTML=`<div class="sconf-row">
+      <div><label>Sessions per day</label><input type="number" id="cf_${i}" value="${S.habits[i].freq||5}" min="1" max="20" style="width:60px"></div>
+      <div style="flex:1"><label>Session names (comma-separated)</label><input type="text" id="cs_${i}" value="${(S.habits[i].snames||[]).join(", ")}" style="width:100%" placeholder="e.g. Fajr, Dhuhr, Asr, Maghrib, Isha"></div>
+    </div>`;
+  } else if(t==="weekly"){
+    ex.innerHTML=`<div class="sconf-row"><div><label>Days per week target</label><input type="number" id="cw_${i}" value="${S.habits[i].wtarget||5}" min="1" max="7" style="width:60px"></div></div>`;
+  } else {
+    ex.innerHTML="";
+  }
+}
+
+function renderSVG(){
+  const{month,year,habits,done}=S;
+  const days=daysIn(month,year);
+  /* ── Start at 12 o'clock (deg=0=top). Small gap there for number badges ── */
+  const NUMGAP=12; /* degrees reserved at top (centered on 0) for number badges */
+  const SS=NUMGAP/2;        /* day-1 starts here (just clockwise of top) */
+  const RDEG=360-NUMGAP;    /* degrees available for day cells */
+  const GAP=1.0;            /* gap between adjacent cells */
+  const seg=RDEG/days;
+  const tod=new Date(),tD=tod.getDate(),tM=tod.getMonth(),tY=tod.getFullYear();
+  const isTM=month===tM&&year===tY;
+  const cx=220,cy=220,IR=52,RA=148;
+  const RW=habits.length>0?RA/habits.length:24;const LR=IR+RA+15;
+  const svg=document.getElementById("svg");
+  let s=`<circle cx="${cx}" cy="${cy}" r="216" fill="#FEFAF0" stroke="#C5BAA8" stroke-width="0.5"/>
+  <circle cx="${cx}" cy="${cy}" r="${IR-5}" fill="none" stroke="#C5BAA8" stroke-width="0.5" stroke-dasharray="3 3"/>`;
+  const N=habits.length;
+  habits.forEach((h,hi)=>{
+    const ri=N-1-hi; /* REVERSED: hi=0 → outermost ring */
+    const r2=IR+RW*(ri+1),r1=r2-RW+1.5;
+    /* ── Day cells ── */
+    for(let di=0;di<days;di++){
+      const d=di+1,sl=SS+di*seg+GAP/2,el=SS+(di+1)*seg-GAP/2;
+      const isFuture=isTM&&d>tD;const isT=isTM&&d===tD;
+      const fill=cellColor(h,hi,d,isFuture,isT);
+      const stroke=(isT&&!isDayDone(hi,d))?"#3B82F6":"#C5BAA8",sw=isT?.9:.4;
+      s+=`<path class="cell" d="${arcP(cx,cy,r1,r2,sl,el)}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" data-hi="${hi}" data-day="${d}"/>`;
+    }
+    /* ── Number badge at top (0°) in the gap ── */
+    const rm=(r1+r2)/2;               /* middle radius of this ring */
+    const[bx,by]=p2c(cx,cy,rm,0);     /* 0° = exactly 12 o'clock */
+    const br=Math.min(RW*0.38,7.5);   /* badge radius, scales with ring width */
+    const fs=Math.max(6,Math.min(br*1.35,10)); /* font size */
+    s+=`<circle cx="${bx.toFixed(1)}" cy="${by.toFixed(1)}" r="${br.toFixed(1)}" fill="${h.c}" stroke="#FEFAF0" stroke-width="1.5"/>`;
+    s+=`<text x="${bx.toFixed(1)}" y="${by.toFixed(1)}" text-anchor="middle" dominant-baseline="central" font-size="${fs.toFixed(1)}" font-weight="bold" fill="#fff" pointer-events="none">${hi+1}</text>`;
+  });
+  /* ── Day number labels (outer ring) ── */
+  for(let di=0;di<days;di++){
+    const d=di+1,a=SS+di*seg+seg/2;const[x,y]=p2c(cx,cy,LR,a);const isT=isTM&&d===tD;
+    s+=`<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="middle" dominant-baseline="central" font-size="${days>29?8:9.5}" font-weight="${isT?"bold":"normal"}" fill="${isT?"#2563EB":"#888"}">${d}</text>`;
+  }
+  s+=`<text x="${cx}" y="${cy-10}" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="bold" letter-spacing="2" fill="#555">${MONTHS[month].slice(0,3).toUpperCase()}</text>
+  <text x="${cx}" y="${cy+10}" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#888">${year}</text>`;
+  svg.innerHTML=s;
+  svg.querySelectorAll("[data-hi]").forEach(p=>p.addEventListener("click",()=>{
+    const hi=+p.dataset.hi,day=+p.dataset.day;
+    const h=S.habits[hi];
+    if(hType(h)==="sessions"){openSesPicker(hi,day);return;}
+    S.done[hi+"-"+day]=!isDayDone(hi,day);
+    save();renderAll();
+  }));
+}
+
+/* ════ FILTER BAR ════ */
+function renderFilterBar(){
+  const{habits,filterIdx,annualYear}=S;
+  const allOn=filterIdx.length===0;
+  let html=`<span class="fbar-label">Filter:</span><div class="fbar-chips">`;
+  html+=`<button class="fchip${allOn?" on":""}" style="${allOn?"background:#1A1A1A":""}" onclick="setFilter(-1)">All</button>`;
+  habits.forEach((h,i)=>{
+    const on=filterIdx.includes(i);
+    const badge=hType(h)==="sessions"?` <span style="opacity:.7">${h.freq}×</span>`:hType(h)==="weekly"?` <span style="opacity:.7">${h.wtarget}×wk</span>`:"";
+    html+=`<button class="fchip${on?" on":""}" style="${on?"background:"+h.c+";border-color:"+h.c:""}" onclick="setFilter(${i})">${esc(h.n)}${badge}</button>`;
+  });
+  html+=`</div><div class="fbar-sep"></div>
+  <div class="fbar-year">
+    <span class="fbar-label">Annual:</span>
+    <button class="fynbtn" onclick="shiftAnnualYear(-1)">&#8249;</button>
+    <span class="fylbl" id="annYrLbl">${annualYear}</span>
+    <button class="fynbtn" onclick="shiftAnnualYear(1)">&#8250;</button>
+  </div>`;
+  document.getElementById("filterBar").innerHTML=html;
+}
+function setFilter(idx){
+  if(idx===-1){S.filterIdx=[];}
+  else{
+    if(!Number.isInteger(idx)||idx<0||idx>=S.habits.length)return;
+    const pos=S.filterIdx.indexOf(idx);
+    if(pos===-1)S.filterIdx.push(idx);else S.filterIdx.splice(pos,1);
+    if(S.filterIdx.length===S.habits.length)S.filterIdx=[];
+  }
+  renderDashboard();
+}
+function shiftAnnualYear(d){
+  S.annualYear+=d;
+  const upd=(id,txt)=>{const el=document.getElementById(id);if(el)el.textContent=txt;};
+  upd("annYrLbl",S.annualYear);
+  upd("yearLabel",S.annualYear);
+  upd("mVsMTitle",`Month vs month — ${S.annualYear}`);
+  renderAnnualCharts();
+  renderHeatmap();
+}
+
+/* ════ DASHBOARD ════ */
+function renderDashboard(){
+  const{month,year,habits}=S;
+  const st=calcStats();
+  const{hStats,activeHStats,dailyTotals,weeklyR,days,de,maxPerDay,overallRate,bestStreak,todayCount,isCurrMonth,perfectDays,zeroDays,totalCheckIns}=st;
+
+  for(let i=0;i<habits.length+5;i++)destroyChart("ch"+i);
+  ["cDaily","cWeekly","cTrend","cMonthVsMonth","cWeekOW","cDayOfWeekYear","cRunning","cRadar"].forEach(id=>destroyChart(id));
+
+  renderFilterBar();
+
+  /* Summary row 1 */
+  const bsName=bestStreak?bestStreak.name.length>14?bestStreak.name.slice(0,14)+"…":bestStreak.name:"—";
+  document.getElementById("sumRow").innerHTML=`
+  <div class="sc teal"><div class="slbl">${isCurrMonth?"Today":"That day"}</div><div class="sval">${todayCount}<span style="font-size:16px;color:#888">/${activeIdx().length}</span></div><div class="ssub">${isCurrMonth?"habits done today":"N/A for past months"}</div></div>
+  <div class="sc blue"><div class="slbl">This month</div><div class="sval">${overallRate}%</div><div class="ssub">overall completion</div></div>
+  <div class="sc amber"><div class="slbl">Best streak</div><div class="sval">${bestStreak?bestStreak.streak:0}</div><div class="ssub">${bsName}</div></div>
+  <div class="sc purple"><div class="slbl">Habits</div><div class="sval">${habits.length}</div><div class="ssub">${activeIdx().length} in filter</div></div>`;
+
+  /* Summary row 2 */
+  const yearRate=(()=>{let sm=0,c=0;for(let m=0;m<12;m++){const r=monthRate(year,m);if(r!==null){sm+=r;c++;}}return c?Math.round(sm/c):0})();
+  let lm2=month-1,ly2=year;if(lm2<0){lm2=11;ly2--;}
+  const prevRate=monthRate(ly2,lm2);
+  const diff=prevRate!==null?overallRate-prevRate:null;
+  const diffHtml=diff===null?"—":diff>0?`<span class="pill up">+${diff}%</span>`:diff<0?`<span class="pill dn">${diff}%</span>`:`<span class="pill eq">Same</span>`;
+  document.getElementById("sumRow2").innerHTML=`
+  <div class="sc green"><div class="slbl">Perfect days</div><div class="sval">${perfectDays}</div><div class="ssub">all active done</div></div>
+  <div class="sc red"><div class="slbl">Zero days</div><div class="sval">${zeroDays}</div><div class="ssub">nothing done</div></div>
+  <div class="sc teal"><div class="slbl">Total sessions</div><div class="sval">${totalCheckIns}</div><div class="ssub">check-ins this month</div></div>
+  <div class="sc blue"><div class="slbl">Year avg</div><div class="sval">${yearRate}%</div><div class="ssub">vs last month: ${diffHtml}</div></div>`;
+
+  /* Insights */
+  const ins=genInsights(st);
+  document.getElementById("insRow").innerHTML=ins.length
+    ?ins.map(({t,i,h,b})=>`<div class="ins ${t}"><span class="ico">${i}</span><div><strong>${h}</strong>${b}</div></div>`).join("")
+    :`<div class="ins info"><span class="ico">💡</span><div><strong>Getting started</strong>Start tracking to see insights.</div></div>`;
+
+  /* Daily chart */
+  document.getElementById("dailyTitle").textContent=`Daily completions — ${MONTHS[month]} ${year}`;
+  const dLabels=Array.from({length:days},(_,i)=>i+1);
+  const dColors=dailyTotals.map(v=>v===maxPerDay&&v>0?"#4EC9C4":v>maxPerDay/2?"#60A5FA":"#DDD5C2");
+  mkChart("cDaily","bar",{labels:dLabels,datasets:[{data:dailyTotals,backgroundColor:dColors,borderRadius:3,borderSkipped:false}]},{
+    responsive:true,maintainAspectRatio:false,animation:{duration:500},
+    plugins:{legend:{display:false},tooltip:{callbacks:{title:i=>`Day ${i[0].label}`,label:i=>`${i.raw}/${maxPerDay} habits`}}},
+    scales:{x:{grid:{color:"rgba(0,0,0,0.04)"},ticks:{font:{size:9},color:"#888"}},y:{beginAtZero:true,max:Math.max(maxPerDay,1),ticks:{stepSize:1,font:{size:9},color:"#888"},grid:{color:"rgba(0,0,0,0.06)"}}}
+  });
+
+  /* Habit cards */
+  const idx=activeIdx();
+  document.getElementById("habGrid").innerHTML=hStats.map((h,hi)=>{
+    const trend=h.lastRate===null?"":h.rate>h.lastRate+3?`<span class="trend-up">↑${h.rate-h.lastRate}%</span>`:h.rate<h.lastRate-3?`<span class="trend-dn">↓${h.lastRate-h.rate}%</span>`:`<span style="color:#888">→</span>`;
+    const miniCal=Array.from({length:days},(_,d)=>{
+      const done2=isDayDoneFromDone(S.done,h.idx,d+1);
+      const ratio=dayRatio(h.idx,d+1);
+      const isToday=new Date().getMonth()===month&&new Date().getFullYear()===year&&new Date().getDate()===d+1;
+      const bg=done2?blendCol("#DDD5C2",h.color,Math.max(ratio,.3)):isToday?"#DBEAFE":"#E0D8C8";
+      return`<div class="md${isToday?" td":""}" style="background:${bg}" title="Day ${d+1}"></div>`;
+    }).join("");
+    /* type-specific extra stats */
+    let extra="";
+    if(h.type==="sessions"){
+      extra=`<div class="sp-stats"><span class="sp-stat g">✅ ${h.ontimePct}% on time</span><span class="sp-stat o">⏰ ${h.latePct}% late</span></div>`;
+    } else if(h.type==="weekly"&&h.totalWeeks>0){
+      extra=`<div class="sp-stats"><span class="sp-stat g">💪 ${h.weekHits}/${h.totalWeeks} weeks on target</span></div>`;
+    }
+    const typeBadge=h.type==="sessions"?`<span class="htype s">${h.freq}×/day</span>`:h.type==="weekly"?`<span class="htype w">${h.wtarget}×/wk</span>`:"";
+    return`<div class="hc${h.isActive?"":" dimmed"}">
+      <div class="hc-top">
+        <div class="hc-ring"><canvas id="ch${hi}"></canvas><div class="hc-pct">${h.rate}%</div></div>
+        <div class="hc-meta">
+          <div class="hc-name" title="${esc(h.name)}">${esc(h.name)} ${typeBadge}</div>
+          <div class="hc-row"><span>Streak</span><b>${h.streak} days</b></div>
+          <div class="hc-row"><span>Best streak</span><b>${h.maxS} days</b></div>
+          <div class="hc-row"><span>vs last month</span>${trend||"<span style='color:#888'>—</span>"}</div>
+          ${extra}
+        </div>
+      </div>
+      <div class="minical">${miniCal}</div>
+    </div>`;
+  }).join("");
+
+  hStats.forEach((h,hi)=>{
+    mkChart("ch"+hi,"doughnut",{datasets:[{data:[h.rate,100-h.rate],backgroundColor:[h.color,"#E8E0D0"],borderWidth:0,borderRadius:2}]},
+      {responsive:false,cutout:"72%",animation:{duration:700,delay:hi*60},plugins:{legend:{display:false},tooltip:{enabled:false}}});
+  });
+
+  /* Habit comparison bars — show on-time vs late for sessions */
+  document.getElementById("habCompBars").innerHTML=activeHStats.length
+    ?activeHStats.map(h=>{
+      const lateW=h.type==="sessions"?Math.round(h.rate*h.latePct/100):0;
+      const ontimeW=h.rate-lateW;
+      return`<div class="hbar-row">
+        <div class="hbar-name" title="${esc(h.name)}">${esc(h.name)}</div>
+        <div class="hbar-track" style="overflow:hidden;border-radius:6px">
+          <div style="display:flex;height:100%">
+            <div style="width:${ontimeW}%;background:${h.color};border-radius:6px 0 0 6px;flex-shrink:0"></div>
+            ${lateW>0?`<div style="width:${lateW}%;background:#FB923C;flex-shrink:0"></div>`:""}
+          </div>
+        </div>
+        <div class="hbar-pct">${h.rate}%${lateW>0?`<span style="font-size:9px;color:#B45309"> (${lateW}%⏰)</span>`:""}</div>
+      </div>`;}).join("")
+    :`<div style="color:#aaa;font-size:12px;padding:12px 0">No habits in filter.</div>`;
+
+  /* Running average */
+  const runData=dailyTotals.map((v,i,arr)=>{
+    const win=arr.slice(Math.max(0,i-6),i+1);
+    const maxP=maxPerDay*win.length;
+    return maxP>0?Math.round(win.reduce((a,b)=>a+b,0)/maxP*100):0;
+  });
+  mkChart("cRunning","line",{
+    labels:dLabels,
+    datasets:[
+      {label:"Daily",data:dailyTotals.map(v=>maxPerDay>0?Math.round(v/maxPerDay*100):0),backgroundColor:"rgba(78,201,196,0.08)",borderColor:"rgba(78,201,196,0.3)",borderWidth:1,fill:true,pointRadius:0,tension:.3},
+      {label:"7-day avg",data:runData,backgroundColor:"transparent",borderColor:"#4EC9C4",borderWidth:2.5,fill:false,pointRadius:0,tension:.4}
+    ]
+  },{
+    responsive:true,maintainAspectRatio:false,animation:{duration:600},
+    plugins:{legend:{display:true,position:"top",labels:{font:{size:9},boxWidth:10,padding:8}},tooltip:{callbacks:{label:i=>`${i.dataset.label}: ${i.raw}%`}}},
+    scales:{x:{grid:{display:false},ticks:{font:{size:9},color:"#888"}},y:{beginAtZero:true,max:100,ticks:{callback:v=>v+"%",font:{size:9},color:"#888"},grid:{color:"rgba(0,0,0,0.05)"}}}
+  });
+
+  /* Radar */
+  const radarWrap=document.getElementById("radarWrap");
+  radarWrap.innerHTML=`<canvas id="cRadar"></canvas>`;
+  if(activeHStats.length>=3){
+    mkChart("cRadar","radar",{
+      labels:activeHStats.map(h=>h.name.length>12?h.name.slice(0,12)+"…":h.name),
+      datasets:[{data:activeHStats.map(h=>h.rate),backgroundColor:"rgba(78,201,196,0.15)",borderColor:"#4EC9C4",borderWidth:2,pointBackgroundColor:activeHStats.map(h=>h.color),pointRadius:4}]
+    },{
+      responsive:true,maintainAspectRatio:false,animation:{duration:700},plugins:{legend:{display:false}},
+      scales:{r:{beginAtZero:true,max:100,ticks:{stepSize:25,font:{size:8},color:"#aaa"},grid:{color:"rgba(0,0,0,0.08)"},pointLabels:{font:{size:10},color:"#555"}}}
+    });
+  } else {
+    radarWrap.innerHTML=`<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#aaa;font-size:12px">Select 3+ habits to see radar</div>`;
+  }
+
+  /* Weekly pattern */
+  mkChart("cWeekly","bar",{labels:DOW,datasets:[{data:weeklyR,backgroundColor:weeklyR.map(v=>v>=75?"#4EC9C4":v>=50?"#60A5FA":"#DDD5C2"),borderRadius:4,borderSkipped:false}]},{
+    responsive:true,maintainAspectRatio:false,animation:{duration:600},
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:i=>`${i.raw}% completion`}}},
+    scales:{x:{grid:{display:false},ticks:{font:{size:10},color:"#888"}},y:{beginAtZero:true,max:100,ticks:{callback:v=>v+"%",font:{size:9},color:"#888"},grid:{color:"rgba(0,0,0,0.05)"}}}
+  });
+
+  /* 6-month trend */
+  const tLabels=[],tData=[],tColors=[];
+  for(let i=5;i>=0;i--){
+    let m=month-i,y=year;while(m<0){m+=12;y--;}
+    tLabels.push(MONTHS[m].slice(0,3)+" "+y.toString().slice(2));
+    tData.push(i===0?overallRate:(monthRate(y,m)||0));
+    tColors.push(i===0?"#4EC9C4":"#60A5FA");
+  }
+  mkChart("cTrend","line",{labels:tLabels,datasets:[{data:tData,borderColor:"#4EC9C4",backgroundColor:"rgba(78,201,196,0.1)",borderWidth:2.5,pointBackgroundColor:tColors,pointRadius:5,pointHoverRadius:7,tension:.35,fill:true}]},{
+    responsive:true,maintainAspectRatio:false,animation:{duration:700},
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:i=>`${i.raw}% overall`}}},
+    scales:{x:{grid:{display:false},ticks:{font:{size:10},color:"#888"}},y:{beginAtZero:true,max:100,ticks:{callback:v=>v+"%",font:{size:9},color:"#888"},grid:{color:"rgba(0,0,0,0.05)"}}}
+  });
+
+  document.getElementById("yearLabel").textContent=S.annualYear;
+  document.getElementById("mVsMTitle").textContent=`Month vs month — ${S.annualYear}`;
+  renderAnnualCharts();
+  renderHeatmap();
+}
+
+/* ════ ANNUAL CHARTS ════ */
+function renderAnnualCharts(){
+  const yr=S.annualYear;
+  ["cMonthVsMonth","cWeekOW","cDayOfWeekYear"].forEach(id=>destroyChart(id));
+  const mvmData=MONTHS.map((_,m)=>{
+    const isFuture=(yr===now.getFullYear()&&m>now.getMonth())||(yr>now.getFullYear());
+    return isFuture?null:(monthRate(yr,m)??0);
+  });
+  mkChart("cMonthVsMonth","bar",{labels:MONTHS.map(m=>m.slice(0,3)),datasets:[{data:mvmData,backgroundColor:mvmData.map((v,m)=>m===S.month&&yr===S.year?"#4EC9C4":v>=75?"#34D399":v>=50?"#60A5FA":"#DDD5C2"),borderRadius:5,borderSkipped:false}]},{
+    responsive:true,maintainAspectRatio:false,animation:{duration:600},
+    plugins:{legend:{display:false},tooltip:{callbacks:{title:i=>`${MONTHS[i[0].dataIndex]} ${yr}`,label:i=>`${i.raw??0}%`}}},
+    scales:{x:{grid:{display:false},ticks:{font:{size:10},color:"#888"}},y:{beginAtZero:true,max:100,ticks:{callback:v=>v+"%",font:{size:9},color:"#888"},grid:{color:"rgba(0,0,0,0.05)"}}}
+  });
+  const weekMap={};const idx=activeIdx();
+  for(let m=0;m<12;m++){
+    const ld=daysIn(m,yr);const done=getMonthDone(yr,m);
+    for(let d=1;d<=ld;d++){
+      const dt=new Date(yr,m,d);if(dt>new Date())continue;
+      const wn=weekNum(yr,m,d);
+      if(!weekMap[wn])weekMap[wn]={total:0,possible:0};
+      idx.forEach(hi=>{if(isDayDoneFromDone(done,hi,d))weekMap[wn].total++;weekMap[wn].possible++;});
+    }
+  }
+  const wowL=[],wowD=[],wowC=[];
+  for(let w=1;w<=54;w++){
+    if(weekMap[w]&&weekMap[w].possible>0){
+      const pct=Math.round(weekMap[w].total/weekMap[w].possible*100);
+      wowL.push("W"+w);wowD.push(pct);wowC.push(pct>=80?"#4EC9C4":pct>=50?"#60A5FA":"#DDD5C2");
+    }
+  }
+  mkChart("cWeekOW","bar",{labels:wowL,datasets:[{data:wowD,backgroundColor:wowC,borderRadius:2,borderSkipped:false,barPercentage:.85}]},{
+    responsive:true,maintainAspectRatio:false,animation:{duration:600},
+    plugins:{legend:{display:false},tooltip:{callbacks:{title:i=>`Week ${i[0].label.replace("W","")} — ${yr}`,label:i=>`${i.raw}%`}}},
+    scales:{x:{grid:{display:false},ticks:{font:{size:8},color:"#888",maxRotation:0,autoSkip:true,maxTicksLimit:18}},y:{beginAtZero:true,max:100,ticks:{callback:v=>v+"%",font:{size:9},color:"#888"},grid:{color:"rgba(0,0,0,0.05)"}}}
+  });
+  const dowColors=["#F87171","#FB923C","#F59E0B","#34D399","#60A5FA","#A78BFA","#F472B6"];
+  const dowData=Array.from({length:7},()=>Array(12).fill(null));
+  for(let m=0;m<12;m++){
+    const isFuture=(yr===now.getFullYear()&&m>now.getMonth())||(yr>now.getFullYear());if(isFuture)continue;
+    const de2=elapsed(m,yr);const done=getMonthDone(yr,m);
+    const dowC=Array(7).fill(0),dowT=Array(7).fill(0);
+    for(let d=1;d<=de2;d++){const dw=new Date(yr,m,d).getDay();dowT[dw]++;idx.forEach(hi=>{if(isDayDoneFromDone(done,hi,d))dowC[dw]++;});}
+    DOW.forEach((_,dw)=>{if(dowT[dw]>0&&idx.length>0)dowData[dw][m]=Math.round(dowC[dw]/dowT[dw]/idx.length*100);});
+  }
+  mkChart("cDayOfWeekYear","line",{
+    labels:MONTHS.map(m=>m.slice(0,3)),
+    datasets:DOW.map((day,dw)=>({label:day,data:dowData[dw],borderColor:dowColors[dw],backgroundColor:"transparent",borderWidth:2,pointRadius:3,tension:.4,spanGaps:true}))
+  },{
+    responsive:true,maintainAspectRatio:false,animation:{duration:700},
+    plugins:{legend:{display:true,position:"top",labels:{font:{size:9},boxWidth:10,padding:8}}},
+    scales:{x:{grid:{display:false},ticks:{font:{size:9},color:"#888"}},y:{beginAtZero:true,max:100,ticks:{callback:v=>v+"%",font:{size:9},color:"#888"},grid:{color:"rgba(0,0,0,0.05)"}}}
+  });
+}
+
+/* ════ HEATMAP ════ */
+function renderHeatmap(){
+  const yr=S.annualYear;const hi=S.hmHabit;
+  document.getElementById("hmYearLbl").textContent=yr;
+  const tabsEl=document.getElementById("hmTabs");
+  let tabs=`<button class="hm-tab${hi===-1?" on":""}" style="${hi===-1?"background:#1A1A1A":""}" onclick="S.hmHabit=-1;renderHeatmap()">All</button>`;
+  S.habits.forEach((h,i)=>{
+    const on=hi===i;
+    tabs+=`<button class="hm-tab${on?" on":""}" style="${on?"background:"+h.c+";border-color:"+h.c:""}" onclick="S.hmHabit=${i};renderHeatmap()">${esc(h.n.length>12?h.n.slice(0,12)+"…":h.n)}</button>`;
+  });
+  tabsEl.innerHTML=tabs;
+  const LC=["#E8E0D0","#A3E4DF","#4EC9C4","#2A9D96","#1A6B67"];
+  const isLeap=(yr%4===0&&yr%100!==0)||(yr%400===0);
+  const dayCount=isLeap?366:365;
+  const startDow=new Date(yr,0,1).getDay();
+  const activeHIdx=activeIdx();
+  const cells=[];
+  for(let p=0;p<startDow;p++)cells.push(`<div></div>`);
+  for(let dn=0;dn<dayCount;dn++){
+    const dt=new Date(yr,0,dn+1);const m=dt.getMonth(),d=dt.getDate();
+    const isFuture=dt>new Date();
+    let bg="transparent",border="1px dashed #E0D8C8",tip="";
+    if(!isFuture){
+      border="none";const done=getMonthDone(yr,m);
+      let level=0;
+      if(hi===-1){
+        const total=activeHIdx.filter(hii=>isDayDoneFromDone(done,hii,d)).length;
+        const max=activeHIdx.length;
+        if(max>0)level=total===0?0:total===max?4:total/max>=.75?3:total/max>=.4?2:1;
+      } else {
+        const h=S.habits[hi];
+        if(hType(h)==="sessions"){
+          const v=done[hi+"-"+d];const arr=Array.isArray(v)?v:[];
+          const c=arr.filter(s=>s>0).length,n=h.freq||1;
+          level=c===0?0:c===n?4:c/n>=.75?3:c/n>=.4?2:1;
+        } else {
+          level=isDayDoneFromDone(done,hi,d)?4:0;
+        }
+      }
+      bg=LC[level];
+      tip=`${MONTHS[m].slice(0,3)} ${d}`;
+    }
+    cells.push(`<div class="hm-cell" style="background:${bg};border:${border}" title="${tip}"></div>`);
+  }
+  const rem=(startDow+dayCount)%7;if(rem>0)for(let p=0;p<7-rem;p++)cells.push(`<div></div>`);
+  let monthHtml=`<div class="hm-months">`;let lastCol=0;
+  for(let m=0;m<12;m++){
+    const doy=Math.floor((new Date(yr,m,1)-new Date(yr,0,1))/86400000);
+    const col=Math.floor((startDow+doy)/7);
+    monthHtml+=`<div style="min-width:${(col-lastCol)*16}px">${MONTHS[m].slice(0,3)}</div>`;lastCol=col;
+  }
+  monthHtml+=`</div>`;
+  document.getElementById("yearHeatmap").innerHTML=`${monthHtml}
+    <div class="hm-wrap">
+      <div class="hm-dow"><span> </span><span>Mon</span><span> </span><span>Wed</span><span> </span><span>Fri</span><span> </span></div>
+      <div class="heatmap-grid">${cells.join("")}</div>
+    </div>`;
+}
+
+/* ════ ACTIONS ════ */
+function addHabit(){
+  const inp=document.getElementById("nhi");const nm=(inp?inp.value:"").trim();
+  if(!nm)return;
+  S.habits.push({n:nm,c:COLORS[S.habits.length%COLORS.length]});
+  inp.value="";
+  closeSesPicker();
+  S.openConf=-1;
+  save();renderAll();
+}
+function switchTab(tab){
+  S.tab=tab;
+  document.querySelectorAll(".tab").forEach(b=>{const t=b.textContent;b.classList.toggle("on",(tab==="t"&&t.includes("Tracker"))||(tab==="d"&&t.includes("Dashboard"))||(tab==="s"&&t.includes("Scores")));});
+  document.getElementById("tv").style.display=tab==="t"?"block":"none";
+  document.getElementById("dv").style.display=tab==="d"?"block":"none";
+  document.getElementById("sv").style.display=tab==="s"?"block":"none";
+  if(tab==="d")renderDashboard();
+  if(tab==="s")renderScores();
+}
+function renderAll(){
+  document.getElementById("mLbl").textContent=MONTHS[S.month]+" "+S.year;
+  renderTracker();
+  if(S.tab==="d")renderDashboard();
+  if(S.tab==="s")renderScores();
+}
+document.getElementById("pBtn").onclick=()=>{if(S.month===0){S.month=11;S.year--;}else S.month--;loadMonth();renderAll();};
+document.getElementById("nBtn").onclick=()=>{if(S.month===11){S.month=0;S.year++;}else S.month++;loadMonth();renderAll();};
+Chart.defaults.font.family="Georgia,serif";Chart.defaults.color="#888";
+load();renderAll();
+/* ════ SCORE HELPERS ════ */
+function calcPeriodScore(y,m,d1,d2,idx){
+  if(!idx||!idx.length||d2<d1)return 0;
+  const done=getMonthDone(y,m);const days=d2-d1+1;
+  const rates=idx.map(hi=>{
+    const h=S.habits[hi];if(!h)return 0;
+    if(hType(h)==="sessions"){
+      const n=h.freq||1;let c=0;
+      for(let d=d1;d<=d2;d++){const v=done[hi+"-"+d];if(Array.isArray(v))c+=v.filter(s=>s>0).length;}
+      return n*days>0?Math.round(c/(n*days)*100):0;
+    } else {
+      let c=0;for(let d=d1;d<=d2;d++)if(isDayDoneFromDone(done,hi,d))c++;
+      return Math.round(c/days*100);
+    }
+  });
+  return rates.length?Math.round(rates.reduce((a,b)=>a+b,0)/rates.length):0;
+}
+
+function scoreGrade(s){
+  if(s>=90)return{g:"A+",c:"#059669",bg:"#D1FAE5"};
+  if(s>=80)return{g:"A", c:"#0D9488",bg:"#CCFBF1"};
+  if(s>=70)return{g:"B+",c:"#4EC9C4",bg:"#E0F2FE"};
+  if(s>=60)return{g:"B", c:"#2563EB",bg:"#DBEAFE"};
+  if(s>=50)return{g:"C", c:"#D97706",bg:"#FEF3C7"};
+  if(s>=40)return{g:"D", c:"#EA580C",bg:"#FED7AA"};
+  return{g:"F",c:"#DC2626",bg:"#FEE2E2"};
+}
+
+function calcWeekScores(y,m){
+  const ld=daysIn(m,y),de=elapsed(m,y),idx=activeIdx();
+  const scores=[];
+  for(let w=0;w<5;w++){
+    const start=w*7+1;if(start>de)break;
+    const end=Math.min((w+1)*7,ld,de);
+    scores.push({label:`W${w+1} (${start}-${end})`,short:`W${w+1}`,score:calcPeriodScore(y,m,start,end,idx)});
+  }
+  return scores;
+}
+
+function calcMonthScores(y){
+  const idx=activeIdx(),todayM=now.getMonth(),todayY=now.getFullYear();
+  return MONTHS.map((_,m)=>{
+    if((y>todayY)||(y===todayY&&m>todayM))return null;
+    const de=elapsed(m,y);
+    return de>0?calcPeriodScore(y,m,1,de,idx):null;
+  });
+}
+
+/* ════ SCORES RENDER ════ */
+function renderScores(){
+  const{month,year}=S;
+  const idx=activeIdx();
+  ["cWkScore","cMoScore","cYrComp","cScHist"].forEach(id=>destroyChart(id));
+
+  /* Current week/month scores */
+  const de=elapsed(month,year);
+  const isCM=month===now.getMonth()&&year===now.getFullYear();
+  const todayDay=isCM?now.getDate():de;
+  const weekN=Math.floor((todayDay-1)/7);
+  const wStart=weekN*7+1,wEnd=Math.min(wStart+6,de);
+  const currWeekScore=calcPeriodScore(year,month,wStart,wEnd,idx);
+  const currMonthScore=calcPeriodScore(year,month,1,de,idx);
+
+  /* Best week/month across last 24 months */
+  let bestMo={score:0,label:"—"},bestWk={score:0,label:"—"};
+  for(let i=0;i<24;i++){
+    let m=month-i,y=year;while(m<0){m+=12;y--;}
+    const isFut=(y>now.getFullYear())||(y===now.getFullYear()&&m>now.getMonth());
+    if(isFut)continue;
+    const de2=elapsed(m,y);if(!de2)continue;
+    const ms=calcPeriodScore(y,m,1,de2,idx);
+    if(ms>bestMo.score)bestMo={score:ms,label:MONTHS[m].slice(0,3)+" "+y};
+    calcWeekScores(y,m).forEach((ws,wi)=>{
+      if(ws.score>bestWk.score)bestWk={score:ws.score,label:`W${wi+1} ${MONTHS[m].slice(0,3)} ${y}`};
+    });
+  }
+  const yearMoScores=calcMonthScores(year).filter(s=>s!==null);
+  const yearAvg=yearMoScores.length?Math.round(yearMoScores.reduce((a,b)=>a+b,0)/yearMoScores.length):0;
+
+  /* ─── Score cards ─── */
+  const mk=(score,lbl,sub)=>{const g=scoreGrade(score);return`<div class="sc ${score>=70?"teal":score>=50?"blue":"amber"}">
+    <div class="slbl">${lbl}</div>
+    <div class="sval">${score}<span style="font-size:16px">%</span></div>
+    <div style="margin-top:5px"><span class="sg" style="background:${g.bg};color:${g.c}">${g.g}</span></div>
+    <div class="ssub" style="margin-top:4px">${sub}</div></div>`;};
+  const bmg=scoreGrade(bestMo.score),bwg=scoreGrade(bestWk.score);
+  document.getElementById("scSumRow").innerHTML=
+    mk(currWeekScore,"This Week","W"+(weekN+1)+" of "+MONTHS[month].slice(0,3))+
+    mk(currMonthScore,"This Month",MONTHS[month]+" "+year)+
+    mk(yearAvg,"Year Average","All months in "+year)+
+    `<div class="sc purple"><div class="slbl">Best Month</div><div class="sval">${bestMo.score}<span style="font-size:16px">%</span></div>
+     <div style="margin-top:5px"><span class="sg" style="background:${bmg.bg};color:${bmg.c}">${bmg.g}</span></div><div class="ssub">${bestMo.label}</div></div>`+
+    `<div class="sc green"><div class="slbl">Best Week</div><div class="sval">${bestWk.score}<span style="font-size:16px">%</span></div>
+     <div style="margin-top:5px"><span class="sg" style="background:${bwg.bg};color:${bwg.c}">${bwg.g}</span></div><div class="ssub">${bestWk.label}</div></div>`;
+
+  document.getElementById("scWkTitle").textContent=`Weekly scores — ${MONTHS[month]} ${year}`;
+  document.getElementById("scMoTitle").textContent=`Monthly scores — ${year}`;
+
+  /* ─── Weekly scores chart ─── */
+  const wkS=calcWeekScores(year,month);
+  mkChart("cWkScore","bar",{
+    labels:wkS.map(w=>w.short),
+    datasets:[{
+      data:wkS.map(w=>w.score),
+      backgroundColor:wkS.map(w=>scoreGrade(w.score).c),
+      borderRadius:7,borderSkipped:false
+    }]
+  },{
+    responsive:true,maintainAspectRatio:false,animation:{duration:600},
+    plugins:{legend:{display:false},tooltip:{callbacks:{
+      title:i=>wkS[i[0].dataIndex].label,
+      label:i=>`Score: ${i.raw}%  Grade: ${scoreGrade(i.raw).g}`
+    }}},
+    scales:{
+      x:{grid:{display:false},ticks:{font:{size:11},color:"#888"}},
+      y:{beginAtZero:true,max:100,ticks:{callback:v=>v+"%",font:{size:9},color:"#888"},grid:{color:"rgba(0,0,0,0.05)"}}
+    }
+  });
+
+  /* ─── Monthly scores chart ─── */
+  const moS=calcMonthScores(year);
+  mkChart("cMoScore","bar",{
+    labels:MONTHS.map(m=>m.slice(0,3)),
+    datasets:[{
+      data:moS.map(s=>s??0),
+      backgroundColor:moS.map((s,m2)=>s===null?"#E8E0D0":m2===month&&year===S.year?"#1A1A1A":scoreGrade(s).c),
+      borderRadius:5,borderSkipped:false
+    }]
+  },{
+    responsive:true,maintainAspectRatio:false,animation:{duration:700},
+    plugins:{legend:{display:false},tooltip:{callbacks:{
+      title:i=>`${MONTHS[i[0].dataIndex]} ${year}`,
+      label:i=>moS[i[0].dataIndex]!==null?`Score: ${i.raw}%  Grade: ${scoreGrade(i.raw).g}`:"No data yet"
+    }}},
+    scales:{
+      x:{grid:{display:false},ticks:{font:{size:10},color:"#888"}},
+      y:{beginAtZero:true,max:100,ticks:{callback:v=>v+"%",font:{size:9},color:"#888"},grid:{color:"rgba(0,0,0,0.05)"}}
+    }
+  });
+
+  /* ─── Year vs year comparison ─── */
+  const yrColors=["#4EC9C4","#60A5FA","#A78BFA"];
+  const yrDS=[];
+  for(let yi=0;yi<3;yi++){
+    const y2=year-yi;
+    const sc=calcMonthScores(y2);
+    if(sc.some(s=>s!==null)){
+      yrDS.push({
+        label:String(y2),data:sc,
+        borderColor:yrColors[yi],backgroundColor:"transparent",
+        borderWidth:yi===0?2.5:1.5,
+        pointBackgroundColor:sc.map(s=>s!==null?yrColors[yi]:"transparent"),
+        pointRadius:3,pointHoverRadius:6,
+        tension:.35,spanGaps:true,
+        borderDash:yi>0?[5,3]:[]
+      });
+    }
+  }
+  mkChart("cYrComp","line",{
+    labels:MONTHS.map(m=>m.slice(0,3)),datasets:yrDS
+  },{
+    responsive:true,maintainAspectRatio:false,animation:{duration:700},
+    plugins:{legend:{display:true,position:"top",labels:{font:{size:10},boxWidth:12,padding:8}},
+      tooltip:{callbacks:{label:i=>i.raw!==null?`${i.dataset.label}: ${i.raw}% (${scoreGrade(i.raw).g})`:`${i.dataset.label}: no data`}}},
+    scales:{
+      x:{grid:{display:false},ticks:{font:{size:10},color:"#888"}},
+      y:{beginAtZero:true,max:100,ticks:{callback:v=>v+"%",font:{size:9},color:"#888"},grid:{color:"rgba(0,0,0,0.05)"}}
+    }
+  });
+
+  /* ─── Score history line (18 months) ─── */
+  const histL=[],histD=[],histC=[];
+  for(let i=17;i>=0;i--){
+    let m=month-i,y=year;while(m<0){m+=12;y--;}
+    if((y>now.getFullYear())||(y===now.getFullYear()&&m>now.getMonth()))continue;
+    const de3=elapsed(m,y);if(!de3)continue;
+    const s=calcPeriodScore(y,m,1,de3,idx);
+    histL.push(MONTHS[m].slice(0,3)+" "+String(y).slice(2));
+    histD.push(s);histC.push(scoreGrade(s).c);
+  }
+  mkChart("cScHist","line",{
+    labels:histL,
+    datasets:[{
+      data:histD,borderColor:"#4EC9C4",backgroundColor:"rgba(78,201,196,0.08)",
+      borderWidth:2.5,pointBackgroundColor:histC,pointRadius:5,pointHoverRadius:7,
+      tension:.35,fill:true
+    }]
+  },{
+    responsive:true,maintainAspectRatio:false,animation:{duration:800},
+    plugins:{legend:{display:false},tooltip:{callbacks:{
+      label:i=>`${i.raw}%  Grade: ${scoreGrade(i.raw).g}`
+    }}},
+    scales:{
+      x:{grid:{display:false},ticks:{font:{size:9},color:"#888",maxRotation:40}},
+      y:{beginAtZero:true,max:100,ticks:{callback:v=>v+"%",font:{size:9},color:"#888"},grid:{color:"rgba(0,0,0,0.05)"}}
+    }
+  });
+
+  /* ─── Scorecard table ─── */
+  let rows="";
+  for(let i=0;i<18;i++){
+    let m=month-i,y=year;while(m<0){m+=12;y--;}
+    if((y>now.getFullYear())||(y===now.getFullYear()&&m>now.getMonth()))continue;
+    const de4=elapsed(m,y);if(!de4)continue;
+    const s=calcPeriodScore(y,m,1,de4,idx);
+    let pm2=m-1,py2=y;if(pm2<0){pm2=11;py2--;}
+    const de5=elapsed(pm2,py2);
+    const ps=de5>0?calcPeriodScore(py2,pm2,1,de5,idx):null;
+    const df=ps!==null?s-ps:null;
+    const dfHtml=df===null?"—":df>0?`<span style="color:#059669;font-weight:bold">↑ +${df}%</span>`:df<0?`<span style="color:#DC2626;font-weight:bold">↓ ${df}%</span>`:`<span style="color:#888">→ 0%</span>`;
+    const sg2=scoreGrade(s);
+    /* weekly breakdown */
+    const wkSc=calcWeekScores(y,m);
+    const wkCells=wkSc.map(w=>{const wg=scoreGrade(w.score);return`<span class="sg" style="background:${wg.bg};color:${wg.c};font-size:9px;padding:1px 5px;margin:0 1px">${w.short}:${w.score}%</span>`;}).join("");
+    const isCurrent=m===month&&y===year;
+    rows+=`<tr style="${isCurrent?"background:#F0FAF9":""}">
+      <td style="font-weight:bold;color:#1A1A1A">${MONTHS[m].slice(0,3)} ${y}${isCurrent?`<span style="font-size:9px;color:#4EC9C4;margin-left:4px">← current</span>`:""}</td>
+      <td><span style="font-size:20px;font-weight:bold">${s}%</span></td>
+      <td><span class="sg" style="background:${sg2.bg};color:${sg2.c}">${sg2.g}</span></td>
+      <td>${dfHtml}</td>
+      <td style="font-size:10px">${wkCells}</td>
+    </tr>`;
+  }
+  document.getElementById("scTable").innerHTML=`
+    <table style="width:100%;border-collapse:collapse;font-size:12px">
+      <thead><tr style="border-bottom:2px solid #D4C9B0;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#999">
+        <th style="text-align:left;padding:7px 8px">Month</th>
+        <th style="text-align:left;padding:7px 8px">Score</th>
+        <th style="text-align:left;padding:7px 8px">Grade</th>
+        <th style="text-align:left;padding:7px 8px">vs Previous</th>
+        <th style="text-align:left;padding:7px 8px">Weekly Breakdown</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+</script>
+</body>
+</html>

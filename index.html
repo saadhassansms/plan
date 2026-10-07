@@ -410,6 +410,15 @@ dialog::backdrop{background:rgba(14,17,32,.5);backdrop-filter:blur(2px)}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 
+/* ---------- cloud sync ---------- */
+.syncpill{display:inline-flex;align-items:center;gap:6px;font-size:.76rem;color:var(--muted);padding:4px 10px;border:1px solid var(--line);border-radius:999px;background:var(--sheet);white-space:nowrap}
+.syncpill i{width:7px;height:7px;border-radius:50%;background:var(--muted)}
+.syncpill[data-s="ok"] i{background:var(--good)}.syncpill[data-s="busy"] i{background:var(--mid)}.syncpill[data-s="err"] i{background:var(--bad)}
+.syncpill[hidden]{display:none}
+.syncbox{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.syncbox input{flex:1;min-width:220px;padding:9px 12px;border:1px solid var(--line);border-radius:11px;background:var(--sheet)}
+.steps{margin:6px 0 0;padding-inline-start:20px;color:var(--ink-soft);font-size:.88rem;line-height:1.9}
+.steps a{color:var(--acc-t);font-weight:600}
 /* ---------- language modes ---------- */
 .bi{display:block;direction:ltr;unicode-bidi:isolate;font-size:.9em;opacity:.8}
 .empty .bi{text-align:center}
@@ -432,6 +441,7 @@ dialog::backdrop{background:rgba(14,17,32,.5);backdrop-filter:blur(2px)}
 <header class="appbar"><div class="appbar-in">
   <div class="brand"><div class="brand-mark" aria-hidden="true"><span></span></div>
     <div id="headBox"><h1 id="hTitle"></h1><p id="hSub"></p></div></div>
+  <span class="syncpill no-print" id="syncPill" hidden><i></i><span></span></span>
   <nav class="tabs" role="tablist" aria-label="الأقسام">
     <button role="tab" data-tab="schedule">الجدول</button>
     <button role="tab" data-tab="habits">العادات</button>
@@ -513,7 +523,7 @@ try{state=JSON.parse(localStorage.getItem(KEY))}catch(e){state=null}
 if(!state||!state.template){state=defaults()}else{const raw=state;state={...defaults(),...raw};
   if(raw.owner==='Mohamed Ghaith'){state.owner='';try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
   if(raw.startV!==2){state.start='2026-10-10';state.startV=2;try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){toast(T('تعذّر الحفظ في المتصفح، اعمل نسخة احتياطية من الإعدادات','Could not save in this browser. Download a backup from Settings.'))}}
+function save(){state._t=Date.now();if(typeof schedulePush==='function')schedulePush();try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){toast(T('تعذّر الحفظ في المتصفح، اعمل نسخة احتياطية من الإعدادات','Could not save in this browser. Download a backup from Settings.'))}}
 
 /* ============ language: ar | bi | en ============ */
 const L=()=>(state&&state.lang==='en')?'en':'ar';
@@ -697,7 +707,7 @@ function fitQuote(){
 let fitT;window.addEventListener('resize',()=>{clearTimeout(fitT);fitT=setTimeout(()=>{fitQuote();fitSlots(document.getElementById('main'))},120)});
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{fitQuote();fitSlots(document.getElementById('main'))});
 function render(){
-  applyTheme();syncLang();
+  applyTheme();syncLang();if(typeof setSync==='function')setSync(syncS,syncErr);
   applyWeekTheme(ui.tab==='schedule'||ui.tab==='habits'?ui.week:currentWeek());
   const he=ui.edit&&(ui.tab==='schedule'||ui.tab==='habits');
   document.getElementById('hTitle').textContent=he?state.title:C(state.title);
@@ -1008,6 +1018,7 @@ function viewSettings(){
   <div class="sec"><h2>${T('الأقسام والألوان','Categories & colors')}</h2></div><div class="card">
     ${state.cats.map(c=>`<div class="catrow"><input type="color" data-cat="${c.id}" data-f="color" value="${c.color}" aria-label="${T('لون','Color:')} ${esc(c.name)}"><input type="text" data-cat="${c.id}" data-f="name" value="${esc(c.name)}"><button class="btn sm danger" data-act="delcat" data-id="${c.id}">${T('حذف','Delete')}</button></div>`).join('')}
     <button class="btn" data-act="addcat">+ ${T('إضافة قسم','Add category')}</button></div>
+  ${syncSection()}
   <div class="sec"><h2>${T('البيانات','Data')}</h2></div><div class="card">
     <p class="hint" style="margin-top:0">${TP('كل البيانات محفوظة في المتصفح ده بس. اعمل نسخة احتياطية كل فترة، وتقدر ترجعها على أي جهاز تاني.','All data is stored in this browser only. Download a backup regularly; you can restore it on any other device.')}</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -1103,6 +1114,9 @@ document.addEventListener('click',e=>{
     case 'delcat':{if(!confirm(T('تحذف القسم ده؟ الخانات اللي عليه هتبقى "بدون تصنيف".','Delete this category? Its cells will become "Uncategorized".')))return;state.cats=state.cats.filter(c=>c.id!==b.dataset.id);break}
     case 'export':{const blob=new Blob([JSON.stringify(state,null,1)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`weekly-planner-backup-${iso(new Date())}.json`;document.body.appendChild(a);a.click();a.remove();return}
     case 'resetall':{if(!confirm(T('هتمسح كل الجداول والمتابعة والعادات. متأكد؟','This erases all schedules, tracking and habits. Are you sure?')))return;const keepLang=state.lang;state=defaults();state.lang=keepLang;ui.week=currentWeek();toast(T('اتمسح كل حاجة','Everything erased'));break}
+    case 'synccon':connectSync(document.getElementById('ghTok').value);return;
+    case 'syncnow':pull();return;
+    case 'syncoff':disconnectSync();return;
     case 'print-week':askOwner(()=>doPrint('week'));return;
     case 'print-report':askOwner(()=>doPrint('report'));return;
   }
@@ -1128,6 +1142,7 @@ document.addEventListener('change',e=>{
 });
 
 document.addEventListener('keydown',e=>{
+  if(e.target.id==='ghTok'&&e.key==='Enter'){e.preventDefault();connectSync(e.target.value);return}
   if(e.target.id==='tdText'&&e.key==='Enter'){e.preventDefault();document.querySelector('[data-act="addtodo"]').click()}
   if(e.target.dataset&&e.target.dataset.qidx!=null&&e.key==='Enter'){e.preventDefault();e.target.blur()}
   if((e.target.id==='hTitle'||e.target.id==='hSub')&&e.key==='Enter'){e.preventDefault();e.target.blur()}
@@ -1197,7 +1212,103 @@ function doPrint(kind){
   setTimeout(()=>window.print(),60);
 }
 
+/* ============ cloud sync (GitHub Gist) ============ */
+const SKEY=KEY+'-sync',FILE='weekly-plan.json',API='https://api.github.com';
+let sync;try{sync=JSON.parse(localStorage.getItem(SKEY))||{}}catch(e){sync={}}
+let syncS='off',syncErr='',pushT=null,dirty=false,pulling=false,pushing=false;
+const syncOn=()=>!!(sync.token&&sync.gist);
+function saveSyncCfg(){try{localStorage.setItem(SKEY,JSON.stringify(sync))}catch(e){}}
+function syncText(){
+  if(!syncOn())return T('مش متزامن','Not synced');
+  if(syncS==='busy')return T('جاري الحفظ…','Saving…');
+  if(syncS==='err')return syncErr||T('في مشكلة في المزامنة','Sync problem');
+  return T('متزامن','Synced');
+}
+function setSync(st,msg){syncS=st;syncErr=msg||'';
+  const p=document.getElementById('syncPill');if(p){p.hidden=!syncOn();p.dataset.s=st;p.lastElementChild.textContent=syncText();p.title=syncText()}
+  const x=document.getElementById('syncStatus');if(x){x.textContent=syncText();x.dataset.s=st}}
+function errMsg(e){
+  if(e&&e.status===401)return T('التوكن غلط أو انتهى، اعمل توكن جديد','Token is invalid or expired — create a new one');
+  if(e&&e.status===403)return T('التوكن مالوش صلاحية gist','The token lacks the gist permission');
+  if(e&&e.status===404)return T('ملف البيانات مش موجود','Data file not found');
+  return T('مفيش إنترنت، هيتزامن لما يرجع','Offline — will sync when back online');
+}
+async function gh(path,opt={}){
+  const r=await fetch(API+path,{...opt,cache:'no-store',headers:{'Accept':'application/vnd.github+json','Authorization':'Bearer '+sync.token,...(opt.body?{'Content-Type':'application/json'}:{})}});
+  if(!r.ok){const e=new Error('HTTP '+r.status);e.status=r.status;throw e}
+  return r.status===204?null:r.json();
+}
+async function findGist(){
+  for(let page=1;page<=5;page++){const list=await gh(`/gists?per_page=100&page=${page}`);
+    const g=list.find(x=>x.files&&x.files[FILE]);if(g)return g.id;if(list.length<100)break}
+  return null;
+}
+async function readRemote(){
+  const g=await gh('/gists/'+sync.gist),f=g.files&&g.files[FILE];if(!f)return null;
+  let txt=f.content;if(f.truncated)txt=await (await fetch(f.raw_url,{cache:'no-store'})).text();
+  return JSON.parse(txt);
+}
+function adopt(remote){
+  state={...defaults(),...remote};
+  try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}
+  ui.week=Math.min(Math.max(ui.week,1),state.weeksCount);
+  const a=document.activeElement;if(a&&(a.tagName==='INPUT'||a.tagName==='TEXTAREA'||a.isContentEditable))return; // don't wipe what you're typing
+  render();
+}
+async function pushNow(){
+  if(!syncOn()||pushing)return;clearTimeout(pushT);pushing=true;setSync('busy');
+  try{await gh('/gists/'+sync.gist,{method:'PATCH',body:JSON.stringify({files:{[FILE]:{content:JSON.stringify(state)}}})});
+    dirty=false;setSync('ok')}
+  catch(e){if(e.status===404){sync.gist='';saveSyncCfg()}setSync('err',errMsg(e))}
+  finally{pushing=false;if(dirty){clearTimeout(pushT);pushT=setTimeout(pushNow,1500)}}
+}
+function schedulePush(){if(!syncOn())return;dirty=true;setSync('busy');clearTimeout(pushT);pushT=setTimeout(pushNow,1500)}
+async function pull(){
+  if(!syncOn()||pulling)return;
+  if(dirty){pushNow();return}
+  pulling=true;
+  try{const r=await readRemote();
+    if(r&&r.template&&(r._t||0)>(state._t||0))adopt(r);
+    else if(!r||(state._t||0)>(r._t||0)){pulling=false;await pushNow();return}
+    setSync('ok')}
+  catch(e){setSync('err',errMsg(e))}
+  finally{pulling=false}
+}
+async function connectSync(token){
+  token=(token||'').trim();if(!token){toast(T('الصق التوكن الأول','Paste the token first'));return}
+  sync={token};setSync('busy');
+  try{
+    const me=await gh('/user');sync.login=me.login;
+    let id=await findGist(),found=!!id;
+    if(!id){const g=await gh('/gists',{method:'POST',body:JSON.stringify({description:'Weekly Plan — synced data',public:false,files:{[FILE]:{content:JSON.stringify(state)}}})});id=g.id}
+    sync.gist=id;saveSyncCfg();
+    if(found){const r=await readRemote();if(r&&r.template){adopt(r)}}
+    setSync('ok');render();
+    toast(found?T('اتربط وجاب بياناتك المحفوظة','Connected — your saved data was loaded'):T('اتربط، وأي تعديل هيتحفظ أونلاين','Connected — every change is now saved online'));
+  }catch(e){sync={};saveSyncCfg();setSync('off');render();toast(errMsg(e))}
+}
+function disconnectSync(){if(!confirm(T('تفصل المزامنة على الجهاز ده؟ بياناتك الأونلاين مش هتتمسح.','Disconnect sync on this device? Your online data won’t be deleted.')))return;
+  sync={};saveSyncCfg();setSync('off');render()}
+function syncSection(){
+  if(syncOn())return `<div class="sec"><h2>${T('المزامنة بين الأجهزة','Sync across devices')}</h2></div><div class="card">
+    <p style="margin:0">${T('مربوط بحساب GitHub:','Connected to GitHub account:')} <b dir="ltr">${esc(sync.login||'')}</b> — <span id="syncStatus" data-s="${syncS}">${syncText()}</span></p>
+    <p class="hint">${TP('أي تعديل بيتحفظ أونلاين تلقائياً بعد ثانيتين، ولما تفتح الصفحة من أي جهاز مربوط بنفس التوكن بتجيب آخر نسخة.','Every change is saved online automatically after a couple of seconds, and any device connected with the same token loads the latest version when opened.')}</p>
+    <div class="syncbox"><button class="btn primary" data-act="syncnow">${T('زامن دلوقتي','Sync now')}</button><button class="btn danger" data-act="syncoff">${T('افصل الجهاز ده','Disconnect this device')}</button></div></div>`;
+  return `<div class="sec"><h2>${T('المزامنة بين الأجهزة','Sync across devices')}</h2><span>${T('عشان تلاقي كل حاجة زي ما هي من أي جهاز','So everything stays the same on every device')}</span></div><div class="card">
+    <ol class="steps">
+      <li>${T('افتح','Open')} <a href="https://github.com/settings/tokens/new?scopes=gist&description=Weekly%20Plan" target="_blank" rel="noopener">${T('صفحة إنشاء التوكن على GitHub','GitHub’s token page')}</a> ${T('(صلاحية gist متعلّمة لوحدها)','(the gist permission is pre-selected)')}</li>
+      <li>${T('من Expiration اختار No expiration أو مدة طويلة، وبعدين Generate token','Set Expiration to “No expiration” or a long period, then click Generate token')}</li>
+      <li>${T('انسخ التوكن والصقه هنا. على أي جهاز تاني الصق نفس التوكن مرة واحدة بس.','Copy the token and paste it here. On any other device, paste the same token once.')}</li>
+    </ol>
+    <div class="syncbox"><input type="password" id="ghTok" placeholder="ghp_…" autocomplete="off" dir="ltr"><button class="btn primary" data-act="synccon">${T('اربط','Connect')}</button></div>
+    <p class="hint">${TP('البيانات بتتحفظ في Gist سري على حسابك، مش بيظهر في البحث ولا في الريبو بتاع الصفحة. التوكن بيتحفظ في المتصفح ده بس، ومش بيدخل في النسخة الاحتياطية.','Data is stored in a secret Gist on your account — it doesn’t appear in search or in the page’s repo. The token is stored only in this browser and is never included in backups.')}</p></div>`;
+}
+document.addEventListener('visibilitychange',()=>{if(!syncOn())return;if(document.visibilityState==='visible')pull();else if(dirty)pushNow()});
+window.addEventListener('online',()=>{if(syncOn())pull()});
+setInterval(()=>{if(syncOn()&&document.visibilityState==='visible'&&!dirty)pull()},60000);
+
 render();
+if(syncOn()){setSync('busy');pull()}
 </script>
 </body>
 </html>

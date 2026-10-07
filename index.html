@@ -1,1457 +1,1087 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Discipline Tracker</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>الجدول الأسبوعي والمتابعة السنوية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Kufi+Arabic:wght@600;700&family=Readex+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:#F4EFE4;font-family:Georgia,serif;color:#1A1A1A;min-height:100vh}
-/* Header */
-.hdr{background:#1A1A1A;color:#F4EFE4;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;position:sticky;top:0;z-index:200}
-.logo{font-size:17px;font-weight:bold;letter-spacing:5px;text-transform:uppercase}
-.logo span{color:#4EC9C4}
-.tabs{display:flex;gap:4px;background:rgba(255,255,255,0.08);padding:4px;border-radius:6px}
-.tab{background:none;border:none;color:rgba(255,255,255,0.55);padding:6px 16px;cursor:pointer;border-radius:4px;font-family:Georgia,serif;font-size:12px;letter-spacing:1px;transition:.2s}
-.tab.on{background:#F4EFE4;color:#1A1A1A;font-weight:bold}
-.tab:hover:not(.on){color:#fff}
-.nav{display:flex;align-items:center;gap:8px}
-.nbtn{background:none;border:1px solid rgba(255,255,255,0.3);color:#F4EFE4;padding:3px 11px;cursor:pointer;border-radius:4px;font-size:17px;transition:.15s}
-.nbtn:hover{background:rgba(255,255,255,0.15)}
-.mlbl{font-size:13px;font-weight:bold;min-width:156px;text-align:center;letter-spacing:1px}
-/* Tracker */
-#tv{padding:16px}
-.tlay{display:flex;gap:16px;max-width:1060px;margin:0 auto;flex-wrap:wrap;align-items:flex-start}
-.tc-h{flex:1 1 180px;min-width:165px}
-.tc-t{flex-shrink:0;display:flex;justify-content:center}
-.tc-n{flex:1 1 160px;min-width:150px}
-.sec{font-weight:bold;text-transform:uppercase;letter-spacing:2px;font-size:11px;border-bottom:2px solid #1A1A1A;padding-bottom:5px;margin-bottom:10px}
-/* Habit rows */
-.hr{display:flex;align-items:center;gap:5px;margin-bottom:6px}
-.dot{width:12px;height:12px;border-radius:2px;flex-shrink:0;cursor:pointer;transition:transform .15s,box-shadow .15s}
-.dot:hover{transform:scale(1.35);box-shadow:0 0 0 2px #fff,0 0 0 3.5px #1A1A1A}
-.hn{flex:1;font-size:12px;cursor:text;line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.hni{flex:1;font-size:12px;font-family:Georgia,serif;background:transparent;border:none;border-bottom:1px solid #C5BAA8;outline:none;color:#1A1A1A}
-.dbtn{background:none;border:none;cursor:pointer;color:#bbb;font-size:14px;padding:0 1px;line-height:1;flex-shrink:0}
-.dbtn:hover{color:#C8442A}
-.gbtn{background:none;border:none;cursor:pointer;color:#bbb;font-size:13px;padding:0 1px;line-height:1;flex-shrink:0}
-.gbtn:hover{color:#4EC9C4}
-/* Habit type badge */
-.htype{font-size:9px;padding:1px 5px;border-radius:3px;font-weight:bold;letter-spacing:.3px;flex-shrink:0}
-.htype.s{background:#EDE9FE;color:#7C3AED}
-.htype.w{background:#FEF3C7;color:#B45309}
-/* Weekly mini-progress */
-.wprog{font-size:9px;color:#888;white-space:nowrap;flex-shrink:0}
-.wprog.hit{color:#059669;font-weight:bold}
-.rnum{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;font-size:8px;font-weight:bold;background:#1A1A1A;color:#F4EFE4;flex-shrink:0;margin-right:1px}
-/* Settings panel */
-.sconf{background:#F0EDE5;border:1px solid #D4C9B0;border-radius:6px;padding:10px 12px;margin-bottom:8px;font-size:11px}
-.sconf select,.sconf input[type=number],.sconf input[type=text]{font-family:Georgia,serif;font-size:11px;border:1px solid #C5BAA8;border-radius:3px;padding:3px 6px;background:#FEFAF0;color:#1A1A1A;outline:none}
-.sconf label{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:3px}
-.sconf-row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-top:8px}
-.sconf-save{background:#1A1A1A;color:#fff;border:none;padding:4px 12px;cursor:pointer;border-radius:3px;font-size:10px;font-family:Georgia,serif;letter-spacing:.5px}
-.sconf-cancel{background:none;border:1px solid #C5BAA8;color:#888;padding:4px 10px;cursor:pointer;border-radius:3px;font-size:10px;font-family:Georgia,serif}
-/* Add habit row */
-.ar{display:flex;gap:5px;margin-top:8px}
-.ai{flex:1;font-size:12px;font-family:Georgia,serif;background:transparent;border:1px solid #C5BAA8;padding:5px 8px;border-radius:4px;outline:none;color:#1A1A1A}
-.ai::placeholder{color:#aaa}
-.abtn{background:#1A1A1A;color:#fff;border:none;padding:5px 12px;cursor:pointer;border-radius:4px;font-size:17px;line-height:1}
-/* Progress bars */
-.pbg{height:3px;background:#DDD5C2;border-radius:2px;margin-top:2px}
-.pb{height:100%;border-radius:2px;transition:width .4s}
-/* Notes */
-.nota{width:100%;background:transparent;border:none;border-bottom:1px solid #C5BAA8;resize:none;font-family:Georgia,serif;font-size:12px;line-height:2;outline:none;color:#1A1A1A}
-.cell{cursor:pointer;transition:opacity .1s}
-.cell:hover{opacity:.55}
-.qbox{margin-top:16px;border-left:3px solid #1A1A1A;padding-left:11px}
-.qt{font-size:12px;font-style:italic;color:#555;line-height:1.75}
-/* Session picker overlay */
-#sesPicker{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#FEFAF0;border:1px solid #D4C9B0;border-radius:10px;padding:0;z-index:500;min-width:300px;max-width:380px;box-shadow:0 8px 40px rgba(0,0,0,.18)}
-#sesPicker.hidden{display:none}
-.sp-hdr{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #E8E0D0}
-.sp-title{font-size:13px;font-weight:bold;letter-spacing:.5px}
-.sp-close{background:none;border:none;cursor:pointer;font-size:18px;color:#888;line-height:1}
-.sp-row{display:flex;align-items:center;gap:8px;padding:8px 16px;border-bottom:1px solid #F0EDE5}
-.sp-row:last-child{border-bottom:none}
-.sp-name{flex:1;font-size:12px;color:#555;min-width:70px}
-.sp-btns{display:flex;gap:4px}
-.sp-btn{border:1px solid #D4C9B0;background:#fff;border-radius:5px;padding:5px 10px;font-size:11px;cursor:pointer;transition:.15s;white-space:nowrap}
-.sp-btn:hover{background:#F0EDE5}
-.sp-btn.v1{background:#D1FAE5;border-color:#6EE7B7;color:#065F46;font-weight:bold}
-.sp-btn.v2{background:#FEF3C7;border-color:#FCD34D;color:#92400E;font-weight:bold}
-.sp-btn.v0{background:#FEE2E2;border-color:#FCA5A5;color:#991B1B;font-weight:bold}
-.sp-foot{padding:10px 16px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid #E8E0D0;font-size:11px;color:#888}
-.sp-overlay{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:499}
-#spOverlay{display:none}
-#spOverlay.show{display:block}
-/* Dashboard */
-#dv{padding:22px;max-width:1140px;margin:0 auto}
-.sum-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px}
-.sc{background:#FEFAF0;border:1px solid #D4C9B0;border-radius:8px;padding:15px 18px}
-.sc.teal{border-top:3px solid #4EC9C4}.sc.blue{border-top:3px solid #60A5FA}
-.sc.amber{border-top:3px solid #FB923C}.sc.purple{border-top:3px solid #A78BFA}
-.sc.green{border-top:3px solid #34D399}.sc.red{border-top:3px solid #F87171}
-.slbl{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:#888;margin-bottom:4px}
-.sval{font-size:28px;font-weight:bold;line-height:1.1}
-.ssub{font-size:11px;color:#888;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ins-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:18px}
-.ins{background:#FEFAF0;border:1px solid #D4C9B0;border-radius:7px;padding:12px 14px;font-size:12px;color:#444;line-height:1.6;display:flex;gap:9px;align-items:flex-start}
-.ins .ico{font-size:19px;line-height:1;flex-shrink:0;margin-top:1px}
-.ins.fire{border-left:3px solid #FB923C}.ins.ok{border-left:3px solid #4EC9C4}
-.ins.warn{border-left:3px solid #F59E0B}.ins.info{border-left:3px solid #60A5FA}
-.ins strong{display:block;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:2px}
-.cc{background:#FEFAF0;border:1px solid #D4C9B0;border-radius:8px;padding:16px 18px;margin-bottom:18px}
-.ctitle{font-size:10px;font-weight:bold;text-transform:uppercase;letter-spacing:2px;color:#999;margin-bottom:14px}
-.cwrap{position:relative;height:190px}
-.two-col{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px;margin-bottom:18px}
-.hgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:11px;margin-bottom:18px}
-.hc{background:#FEFAF0;border:1px solid #D4C9B0;border-radius:8px;padding:14px}
-.hc.dimmed{opacity:.35}
-.hc-top{display:flex;align-items:center;gap:10px;margin-bottom:11px}
-.hc-ring{position:relative;width:62px;height:62px;flex-shrink:0}
-.hc-ring canvas{width:62px!important;height:62px!important}
-.hc-pct{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:12px;font-weight:bold;color:#1A1A1A}
-.hc-meta{flex:1;min-width:0}
-.hc-name{font-size:12px;font-weight:bold;margin-bottom:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.hc-row{display:flex;justify-content:space-between;font-size:11px;color:#888;line-height:1.9}
-.hc-row b{color:#1A1A1A}
-.trend-up{color:#4EC9C4;font-weight:bold}.trend-dn{color:#E8674A;font-weight:bold}
-.minical{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-top:8px}
-.md{height:9px;border-radius:1px;background:#E0D8C8}
-.md.td{box-shadow:0 0 0 1.5px #2563EB}
-/* Stat mini-pills in habit card */
-.sp-stats{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap}
-.sp-stat{font-size:9px;padding:2px 6px;border-radius:3px;font-weight:bold}
-.sp-stat.g{background:#D1FAE5;color:#065F46}
-.sp-stat.o{background:#FEF3C7;color:#92400E}
-.sp-stat.r{background:#FEE2E2;color:#991B1B}
-/* Filter bar */
-.fbar{background:#FEFAF0;border:1px solid #D4C9B0;border-radius:8px;padding:12px 16px;margin-bottom:18px;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
-.fbar-label{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:#888;flex-shrink:0}
-.fbar-chips{display:flex;flex-wrap:wrap;gap:5px;flex:1}
-.fchip{border:1px solid #C5BAA8;background:transparent;border-radius:20px;padding:3px 11px;font-size:11px;font-family:Georgia,serif;cursor:pointer;color:#888;transition:.15s;white-space:nowrap}
-.fchip.on{color:#fff;border-color:transparent}
-.fchip:hover:not(.on){background:#E8E0D0}
-.fbar-sep{width:1px;height:24px;background:#D4C9B0;flex-shrink:0}
-.fbar-year{display:flex;align-items:center;gap:6px}
-.fynbtn{background:none;border:1px solid #C5BAA8;color:#888;padding:1px 8px;cursor:pointer;border-radius:4px;font-size:14px;line-height:1.4}
-.fynbtn:hover{background:#E8E0D0}
-.fylbl{font-size:12px;font-weight:bold;min-width:38px;text-align:center}
-/* Section header */
-.sec-hdr{font-weight:bold;text-transform:uppercase;letter-spacing:3px;font-size:10px;color:#888;padding:4px 0 12px 0;display:flex;align-items:center;gap:10px}
-.sec-hdr::after{content:"";flex:1;height:1px;background:#D4C9B0}
-/* Hbar */
-.hbar-row{display:flex;align-items:center;gap:10px;margin-bottom:9px}
-.hbar-name{font-size:11px;min-width:130px;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#555}
-.hbar-track{flex:1;height:13px;background:#E8E0D0;border-radius:6px;overflow:hidden;position:relative}
-.hbar-fill{height:100%;border-radius:6px;transition:width .5s}
-.hbar-fill2{position:absolute;top:0;left:0;height:100%;opacity:.45;border-radius:6px}
-.hbar-pct{font-size:11px;font-weight:bold;min-width:34px;text-align:right;color:#1A1A1A}
-/* Heatmap */
-.heatmap-wrap{overflow-x:auto;padding:4px 0}
-.heatmap-grid{display:grid;grid-template-rows:repeat(7,14px);grid-auto-flow:column;grid-auto-columns:14px;gap:2px;width:max-content}
-.hm-cell{width:14px;height:14px;border-radius:2px;cursor:default}
-.hm-wrap{display:flex;align-items:flex-start}
-.hm-dow{display:grid;grid-template-rows:repeat(7,14px);gap:2px;margin-right:6px;font-size:9px;color:#999;line-height:14px;text-align:right;flex-shrink:0}
-.hm-months{display:flex;margin-bottom:4px;margin-left:30px;font-size:9px;color:#999}
-/* Pills */
-.pill{display:inline-block;font-size:9px;padding:2px 7px;border-radius:10px;font-weight:bold}
-.pill.up{background:#D1FAE5;color:#059669}
-.pill.dn{background:#FEE2E2;color:#DC2626}
-.pill.eq{background:#E5E7EB;color:#6B7280}
-/* Heatmap habit tabs */
-.hm-tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px}
-.hm-tab{border:1px solid #C5BAA8;background:transparent;border-radius:4px;padding:3px 10px;font-size:10px;font-family:Georgia,serif;cursor:pointer;color:#888;transition:.15s}
-.hm-tab.on{color:#fff;border-color:transparent}
-.hm-tab:hover:not(.on){background:#E8E0D0}
+:root{
+  --paper:#F3F4F8; --sheet:#FFFFFF; --ink:#161C34; --ink-soft:#4B5270; --line:#E3E6EE; --line-2:#EEF0F5; --muted:#858BA3;
+  --good:#16794F; --mid:#A8741A; --bad:#B23A3A; --empty:#EEF0F5;
+  --acc:#1C2E6B; --acc2:#E8C468; --acc-t:var(--acc);
+  --shadow:0 1px 2px rgba(22,28,52,.05),0 4px 16px rgba(22,28,52,.04);
+  --r:16px;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --paper:#0E1120; --sheet:#161A2D; --ink:#E9EBF5; --ink-soft:#B3B8D3; --line:#272C46; --line-2:#1F2439; --muted:#8B91B2;
+  --good:#5CCB98; --mid:#E5B65A; --bad:#F08A84; --empty:#20253B; --acc-t:color-mix(in srgb,var(--acc) 40%,#fff);
+  --shadow:none;
+}}
+:root[data-theme="dark"]{
+  --paper:#0E1120; --sheet:#161A2D; --ink:#E9EBF5; --ink-soft:#B3B8D3; --line:#272C46; --line-2:#1F2439; --muted:#8B91B2;
+  --good:#5CCB98; --mid:#E5B65A; --bad:#F08A84; --empty:#20253B; --acc-t:color-mix(in srgb,var(--acc) 40%,#fff);
+  --shadow:none;
+}
+html{scroll-padding-top:calc(76px + env(safe-area-inset-top,0px))}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Readex Pro","Segoe UI",Tahoma,sans-serif;line-height:1.6;font-size:15px;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--acc2);outline-offset:2px}
+.display{font-family:"Noto Kufi Arabic","Readex Pro",sans-serif}
 
-/* Score tab */
-#scTable td{padding:8px;border-bottom:1px solid #F0EDE5;color:#555;vertical-align:middle}
-#scTable tr:last-child td{border-bottom:none}
-#scTable tr:hover td{background:#F8F5EE}
-.sg{display:inline-block;font-weight:bold;font-size:11px;padding:2px 9px;border-radius:4px;letter-spacing:.3px}
+/* ---------- app bar ---------- */
+.appbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--sheet) 92%,transparent);backdrop-filter:saturate(1.4) blur(10px);-webkit-backdrop-filter:saturate(1.4) blur(10px);border-bottom:1px solid var(--line)}
+.appbar-in{max-width:1280px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.brand-mark{width:38px;height:38px;border-radius:11px;background:var(--acc);display:grid;place-items:center;flex:none;position:relative;overflow:hidden}
+.brand-mark::after{content:"";position:absolute;inset:0;background:var(--pat);opacity:.35}
+.brand-mark span{position:relative;z-index:1;width:14px;height:14px;border-radius:4px;background:var(--acc2)}
+#hTitle{font-family:"Noto Kufi Arabic","Readex Pro",sans-serif;font-weight:700;font-size:1.15rem;margin:0;line-height:1.3}
+#hSub{margin:0;color:var(--muted);font-size:.8rem;line-height:1.4}
+.edit-head #hTitle,.edit-head #hSub{outline:1.5px dashed var(--acc2);outline-offset:3px;border-radius:5px;cursor:text}
+.edit-head #hTitle:focus,.edit-head #hSub:focus{outline-style:solid}
+.tabs{display:flex;gap:2px;background:var(--empty);padding:4px;border-radius:12px}
+.tabs button{background:none;border:none;padding:7px 14px;border-radius:9px;font-weight:500;font-size:.88rem;color:var(--ink-soft);transition:background .15s,color .15s}
+.tabs button[aria-selected="true"]{background:var(--sheet);color:var(--ink);box-shadow:0 1px 3px rgba(22,28,52,.12)}
+
+.wrap{max-width:1280px;margin:0 auto;padding:24px 20px 72px}
+
+/* ---------- hero ---------- */
+.hero{position:relative;overflow:hidden;border-radius:22px;background:var(--acc);color:#fff;padding:26px 28px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:22px 30px;align-items:center;isolation:isolate}
+.hero::before{content:"";position:absolute;inset:0;background-image:var(--pat);opacity:.16;z-index:-1;-webkit-mask-image:linear-gradient(to left,#000 10%,transparent 85%);mask-image:linear-gradient(to left,#000 10%,transparent 85%)}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 40%,rgba(0,0,0,.22));z-index:-1}
+.deco{position:absolute;z-index:-1;pointer-events:none}
+.deco.circle{width:300px;height:300px;border-radius:50%;border:46px solid var(--acc2);opacity:.2;left:-90px;bottom:-150px}
+.deco.square{width:190px;height:190px;border:30px solid var(--acc2);opacity:.18;left:-30px;top:-70px;transform:rotate(28deg);border-radius:18px}
+.deco.arc{width:340px;height:340px;border-radius:50%;border:2px solid var(--acc2);opacity:.45;left:-140px;top:-160px;box-shadow:0 0 0 26px color-mix(in srgb,var(--acc2) 14%,transparent),0 0 0 60px color-mix(in srgb,var(--acc2) 8%,transparent)}
+.wk{display:flex;align-items:center;gap:16px}
+.wk-num{font-family:"Noto Kufi Arabic","Readex Pro",sans-serif;font-weight:700;font-size:4.2rem;line-height:.9;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.wk-num small{display:block;font-family:"Readex Pro",sans-serif;font-size:.78rem;font-weight:400;letter-spacing:0;opacity:.75;margin-top:8px}
+.wk-meta{display:flex;flex-direction:column;gap:6px;min-width:0}
+.wk-range{font-size:1.25rem;font-weight:600}
+.wk-theme{display:inline-flex;align-items:center;gap:8px;font-size:.82rem;opacity:.85}
+.wk-theme i{width:10px;height:10px;border-radius:3px;background:var(--acc2)}
+.wk-ctl{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px}
+.hbtn{width:36px;height:36px;border-radius:10px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.1);color:#fff;display:grid;place-items:center;padding:0}
+.hbtn:hover:not(:disabled){background:rgba(255,255,255,.2)}
+.hbtn:disabled{opacity:.35;cursor:default}
+.hsel{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28);color:#fff;border-radius:10px;padding:7px 12px;width:auto;min-width:240px;max-width:100%;font-size:.86rem;field-sizing:content}
+.hsel option{color:#161C34;background:#fff}
+.hpill{border:1px solid rgba(255,255,255,.35);background:var(--acc2);color:var(--acc);border-radius:10px;padding:7px 12px;font-size:.82rem;font-weight:600}
+.rings{display:flex;gap:18px}
+.ring{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;width:76px}
+.ring svg{width:76px;height:76px}
+.ring .bg{fill:none;stroke:rgba(255,255,255,.18);stroke-width:7}
+.ring .fg{fill:none;stroke:var(--acc2);stroke-width:7;stroke-linecap:round;transition:stroke-dashoffset .5s ease}
+.ring b{position:absolute;top:24px;font-size:1rem;font-weight:600;font-variant-numeric:tabular-nums}
+.ring span{font-size:.76rem;opacity:.85}
+
+/* ---------- quote ---------- */
+.quote{position:relative;margin:16px 0 0;background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);padding:22px 30px 20px;box-shadow:var(--shadow);overflow:hidden;isolation:isolate}
+.quote::before{content:"";position:absolute;inset-block:0;inset-inline-start:0;width:6px;background:linear-gradient(var(--acc),color-mix(in srgb,var(--acc) 60%,var(--acc2)))}
+.quote::after{content:"";position:absolute;inset:0;background-image:var(--pat);opacity:.05;z-index:-1;filter:invert(1)}
+.q-mark{position:absolute;left:22px;top:-26px;font-family:"Amiri",serif;font-size:9rem;line-height:1;color:var(--acc2);opacity:.55;z-index:-1}
+.q-top{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.q-label{font-family:"Noto Kufi Arabic","Readex Pro",sans-serif;font-weight:700;font-size:.85rem;color:var(--acc-t);display:inline-flex;align-items:center;gap:8px}
+.q-label::before{content:"";width:8px;height:8px;background:var(--acc2);transform:rotate(45deg);border-radius:1px}
+.q-count{font-size:.75rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.quote blockquote{margin:0;font-family:"Amiri","Noto Kufi Arabic",serif;font-weight:700;font-size:28px;line-height:1.8;color:var(--ink);width:100%;overflow:hidden}
+.quote blockquote[contenteditable="true"]{outline:1.5px dashed var(--acc2);outline-offset:6px;border-radius:6px;cursor:text;white-space:normal!important;font-size:22px!important}
+.quote blockquote[contenteditable="true"]:focus{outline-style:solid}
+.q-edit{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;align-items:center}
+.q-edit .hint{flex-basis:100%}
+.q-nav{display:flex;align-items:center;gap:10px;margin-top:12px}
+.qbtn{width:30px;height:30px;border-radius:9px;border:1px solid var(--line);background:var(--sheet);display:grid;place-items:center;padding:0;color:var(--ink-soft)}
+.qbtn svg{width:15px;height:15px}
+.qbtn:hover{border-color:var(--acc-t);color:var(--acc-t)}
+.q-dots{display:flex;gap:5px}
+.q-dots i{width:6px;height:6px;border-radius:3px;background:var(--line);transition:width .2s,background .2s}
+.q-dots i.on{width:18px;background:var(--acc)}
+.qrow{display:flex;gap:8px;align-items:flex-start;margin-bottom:10px}
+.qrow textarea{min-height:64px;font-family:"Amiri",serif;font-size:1.05rem}
+/* ---------- log ---------- */
+.tag{display:inline-block;font-size:.72rem;border-radius:10px;padding:1px 9px}
+.tag.on{background:color-mix(in srgb,var(--good) 14%,transparent);color:var(--good)}
+.tag.off{background:var(--empty);color:var(--ink-soft)}
+
+/* ---------- toolbar ---------- */
+.toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:18px 0 14px}
+.toolbar .grow{flex:1}
+.seg{display:inline-flex;background:var(--sheet);border:1px solid var(--line);border-radius:12px;padding:3px}
+.seg button{border:none;background:none;padding:6px 14px;border-radius:9px;font-size:.86rem;color:var(--ink-soft)}
+.seg button[aria-pressed="true"]{background:var(--acc);color:#fff}
+.btn{display:inline-flex;align-items:center;gap:7px;background:var(--sheet);border:1px solid var(--line);border-radius:11px;padding:8px 14px;font-size:.86rem;font-weight:500;transition:border-color .15s,background .15s}
+.btn svg{width:16px;height:16px;flex:none}
+.btn:hover:not(:disabled){border-color:var(--acc-t)}
+.btn:disabled{opacity:.4;cursor:default}
+.btn.primary{background:var(--acc);color:#fff;border-color:var(--acc)}
+.btn.primary:hover{filter:brightness(1.1)}
+.btn.on{background:var(--acc2);color:var(--acc);border-color:var(--acc2)}
+.btn.danger{color:var(--bad)}
+.btn.sm{padding:5px 10px;font-size:.8rem;border-radius:9px}
+.btn.ghost{background:none}
+select,input[type=text],input[type=date],input[type=time],input[type=number],textarea{background:var(--sheet);border:1px solid var(--line);border-radius:10px;padding:8px 11px;transition:border-color .15s}
+select:focus,input:focus,textarea:focus{border-color:var(--acc-t);outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 15%,transparent)}
+.status{display:inline-flex;align-items:center;gap:7px;font-size:.8rem;color:var(--ink-soft)}
+.status i{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.status.custom i{background:var(--acc2);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc2) 30%,transparent)}
+
+/* ---------- edit panel ---------- */
+.editpanel{background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);margin-bottom:16px;overflow:hidden;box-shadow:var(--shadow)}
+.ep-head{display:flex;align-items:center;gap:10px;padding:12px 18px;background:color-mix(in srgb,var(--acc2) 16%,var(--sheet));border-bottom:1px solid var(--line);font-weight:600;font-size:.9rem}
+.ep-head i{width:8px;height:8px;border-radius:50%;background:var(--acc2)}
+.ep-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding:14px 18px;border-bottom:1px solid var(--line-2)}
+.ep-row:last-child{border-bottom:none}
+.ep-label{font-size:.82rem;color:var(--muted);min-width:110px}
+.radio-seg{display:inline-flex;gap:6px;flex-wrap:wrap}
+.radio-seg label{display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:10px;padding:6px 12px;cursor:pointer;font-size:.86rem}
+.radio-seg label:has(input:checked){border-color:var(--acc-t);background:color-mix(in srgb,var(--acc) 8%,var(--sheet));color:var(--acc-t);font-weight:500}
+.radio-seg input{accent-color:var(--acc)}
+.swatches{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+.sw{width:34px;height:34px;border-radius:10px;border:2px solid transparent;padding:0;background:linear-gradient(135deg,var(--a) 0 62%,var(--b) 62% 100%);position:relative}
+.sw[aria-pressed="true"]{border-color:var(--ink);box-shadow:0 0 0 2px var(--sheet) inset}
+.sw-auto{height:34px;border-radius:10px;border:1px dashed var(--line);background:none;padding:0 12px;font-size:.8rem;color:var(--ink-soft)}
+.sw-auto[aria-pressed="true"]{border-style:solid;border-color:var(--ink);color:var(--ink)}
+.hint{font-size:.82rem;color:var(--muted);margin:0}
+
+/* ---------- legend ---------- */
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
+.legend>span{display:inline-flex;align-items:center;gap:7px;font-size:.8rem;color:var(--ink-soft);background:var(--sheet);border:1px solid var(--line);border-radius:20px;padding:4px 12px 4px 10px}
+.legend i{width:9px;height:9px;border-radius:50%}
+.star{color:var(--mid);font-size:.78rem;margin-inline-start:4px}
+
+/* ---------- week table ---------- */
+.board{background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+.scroller{overflow-x:auto}
+table.tt{border-collapse:separate;border-spacing:0;width:100%;min-width:1040px;table-layout:fixed}
+.tt th,.tt td{padding:6px;vertical-align:top;border-bottom:1px solid var(--line-2)}
+.tt td+td,.tt th+td,.tt th+th{border-inline-start:1px solid var(--line-2)}
+.tt thead th{padding:14px 6px 12px;text-align:center;font-weight:600;font-size:.92rem;background:var(--sheet);border-bottom:1px solid var(--line)}
+.tt thead th small{display:block;font-weight:400;color:var(--muted);font-size:.74rem}
+.tt thead th.is-today{background:var(--acc);color:#fff;border-radius:12px 12px 0 0;position:relative}
+.tt thead th.is-today small{color:rgba(255,255,255,.8)}
+.today-chip{display:inline-block;margin-top:5px;background:var(--acc2);color:var(--acc);font-size:.7rem;font-weight:700;border-radius:20px;padding:1px 10px}
+.tt .time{width:112px;text-align:start;padding:12px 14px;background:color-mix(in srgb,var(--empty) 55%,var(--sheet))}
+.tt .time b{display:block;font-weight:600;font-size:.92rem;font-variant-numeric:tabular-nums}
+.tt .time .to{display:block;font-size:.78rem;color:var(--muted)}
+.tt .time .du{display:inline-block;margin-top:6px;font-size:.7rem;color:var(--ink-soft);background:var(--sheet);border:1px solid var(--line);border-radius:12px;padding:0 8px}
+.tt td.is-today{background:color-mix(in srgb,var(--acc) 7%,var(--sheet));box-shadow:inset 2px 0 0 var(--acc),inset -2px 0 0 var(--acc)}
+.tt tfoot td.is-today{box-shadow:inset 2px 0 0 var(--acc),inset -2px 0 0 var(--acc),inset 0 -2px 0 var(--acc)}
+.tt td.is-today .slot{box-shadow:0 2px 8px color-mix(in srgb,var(--acc) 18%,transparent)}
+.tt tfoot td,.tt tfoot th{text-align:center;padding:10px 6px;border-bottom:none;border-top:1px solid var(--line)}
+.tt tfoot th.time{font-size:.8rem;color:var(--ink-soft);font-weight:500}
+.minibar{height:6px;border-radius:4px;background:var(--empty);overflow:hidden;margin:0 10px 5px}
+.minibar i{display:block;height:100%;background:var(--acc)}
+.tt tfoot span{font-size:.76rem;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+
+/* slot (shape depends on week theme) */
+.slot{--c:#888;position:relative;display:block;width:100%;min-height:76px;text-align:right;border:none;padding:10px 10px 10px 10px;color:var(--ink);
+  background:color-mix(in srgb,var(--c) 9%,var(--sheet));border-radius:12px;border-inline-start:4px solid var(--c);transition:background .15s,transform .1s}
+.slot b{display:block;font-weight:600;font-size:14px;line-height:1.4;color:color-mix(in srgb,var(--c) 75%,var(--ink));padding-left:22px}
+.slot b,.slot em{white-space:nowrap;overflow:hidden;text-align:right}
+.slot em{unicode-bidi:plaintext}
+.slot em{font-style:normal;display:block;font-size:12px;color:var(--ink-soft);margin-top:4px;line-height:1.45}
+.slot .tick{position:absolute;top:10px;left:8px;width:18px;height:18px;border-radius:50%;border:1.5px solid color-mix(in srgb,var(--c) 45%,transparent);display:grid;place-items:center;font-style:normal;font-size:.62rem;color:transparent;transition:background .15s}
+.slot:hover{background:color-mix(in srgb,var(--c) 15%,var(--sheet))}
+.slot:active{transform:scale(.985)}
+.slot.done{background:color-mix(in srgb,var(--c) 22%,var(--sheet))}
+.slot.done .tick{background:var(--c);border-color:var(--c);color:#fff}
+.slot.done b{text-decoration:line-through;text-decoration-thickness:1px;text-decoration-color:color-mix(in srgb,var(--c) 50%,transparent)}
+[data-shape="sharp"] .slot{border-radius:4px;border-inline-start:none;box-shadow:inset 0 3px 0 var(--c)}
+[data-shape="pill"] .slot{border-radius:20px;border-inline-start:none;box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--c) 40%,transparent)}
+[data-shape="notch"] .slot{border-radius:0;border-inline-start:none;clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,0 100%);box-shadow:inset -3px 0 0 var(--c)}
+[data-shape="tab"] .slot{border-radius:14px 3px 14px 3px;border-inline-start:3px solid var(--c)}
+.edit-on .slot{outline:1.5px dashed color-mix(in srgb,var(--c) 55%,transparent);outline-offset:-3px}
+.edit-on .slot .tick{display:none}
+.addcell{width:100%;min-height:76px;border:1.5px dashed var(--line);border-radius:12px;background:none;color:var(--muted);font-size:.8rem}
+.addcell:hover{border-color:var(--acc-t);color:var(--acc-t)}
+.tedit{display:flex;flex-direction:column;gap:5px}
+.tedit label{display:flex;flex-direction:column;font-size:.7rem;color:var(--muted);gap:2px}
+.tedit input{padding:4px 6px;font-size:.8rem;width:100%}
+.tedit .del{background:none;border:none;color:var(--bad);font-size:.74rem;padding:2px;text-align:start}
+.addrowcell{padding:10px!important;background:var(--sheet)!important}
+.addrowbtn{width:100%;border:1.5px dashed color-mix(in srgb,var(--acc) 40%,var(--line));background:color-mix(in srgb,var(--acc) 4%,var(--sheet));color:var(--acc-t);border-radius:12px;padding:12px;font-weight:500}
+
+/* ---------- day view ---------- */
+.daychips{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-bottom:14px}
+.daychip{background:var(--sheet);border:1px solid var(--line);border-radius:14px;padding:10px 4px 8px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px}
+.daychip b{font-size:.84rem;font-weight:600}
+.daychip span{font-size:.7rem;color:var(--muted)}
+.daychip .dp{width:70%;height:4px;border-radius:3px;background:var(--empty);overflow:hidden;margin-top:4px}
+.daychip .dp i{display:block;height:100%;background:var(--acc)}
+.daychip[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:#fff}
+.daychip[aria-pressed="true"] span{color:rgba(255,255,255,.8)}
+.daychip[aria-pressed="true"] .dp{background:rgba(255,255,255,.25)}
+.daychip[aria-pressed="true"] .dp i{background:var(--acc2)}
+.daychip.today{position:relative}
+.daychip.today::before{content:"النهارده";position:absolute;top:-9px;left:50%;transform:translateX(-50%);background:var(--acc2);color:var(--acc);font-size:.62rem;font-weight:700;border-radius:10px;padding:0 7px;white-space:nowrap}
+.daychip.today:not([aria-pressed="true"]){border-color:var(--acc-t);border-width:2px}
+.daychips{padding-top:8px}
+.timeline{background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);padding:8px 16px;box-shadow:var(--shadow)}
+.tl-row{display:grid;grid-template-columns:96px 1fr;gap:14px;padding:10px 0;border-bottom:1px solid var(--line-2);align-items:stretch}
+.tl-row:last-child{border-bottom:none}
+.tl-time{position:relative;padding-inline-start:16px}
+.tl-time::before{content:"";position:absolute;inset-inline-start:0;top:6px;width:9px;height:9px;border-radius:50%;background:var(--acc)}
+.tl-time::after{content:"";position:absolute;inset-inline-start:4px;top:20px;bottom:-14px;width:1px;background:var(--line)}
+.tl-row:last-child .tl-time::after{display:none}
+.tl-time b{display:block;font-size:.9rem;font-variant-numeric:tabular-nums}
+.tl-time span{font-size:.75rem;color:var(--muted);white-space:nowrap}
+.empty{text-align:center;padding:36px 16px;color:var(--muted)}
+.empty b{display:block;color:var(--ink);font-weight:600;margin-bottom:4px}
+
+/* ---------- cards & sections ---------- */
+.card{background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);padding:20px;box-shadow:var(--shadow)}
+.sec{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:32px 0 12px;flex-wrap:wrap}
+.sec h2{font-family:"Noto Kufi Arabic","Readex Pro",sans-serif;font-size:1.08rem;font-weight:700;margin:0;display:flex;align-items:center;gap:10px}
+.sec h2::before{content:"";width:4px;height:18px;border-radius:2px;background:var(--acc)}
+.sec span{font-size:.82rem;color:var(--muted)}
+h3{font-size:.95rem;font-weight:600;margin:0 0 14px}
+
+/* todos */
+.todo{display:flex;align-items:center;gap:12px;padding:11px 2px;border-bottom:1px solid var(--line-2)}
+.todo:last-of-type{border-bottom:none}
+.todo .tt-t{flex:1;font-size:.92rem;unicode-bidi:plaintext;text-align:right}
+.todo.done .tt-t{text-decoration:line-through;color:var(--muted)}
+.dtag{font-size:.72rem;color:var(--acc-t);background:color-mix(in srgb,var(--acc) 8%,var(--sheet));border-radius:12px;padding:2px 10px;white-space:nowrap}
+.todoadd{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.todoadd input{flex:1;min-width:200px}
+.xbtn{background:none;border:none;color:var(--muted);font-size:.9rem;padding:4px 8px;border-radius:8px}
+.xbtn:hover{color:var(--bad);background:var(--empty)}
+.chk{appearance:none;-webkit-appearance:none;width:24px;height:24px;border-radius:8px;border:1.5px solid var(--line);background:var(--sheet);display:inline-grid;place-items:center;cursor:pointer;margin:0;flex:none;transition:background .15s,border-color .15s}
+.chk:hover{border-color:var(--acc-t)}
+.chk:checked{background:var(--acc);border-color:var(--acc)}
+.chk:checked::after{content:"";width:6px;height:11px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg) translate(-1px,-1px)}
+
+/* habits */
+table.ht{border-collapse:separate;border-spacing:0;width:100%;min-width:700px}
+.ht th,.ht td{border-bottom:1px solid var(--line-2);padding:12px 8px;text-align:center}
+.ht tbody tr:last-child td{border-bottom:none}
+.ht th:first-child,.ht td:first-child{text-align:start;padding-inline-start:20px}
+.ht thead th{font-weight:600;font-size:.85rem;border-bottom:1px solid var(--line)}
+.ht thead th small{display:block;font-weight:400;color:var(--muted);font-size:.72rem}
+.ht thead th.is-today{background:var(--acc);color:#fff;border-radius:10px 10px 0 0}
+.ht thead th.is-today small{color:rgba(255,255,255,.8)}
+.ht td.is-today{background:color-mix(in srgb,var(--acc) 7%,var(--sheet));box-shadow:inset 2px 0 0 var(--acc),inset -2px 0 0 var(--acc)}
+.ht td b,.ht td small{font-weight:600;unicode-bidi:plaintext;text-align:right}
+.ht td small{font-weight:400}
+.ht td small{display:block;color:var(--muted);font-size:.76rem}
+.ht .chk{border-radius:50%;width:28px;height:28px}
+.addhabit{display:flex;gap:8px;flex-wrap:wrap;padding:16px 20px;border-top:1px solid var(--line);background:color-mix(in srgb,var(--empty) 50%,var(--sheet))}
+.addhabit input{flex:1;min-width:160px}
+textarea{width:100%;min-height:110px;resize:vertical;line-height:1.7}
+
+/* pills */
+.pill{display:inline-block;min-width:44px;padding:2px 9px;border-radius:10px;font-weight:600;font-size:.76rem;font-variant-numeric:tabular-nums}
+.p-good{background:color-mix(in srgb,var(--good) 14%,transparent);color:var(--good)}
+.p-mid{background:color-mix(in srgb,var(--mid) 16%,transparent);color:var(--mid)}
+.p-bad{background:color-mix(in srgb,var(--bad) 12%,transparent);color:var(--bad)}
+
+/* ---------- dashboard ---------- */
+.rangebar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;margin-bottom:18px;box-shadow:var(--shadow)}
+.rangebar .lbl{font-size:.84rem;color:var(--muted)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:12px}
+.kpi{background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;box-shadow:var(--shadow)}
+.kpi.lead{background:var(--acc);color:#fff;border-color:var(--acc);position:relative;overflow:hidden;isolation:isolate}
+.kpi.lead::before{content:"";position:absolute;inset:0;background-image:var(--pat);opacity:.14;z-index:-1}
+.kpi.lead span{color:rgba(255,255,255,.8)}
+.kpi b{display:block;font-family:"Noto Kufi Arabic","Readex Pro",sans-serif;font-size:1.75rem;font-weight:700;line-height:1.25;font-variant-numeric:tabular-nums}
+.kpi span{font-size:.8rem;color:var(--muted)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px}
+.hbar{display:grid;grid-template-columns:120px 1fr 96px;gap:12px;align-items:center;font-size:.86rem;margin-bottom:11px}
+.hbar .tr{position:relative;height:10px;background:var(--empty);border-radius:6px;overflow:hidden}
+.hbar .tr i{position:absolute;inset-block:0;inset-inline-start:0;border-radius:6px}
+.hbar .tr i.p{opacity:.22}
+.hbar span:last-child{text-align:end;color:var(--ink-soft);font-size:.78rem;font-variant-numeric:tabular-nums}
+.heat{display:grid;grid-template-columns:repeat(13,minmax(0,46px));gap:6px;justify-content:start}
+.heat button{aspect-ratio:1;border-radius:8px;border:none;font-size:.68rem;padding:0;color:var(--ink-soft);background:var(--empty);font-variant-numeric:tabular-nums;position:relative}
+.heat button.l1{background:color-mix(in srgb,var(--a) 22%,var(--sheet));color:var(--ink)}
+.heat button.l2{background:color-mix(in srgb,var(--a) 48%,var(--sheet));color:#fff}
+.heat button.l3{background:color-mix(in srgb,var(--a) 75%,var(--sheet));color:#fff}
+.heat button.l4{background:var(--a);color:#fff}
+.heat button.fut{background:none;box-shadow:inset 0 0 0 1px var(--line);color:var(--muted)}
+.heat button.inr::after{content:"";position:absolute;inset:-3px;border-radius:10px;border:1.5px solid var(--acc2)}
+.heat button.cur{font-weight:700;box-shadow:inset 0 0 0 2px var(--ink)}
+.chart{width:100%;height:auto;display:block}
+.chart .gl{stroke:var(--line);stroke-width:1}
+.chart .ax{fill:var(--muted);font-size:11px;font-family:"Readex Pro",sans-serif}
+table.dt{width:100%;border-collapse:collapse;font-size:.86rem}
+.dt th,.dt td{padding:11px 8px;border-bottom:1px solid var(--line-2);text-align:center}
+.dt tbody tr:last-child td{border-bottom:none}
+.dt th:first-child,.dt td:first-child{text-align:start}
+.dt thead th{color:var(--muted);font-weight:500;font-size:.78rem;border-bottom:1px solid var(--line)}
+.dt .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-inline-end:6px}
+.insights{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+.insights li{display:flex;gap:12px;align-items:flex-start;line-height:1.7}
+.insights li::before{content:"";flex:none;width:7px;height:7px;border-radius:2px;background:var(--acc2);margin-top:10px;transform:rotate(45deg)}
+.up{color:var(--good);font-weight:600} .down{color:var(--bad);font-weight:600}
+.keys{display:flex;gap:16px;font-size:.8rem;color:var(--ink-soft);margin-bottom:10px;flex-wrap:wrap}
+.keys i{display:inline-block;width:14px;height:4px;border-radius:2px;margin-inline-end:6px;vertical-align:middle}
+
+/* ---------- settings ---------- */
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px 18px}
+.form label{display:flex;flex-direction:column;gap:6px;font-size:.84rem;color:var(--ink-soft)}
+.catrow{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+.catrow input[type=color]{width:44px;height:38px;border:1px solid var(--line);border-radius:10px;padding:3px;background:var(--sheet)}
+.catrow input[type=text]{flex:1;min-width:160px}
+.themegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.tcard{border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--sheet)}
+.tcard .tp{height:62px;background:var(--a);position:relative;overflow:hidden}
+.tcard .tp::before{content:"";position:absolute;inset:0;background-image:var(--tp);opacity:.22}
+.tcard .tp::after{content:"";position:absolute;width:30px;height:30px;border-radius:8px;background:var(--b);bottom:10px;left:12px}
+.tcard div:last-child{padding:8px 12px;font-size:.8rem}
+
+/* ---------- dialog & toast ---------- */
+dialog{border:none;border-radius:20px;padding:0;background:var(--sheet);color:var(--ink);width:min(470px,92vw);box-shadow:0 24px 70px rgba(10,15,40,.3)}
+dialog::backdrop{background:rgba(14,17,32,.5);backdrop-filter:blur(2px)}
+.dlg-in{padding:24px}
+.dlg-in h3{font-family:"Noto Kufi Arabic","Readex Pro",sans-serif;font-size:1.05rem;margin-bottom:16px}
+.dlg-in .form{grid-template-columns:1fr}
+.dlg-act{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px;justify-content:flex-end}
+.dlg-act .danger{margin-inline-end:auto}
+.ck{flex-direction:row!important;align-items:center;gap:10px!important;color:var(--ink)!important}
+.ck input{accent-color:var(--acc);width:17px;height:17px}
+.toast{position:fixed;bottom:calc(22px + env(safe-area-inset-bottom,0px));left:50%;transform:translate(-50%,10px);background:var(--ink);color:var(--paper);padding:10px 18px;border-radius:12px;font-size:.88rem;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:50}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* ---------- print ---------- */
+#printArea{display:none}
+.pr-head{position:relative;overflow:hidden;background:var(--acc);color:#fff;border-radius:14px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;isolation:isolate}
+.pr-head::before{content:"";position:absolute;inset:0;background-image:var(--pat);opacity:.16;z-index:-1}
+.pr-head h1{font-family:"Noto Kufi Arabic","Readex Pro",sans-serif;font-size:1.5rem;margin:0}
+.pr-head .s{opacity:.85;font-size:.85rem}
+.pr-foot{margin-top:14px;padding-top:8px;border-top:1px solid var(--line);display:flex;justify-content:space-between;font-size:.8rem;color:var(--ink-soft)}
+.pr-h2{font-family:"Noto Kufi Arabic","Readex Pro",sans-serif;font-size:1rem;margin:16px 0 8px}
+@media print{
+  @page{size:A4 landscape;margin:9mm}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body{background:#fff;font-size:11px}
+  body.printing .appbar,body.printing .wrap,body.printing dialog,body.printing .toast{display:none!important}
+  body.printing #printArea{display:block}
+  .board,.card,.kpi{box-shadow:none}
+  .scroller{overflow:visible}
+  table.tt,table.ht{min-width:0}
+  .slot{min-height:52px;padding:6px 7px}
+  .card,.kpi,.tt tr,.hbar,.board,.quote{break-inside:avoid}
+  .quote{padding:12px 20px}.quote blockquote{font-size:1.15rem}.q-mark{font-size:6rem}
+  .no-print{display:none!important}
+  .grid2{grid-template-columns:1fr 1fr}
+}
+@media (max-width:820px){
+  .hero{grid-template-columns:1fr;padding:22px}
+  .rings{justify-content:space-between}
+  .appbar-in{padding:10px 14px}
+  .tabs{width:100%;overflow-x:auto}
+  .tabs button{flex:1;white-space:nowrap;padding:7px 10px}
+  .wrap{padding:16px 12px 64px}
+}
+@media (max-width:560px){
+  .wk-num{font-size:3.3rem}
+  .ring,.ring svg{width:64px}.ring svg{height:64px}.ring b{top:20px;font-size:.9rem}
+  .hbar{grid-template-columns:88px 1fr 76px}
+  .heat{grid-template-columns:repeat(7,minmax(0,1fr))}
+  .wk-ctl{flex-wrap:nowrap}.hsel{flex:1;min-width:0;field-sizing:fixed}
+  .daychip b{font-size:.74rem}.daychip span{display:none}
+  .tl-row{grid-template-columns:74px 1fr;gap:10px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
 </style>
 </head>
 <body>
-<div class="hdr">
-  <div class="logo">Discipline<span>.</span></div>
-  <div class="tabs">
-    <button class="tab on" onclick="switchTab('t')">&#9679; Tracker</button>
-    <button class="tab" onclick="switchTab('d')">&#9632; Dashboard</button>
-    <button class="tab" onclick="switchTab('s')">&#9650; Scores</button>
-  </div>
-  <div class="nav">
-    <button class="nbtn" id="pBtn">&#8249;</button>
-    <span class="mlbl" id="mLbl"></span>
-    <button class="nbtn" id="nBtn">&#8250;</button>
-  </div>
-</div>
-<!-- Session picker overlay -->
-<div id="spOverlay" class="sp-overlay" onclick="closeSesPicker()"></div>
-<div id="sesPicker" class="hidden">
-  <div class="sp-hdr">
-    <span class="sp-title" id="spTitle"></span>
-    <button class="sp-close" onclick="closeSesPicker()">&#215;</button>
-  </div>
-  <div id="spRows"></div>
-  <div class="sp-foot" id="spFoot"></div>
-</div>
-<!-- TRACKER -->
-<div id="tv">
-  <div class="tlay">
-    <div class="tc-h" id="colH"></div>
-    <div class="tc-t"><svg id="svg" width="440" height="440" viewBox="0 0 440 440" style="display:block;max-width:100%"></svg></div>
-    <div class="tc-n" id="colN"></div>
-  </div>
-</div>
-<!-- DASHBOARD -->
-<div id="dv" style="display:none">
-  <div id="filterBar" class="fbar"></div>
-  <div class="sum-row" id="sumRow"></div>
-  <div class="sum-row" id="sumRow2"></div>
-  <div class="ins-row" id="insRow"></div>
-  <div class="cc">
-    <div class="ctitle" id="dailyTitle">Daily completions</div>
-    <div class="cwrap"><canvas id="cDaily"></canvas></div>
-  </div>
-  <div class="hgrid" id="habGrid"></div>
-  <div class="cc">
-    <div class="ctitle">Habit comparison — this month</div>
-    <div id="habCompBars"></div>
-  </div>
-  <div class="two-col">
-    <div class="cc">
-      <div class="ctitle">7-day running average</div>
-      <div class="cwrap"><canvas id="cRunning"></canvas></div>
-    </div>
-    <div class="cc">
-      <div class="ctitle" id="radarTitle">Habit radar</div>
-      <div class="cwrap" id="radarWrap"><canvas id="cRadar"></canvas></div>
-    </div>
-  </div>
-  <div class="sec-hdr" style="margin:10px 0 16px">Annual Analysis — <span id="yearLabel"></span></div>
-  <div class="cc">
-    <div class="ctitle" id="mVsMTitle">Month vs month</div>
-    <div class="cwrap"><canvas id="cMonthVsMonth"></canvas></div>
-  </div>
-  <div class="two-col">
-    <div class="cc">
-      <div class="ctitle">Week over week — 52 weeks</div>
-      <div class="cwrap"><canvas id="cWeekOW"></canvas></div>
-    </div>
-    <div class="cc">
-      <div class="ctitle">Same day of week — all months</div>
-      <div class="cwrap"><canvas id="cDayOfWeekYear"></canvas></div>
-    </div>
-  </div>
-  <div class="two-col">
-    <div class="cc">
-      <div class="ctitle">Weekly pattern — strongest day?</div>
-      <div class="cwrap"><canvas id="cWeekly"></canvas></div>
-    </div>
-    <div class="cc">
-      <div class="ctitle">6-month trend</div>
-      <div class="cwrap"><canvas id="cTrend"></canvas></div>
-    </div>
-  </div>
-  <div class="cc">
-    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px">
-      <div class="ctitle" style="margin:0">Full year heatmap — <span id="hmYearLbl"></span></div>
-      <div class="hm-tabs" id="hmTabs"></div>
-    </div>
-    <div class="heatmap-wrap" id="yearHeatmap"></div>
-    <div style="display:flex;align-items:center;gap:6px;margin-top:10px;font-size:10px;color:#999">
-      <span>Less</span>
-      <div style="width:12px;height:12px;border-radius:2px;background:#E8E0D0"></div>
-      <div style="width:12px;height:12px;border-radius:2px;background:#A3E4DF"></div>
-      <div style="width:12px;height:12px;border-radius:2px;background:#4EC9C4"></div>
-      <div style="width:12px;height:12px;border-radius:2px;background:#2A9D96"></div>
-      <div style="width:12px;height:12px;border-radius:2px;background:#1A6B67"></div>
-      <span>More</span>
-    </div>
-  </div>
-</div>
-<!-- SCORES DASHBOARD -->
-<div id="sv" style="display:none">
-  <div class="sum-row" id="scSumRow"></div>
-  <div class="two-col" style="margin-bottom:18px">
-    <div class="cc">
-      <div class="ctitle" id="scWkTitle">Weekly scores</div>
-      <div class="cwrap"><canvas id="cWkScore"></canvas></div>
-    </div>
-    <div class="cc">
-      <div class="ctitle" id="scMoTitle">Monthly scores</div>
-      <div class="cwrap"><canvas id="cMoScore"></canvas></div>
-    </div>
-  </div>
-  <div class="cc">
-    <div class="ctitle">Year vs year comparison</div>
-    <div class="cwrap" style="height:220px"><canvas id="cYrComp"></canvas></div>
-  </div>
-  <div class="cc">
-    <div class="ctitle">Score history — last 18 months</div>
-    <div class="cwrap" style="height:220px"><canvas id="cScHist"></canvas></div>
-  </div>
-  <div class="cc">
-    <div class="ctitle">Month-by-month scorecard</div>
-    <div id="scTable"></div>
-  </div>
-</div>
+<header class="appbar"><div class="appbar-in">
+  <div class="brand"><div class="brand-mark" aria-hidden="true"><span></span></div>
+    <div id="headBox"><h1 id="hTitle"></h1><p id="hSub"></p></div></div>
+  <nav class="tabs" role="tablist" aria-label="الأقسام">
+    <button role="tab" data-tab="schedule">الجدول</button>
+    <button role="tab" data-tab="habits">العادات</button>
+    <button role="tab" data-tab="dash">الداشبورد والتقارير</button>
+    <button role="tab" data-tab="settings">الإعدادات</button>
+  </nav>
+</div></header>
+<div class="wrap"><main id="main"></main></div>
+<div id="printArea"></div>
+<dialog id="dlg"><div class="dlg-in"><h3 id="dlgT"></h3><div id="dlgB"></div><div class="dlg-act" id="dlgA"></div></div></dialog>
+<div class="toast" id="toast" role="status"></div>
 <script>
-/* ════ CONSTANTS ════ */
-const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
-const DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-const COLORS=["#4EC9C4","#60A5FA","#A78BFA","#F472B6","#34D399","#FB923C","#F59E0B","#F87171","#6EE7B7","#818CF8"];
-const now=new Date();
 
-/* ════ STATE ════ */
-const S={
-  month:now.getMonth(), year:now.getFullYear(),
-  habits:[
-    {n:"Wake up 6:00 AM",c:"#4EC9C4"},
-    {n:"Fajr Prayer",c:"#4EC9C4",type:"sessions",freq:5,snames:["Fajr","Dhuhr","Asr","Maghrib","Isha"]},
-    {n:"Exercise",c:"#4EC9C4"},
-    {n:"Drink Water",c:"#60A5FA"},
-    {n:"Training",c:"#34D399",type:"weekly",wtarget:5},
-    {n:"Sleep by 11 PM",c:"#4EC9C4"}
-  ],
-  done:{}, notes:"", excuses:"", tab:"t",
-  filterIdx:[], annualYear:now.getFullYear(), hmHabit:-1,
-  openConf:-1  /* which habit has settings panel open */
+/* ============ data ============ */
+const KEY='weekly-planner-52-v1';
+const DAYS=['السبت','الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة'];
+const DAY_MS=864e5;
+const uid=()=>Math.random().toString(36).slice(2,9);
+const clone=o=>JSON.parse(JSON.stringify(o));
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad=n=>String(n).padStart(2,'0');
+const iso=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const parseISO=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
+function saturdayOf(d){const x=new Date(d.getFullYear(),d.getMonth(),d.getDate());x.setDate(x.getDate()-((x.getDay()+1)%7));return x}
+
+const DEFAULT_QUOTES=[
+  'حريٌّ بك أن تتذكّر أن السعي لطلب العلم هو توفيقٌ من الله، ورزقٌ ساقه إليك.',
+  'الانتفاع بالعلم فتحٌ من الله ومِنّة، لذلك لا بد من تجديد النية، وإظهار الحاجة والافتقار إلى المولى سبحانه.',
+  'تخلّص من كل فكرةٍ تُشعرك أن ما تقوم به هو من حولك وقوتك، وإيّاك أن تُعجب بنفسك.',
+  'طريق العلم طريقٌ محفوفٌ بالابتلاءات وقواطع الطريق، لذلك فأنت تحتاج إلى الصبر والمجاهدة.',
+  'قد يُحرم المرء فضل العلم ويُحجب عنه بسبب ذنب، فلا يفارقنّ لسانك الاستغفار.',
+  'الدعاء من أقوى الأسلحة، فلا تفتر أن تدعو الله أن يشرح صدرك، وينفعك بهذا العلم، ويوفقك للعمل الصالح، وأن تكون من أهل الجنة.'
+];
+function defaults(){
+  const C=(t,s,c,star)=>({t,s,c,star:!!star});
+  const all=x=>Array.from({length:7},()=>({...x}));
+  return {
+    title:'الجدول الأسبوعي', subtitle:'قرآن ومهارات ومحاسبة، كل يوم بخطوة ثابتة',
+    owner:'', fixedTheme:'', start:'2026-10-10', startV:2,
+    quotesTitle:'وصايا غالية', quotes:DEFAULT_QUOTES.slice(), weeksCount:52, theme:'auto',
+    cats:[
+      {id:'q',name:'القرآن والذكر',color:'#1E6B50'},
+      {id:'t',name:'المهارات التقنية',color:'#2563A8'},
+      {id:'a',name:'المحاسبة والشهادات',color:'#7B3A68'},
+      {id:'f',name:'مراجعة',color:'#8A90A8'}
+    ],
+    template:{
+      slots:[
+        {id:'s1',start:'05:30',end:'07:00'},
+        {id:'s2',start:'18:00',end:'19:00'},
+        {id:'s3',start:'19:15',end:'20:45'},
+        {id:'s4',start:'21:00',end:'22:00'},
+        {id:'s5',start:'22:00',end:'22:45'}
+      ],
+      cells:{
+        s1:all(C('حفظ القرآن','حفظ + أذكار + نفع','q')),
+        s2:[C('Excel','دوال، Pivot، Power Query','t'),C('AI','أدوات الذكاء الاصطناعي في الشغل','t',1),C('IQ','تمارين منطق وتحليل','t',1),
+            C('Power BI','نماذج بيانات و DAX','t'),C('AI','تطبيق عملي ومشروع صغير','t',1),C('ERP Odoo','محاسبة وتقارير Odoo','t'),C('IQ','اختبار ومراجعة','t',1)],
+        s3:all(C('CMA','مذاكرة + أسئلة MCQ','a')),
+        s4:all(C('Accounting 101','أساسيات + حل تمارين','a')),
+        s5:[C('IFRS','معيار جديد','a'),C('Entrepreneurship','قراءة + أفكار','a'),C('IFRS','حالات عملية','a'),
+            C('مراجعة','تلخيص الأسبوع','f'),C('IFRS','مراجعة المعايير','a'),C('Entrepreneurship','تطبيق على فكرة','a'),C('مراجعة وتخطيط','تجهيز الأسبوع الجاي','f')]
+      }
+    },
+    habits:[
+      {id:'h1',name:'القراءة',desc:'ولو 15 صفحة في اليوم',from:1},
+      {id:'h2',name:'مفيش سوشيال ميديا',desc:'بدون تصفح عشوائي',from:1},
+      {id:'h3',name:'تدوين اليوميات',desc:'دقائق في آخر اليوم',from:1},
+      {id:'h4',name:'غض البصر',desc:'طول اليوم',from:1}
+    ],
+    weeks:{}
+  };
+}
+let state;
+try{state=JSON.parse(localStorage.getItem(KEY))}catch(e){state=null}
+if(!state||!state.template){state=defaults()}else{const raw=state;state={...defaults(),...raw};
+  if(raw.owner==='Mohamed Ghaith'){state.owner='';try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+  if(raw.startV!==2){state.start='2026-10-10';state.startV=2;try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){toast('تعذّر الحفظ في المتصفح، اعمل نسخة احتياطية من الإعدادات')}}
+
+/* ============ helpers ============ */
+function currentWeek(){const s=parseISO(state.start);const n=Math.floor((new Date()-s)/DAY_MS/7)+1;return Math.min(Math.max(n,1),state.weeksCount)}
+function isThisWeek(n){const a=weekStart(n),now=new Date();return now>=a&&now<new Date(a.getTime()+7*DAY_MS)}
+function daysToStart(){return Math.ceil((parseISO(state.start)-new Date())/DAY_MS)}
+function weekStart(n){const d=parseISO(state.start);d.setDate(d.getDate()+(n-1)*7);return d}
+const fmtD=d=>d.toLocaleDateString('ar-EG-u-nu-latn',{day:'numeric',month:'short'});
+function rangeLabel(n){const a=weekStart(n),b=new Date(a);b.setDate(b.getDate()+6);return `${fmtD(a)} – ${fmtD(b)}`}
+function dayDate(n,i){const d=weekStart(n);d.setDate(d.getDate()+i);return fmtD(d)}
+function todayIdx(){return (new Date().getDay()+1)%7}
+const toMin=t=>{const [h,m]=t.split(':').map(Number);return h*60+m};
+function dur(s){let d=toMin(s.end)-toMin(s.start);if(d<=0)d+=1440;return d}
+function fmt12(t){const [h,m]=t.split(':').map(Number);return `${h%12||12}:${pad(m)} ${h<12?'ص':'م'}`}
+function durLabel(m){if(m%60===0)return m===60?'ساعة':m===120?'ساعتين':`${m/60} ساعات`;if(m===90)return 'ساعة ونص';if(m<60)return `${m} دقيقة`;return `${Math.floor(m/60)} س و ${m%60} د`}
+const hrs=m=>{const v=Math.round(m/6)/10;return String(v)};
+const catOf=id=>state.cats.find(c=>c.id===id)||{id:'',name:'بدون تصنيف',color:'#8A90A8'};
+const getWeek=(n,create)=>{if(!state.weeks[n]&&create)state.weeks[n]={plan:null,done:{},habits:{},note:''};return state.weeks[n]};
+const getPlan=n=>(state.weeks[n]&&state.weeks[n].plan)||state.template;
+const habitsFor=n=>state.habits.filter(h=>(h.from||1)<=n&&(!h.to||n<=h.to));
+const pctClass=p=>p>=80?'p-good':p>=50?'p-mid':'p-bad';
+let toastT;function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2200)}
+function applyTheme(){const r=document.documentElement;if(state.theme==='auto')r.removeAttribute('data-theme');else r.setAttribute('data-theme',state.theme)}
+
+/* keep past weeks frozen before master edits so the dashboard stays accurate */
+function freezePast(upTo){const snap=JSON.stringify(state.template);
+  for(let n=1;n<=state.weeksCount;n++){if(n===upTo)continue;const w=state.weeks[n];
+    const tracked=w&&Object.keys(w.done||{}).length>0;
+    if(n<upTo||tracked){const x=getWeek(n,true);if(!x.plan)x.plan=JSON.parse(snap)}}}
+function doneInSlot(n,id){const w=state.weeks[n];return w?Object.keys(w.done||{}).filter(k=>k.startsWith(id+'_')).length:0}
+function editablePlan(){
+  if(ui.scope==='week'){const w=getWeek(ui.week,true);if(!w.plan)w.plan=clone(state.template);return w.plan}
+  freezePast(ui.week);const w=state.weeks[ui.week];if(w&&w.plan)return w.plan;return state.template;
+}
+
+/* ============ stats ============ */
+function weekStats(n){
+  const plan=getPlan(n),w=state.weeks[n]||{done:{},habits:{}};
+  const r={n,pMin:0,dMin:0,pCnt:0,dCnt:0,cat:{},subj:{},day:Array.from({length:7},()=>({p:0,d:0})),hP:0,hD:0,hab:{}};
+  plan.slots.forEach(s=>{const m=dur(s);(plan.cells[s.id]||[]).forEach((c,i)=>{
+    if(!c||!c.t)return;const d=!!(w.done||{})[s.id+'_'+i];
+    r.pMin+=m;r.pCnt++;if(d){r.dMin+=m;r.dCnt++}
+    const cc=r.cat[c.c]||(r.cat[c.c]={p:0,d:0});cc.p+=m;if(d)cc.d+=m;
+    const k=c.t.trim();const ss=r.subj[k]||(r.subj[k]={cat:c.c,p:0,d:0,pc:0,dc:0});ss.p+=m;ss.pc++;if(d){ss.d+=m;ss.dc++}
+    r.day[i].p+=m;if(d)r.day[i].d+=m;})});
+  habitsFor(n).forEach(h=>{let c=0;for(let i=0;i<7;i++)if((w.habits||{})[h.id+'_'+i])c++;r.hab[h.id]=c;r.hD+=c;r.hP+=7});
+  const td=w.todos||[];r.tP=td.length;r.tD=td.filter(t=>t.done).length;
+  r.pct=r.pMin?Math.round(r.dMin/r.pMin*100):0;r.hPct=r.hP?Math.round(r.hD/r.hP*100):0;
+  return r;
+}
+function aggregate(from,to){
+  const A={pMin:0,dMin:0,pCnt:0,dCnt:0,cat:{},subj:{},day:Array.from({length:7},()=>({p:0,d:0})),hP:0,hD:0,tP:0,tD:0,hab:{},weeks:[]};
+  for(let n=from;n<=to;n++){const r=weekStats(n);A.weeks.push(r);
+    ['pMin','dMin','pCnt','dCnt','hP','hD','tP','tD'].forEach(k=>A[k]+=r[k]);
+    for(const k in r.cat){const a=A.cat[k]||(A.cat[k]={p:0,d:0});a.p+=r.cat[k].p;a.d+=r.cat[k].d}
+    for(const k in r.subj){const s=r.subj[k],a=A.subj[k]||(A.subj[k]={cat:s.cat,p:0,d:0,pc:0,dc:0});a.p+=s.p;a.d+=s.d;a.pc+=s.pc;a.dc+=s.dc}
+    r.day.forEach((d,i)=>{A.day[i].p+=d.p;A.day[i].d+=d.d});
+    habitsFor(n).forEach(h=>{const a=A.hab[h.id]||(A.hab[h.id]={p:0,d:0});a.p+=7;a.d+=r.hab[h.id]||0});}
+  A.pct=A.pMin?Math.round(A.dMin/A.pMin*100):0;A.hPct=A.hP?Math.round(A.hD/A.hP*100):0;
+  return A;
+}
+
+
+/* ============ week themes ============ */
+const THEMES=[
+  {id:'navy',name:'كحلي وذهبي',a:'#1C2E6B',b:'#E8C468',pat:'dots',shape:'soft',deco:'circle'},
+  {id:'emerald',name:'زمردي ورملي',a:'#0E5A4C',b:'#F0C987',pat:'diag',shape:'sharp',deco:'square'},
+  {id:'bordeaux',name:'عنابي ومشمشي',a:'#6E1C38',b:'#F2B88B',pat:'arcs',shape:'pill',deco:'arc'},
+  {id:'petrol',name:'بترولي وبرتقالي',a:'#0D4F66',b:'#F7B05B',pat:'waves',shape:'tab',deco:'circle'},
+  {id:'royal',name:'بنفسجي ملكي',a:'#432874',b:'#F4C95D',pat:'tri',shape:'notch',deco:'square'},
+  {id:'copper',name:'فحمي ونحاسي',a:'#2B313C',b:'#E39B6B',pat:'hex',shape:'sharp',deco:'arc'},
+  {id:'olive',name:'زيتوني وكريمي',a:'#4A5A26',b:'#E9D886',pat:'squares',shape:'soft',deco:'circle'},
+  {id:'cobalt',name:'كوبالت ومرجاني',a:'#1B4F9C',b:'#FFB4A2',pat:'rings',shape:'pill',deco:'arc'},
+  {id:'berry',name:'توتي وتركواز',a:'#7A2450',b:'#8FD3D9',pat:'stripes',shape:'tab',deco:'square'},
+  {id:'pine',name:'صنوبري وذهبي',a:'#183F31',b:'#E7C977',pat:'cross',shape:'notch',deco:'circle'},
+  {id:'terracotta',name:'طوبي ورملي',a:'#8A3A23',b:'#F6D2A2',pat:'diamond',shape:'soft',deco:'square'},
+  {id:'indigo',name:'نيلي وتركواز',a:'#23307A',b:'#6FE3D6',pat:'chevron',shape:'sharp',deco:'arc'},
+  {id:'graphite',name:'جرافيت وليموني',a:'#30353D',b:'#E6DA6A',pat:'diag',shape:'pill',deco:'circle'}
+];
+function patternURI(type,c){
+  const P={
+    dots:[22,22,`<circle cx='4' cy='4' r='1.7' fill='${c}'/>`],
+    diag:[14,14,`<path d='M-3 3l6-6M0 14L14 0M11 17l6-6' stroke='${c}' stroke-width='1.3'/>`],
+    arcs:[40,40,`<circle cx='0' cy='40' r='20' fill='none' stroke='${c}' stroke-width='1.3'/><circle cx='40' cy='0' r='20' fill='none' stroke='${c}' stroke-width='1.3'/>`],
+    waves:[40,16,`<path d='M0 8q10-8 20 0t20 0' fill='none' stroke='${c}' stroke-width='1.3'/>`],
+    tri:[24,21,`<path d='M12 3l9 15H3z' fill='none' stroke='${c}' stroke-width='1.2'/>`],
+    hex:[28,48,`<path d='M14 0l14 8v16l-14 8L0 24V8zM14 32v16' fill='none' stroke='${c}' stroke-width='1.2'/>`],
+    squares:[22,22,`<rect x='5' y='5' width='9' height='9' fill='none' stroke='${c}' stroke-width='1.2'/>`],
+    rings:[48,48,`<circle cx='24' cy='24' r='8' fill='none' stroke='${c}' stroke-width='1.2'/><circle cx='24' cy='24' r='17' fill='none' stroke='${c}' stroke-width='1.2'/>`],
+    stripes:[12,12,`<rect width='12' height='3' fill='${c}'/>`],
+    cross:[24,24,`<path d='M12 7v10M7 12h10' stroke='${c}' stroke-width='1.4'/>`],
+    diamond:[22,22,`<path d='M11 3l8 8-8 8-8-8z' fill='none' stroke='${c}' stroke-width='1.2'/>`],
+    chevron:[28,14,`<path d='M0 11l7-7 7 7 7-7 7 7' fill='none' stroke='${c}' stroke-width='1.3'/>`]
+  }[type]||[22,22,''];
+  return `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='${P[0]}' height='${P[1]}'>${P[2]}</svg>`)}")`;
+}
+function themeOf(n){
+  const w=state.weeks[n];const pick=(w&&w.theme)||state.fixedTheme;
+  return THEMES.find(t=>t.id===pick)||THEMES[(n-1)%THEMES.length];
+}
+function applyWeekTheme(n){
+  const t=themeOf(n),r=document.documentElement.style;
+  r.setProperty('--acc',t.a);r.setProperty('--acc2',t.b);r.setProperty('--pat',patternURI(t.pat,'#ffffff'));
+  document.body.dataset.shape=t.shape;
+  return t;
+}
+
+/* ============ UI state ============ */
+const cw=currentWeek();
+const ui={tab:'schedule',week:cw,edit:false,scope:'week',from:1,to:cw,cmpA:Math.max(cw-1,1),cmpB:cw,
+  view:window.innerWidth<760?'day':'week',day:isThisWeek(cw)?todayIdx():0,qOff:0};
+
+const ICON={
+  prev:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>',
+  next:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>',
+  edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>',
+  print:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>',
+  plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>'
 };
-const CR={};
 
-/* ════ HABIT HELPERS ════ */
-function hType(h){return h&&h.type||"simple"}
-/* Get done value; sessions returns array */
-function getDoneVal(hi,day){
-  const h=S.habits[hi];
-  const v=S.done[hi+"-"+day];
-  if(hType(h)==="sessions"){
-    const n=h.freq||1;
-    if(!v||!Array.isArray(v))return Array(n).fill(0);
-    const a=[...v];while(a.length<n)a.push(0);return a.slice(0,n);
-  }
-  return !!v;
-}
-/* Is a day "done" at all */
-function isDayDone(hi,day){
-  const h=S.habits[hi];const v=S.done[hi+"-"+day];
-  if(hType(h)==="sessions"){if(!v||!Array.isArray(v))return false;return v.some(s=>s>0);}
-  return !!v;
-}
-/* 0-1 completion ratio for a day */
-function dayRatio(hi,day){
-  const h=S.habits[hi];const v=S.done[hi+"-"+day];
-  if(hType(h)==="sessions"){
-    if(!v||!Array.isArray(v))return 0;
-    return v.filter(s=>s>0).length/(h.freq||1);
-  }
-  return v?1:0;
-}
-/* Blend two hex colors */
-function blendCol(a,b,t){
-  const p=s=>{const x=s.replace("#","");return[parseInt(x.slice(0,2),16),parseInt(x.slice(2,4),16),parseInt(x.slice(4,6),16)]};
-  const[r1,g1,b1]=p(a),[r2,g2,b2]=p(b);
-  return"#"+[Math.round(r1+(r2-r1)*t),Math.round(g1+(g2-g1)*t),Math.round(b1+(b2-b1)*t)].map(x=>x.toString(16).padStart(2,"0")).join("");
-}
-/* SVG cell fill color */
-function cellColor(h,hi,day,isFuture,isToday){
-  if(isFuture)return"#DDD5C2";
-  if(isToday&&!isDayDone(hi,day))return"#DBEAFE";
-  const v=S.done[hi+"-"+day];
-  if(hType(h)==="sessions"){
-    if(!v||!Array.isArray(v))return"#DDD5C2";
-    const done=v.filter(s=>s>0).length,late=v.filter(s=>s===2).length,n=h.freq||1;
-    if(done===0)return"#DDD5C2";
-    const ratio=done/n;
-    const base=late>0&&done===n?"#FB923C":h.c;
-    return blendCol("#DDD5C2",base,ratio);
-  }
-  return isDayDone(hi,day)?h.c:"#DDD5C2";
-}
-/* Weekly done count for current week containing a day */
-function weekDoneCount(hi,year,month,day){
-  const dt=new Date(year,month,day);
-  const dow=dt.getDay();
-  const weekStart=new Date(dt);weekStart.setDate(dt.getDate()-dow);
-  let count=0;
-  for(let i=0;i<7;i++){
-    const d=new Date(weekStart);d.setDate(weekStart.getDate()+i);
-    if(d>new Date())break;
-    if(d.getMonth()===month&&d.getFullYear()===year){
-      if(isDayDone(hi,d.getDate()))count++;
-    } else {
-      const md=getMonthDone(d.getFullYear(),d.getMonth());
-      if(isDayDoneFromDone(md,hi,d.getDate()))count++;
-    }
-  }
-  return count;
-}
-function isDayDoneFromDone(done,hi,day){
-  const h=S.habits[hi];const v=done[hi+"-"+day];
-  if(hType(h)==="sessions"){if(!v||!Array.isArray(v))return false;return v.some(s=>s>0);}
-  return !!v;
-}
-
-/* ════ PERSISTENCE ════ */
-function mkey(){return"ht-"+S.year+"-"+S.month}
-function save(){
-  try{
-    localStorage.setItem("ht2-habits",JSON.stringify(S.habits));
-    localStorage.setItem(mkey(),JSON.stringify({done:S.done,notes:S.notes,excuses:S.excuses}));
-  }catch(_){}
-}
-function load(){
-  try{const h=localStorage.getItem("ht2-habits");if(h)S.habits=JSON.parse(h);}catch(_){}
-  S.filterIdx=S.filterIdx.filter(i=>i<S.habits.length);
-  if(S.hmHabit>=S.habits.length)S.hmHabit=-1;
-  if(S.openConf>=S.habits.length)S.openConf=-1;
-  loadMonth();
-}
-function loadMonth(){
-  try{
-    const raw=localStorage.getItem(mkey());
-    if(raw){const p=JSON.parse(raw);S.done=p.done||{};S.notes=p.notes||"";S.excuses=p.excuses||"";}
-    else{S.done={};S.notes="";S.excuses="";}
-  }catch(_){S.done={};S.notes="";S.excuses="";}
-}
-
-/* ════ GENERAL HELPERS ════ */
-function esc(s){return(""+s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
-function daysIn(m,y){return new Date(y,m+1,0).getDate()}
-function elapsed(m,y){const t=new Date();return(m===t.getMonth()&&y===t.getFullYear())?t.getDate():daysIn(m,y)}
-function destroyChart(id){if(CR[id]){try{CR[id].destroy()}catch(_){}delete CR[id]}}
-function mkChart(id,type,data,opts){destroyChart(id);const c=document.getElementById(id);if(!c)return;CR[id]=new Chart(c,{type,data,options:opts})}
-function weekNum(y,m,d){const date=new Date(y,m,d);const start=new Date(y,0,1);return Math.ceil(((date-start)/86400000+start.getDay()+1)/7)}
-function getMonthDone(y,m){
-  if(y===S.year&&m===S.month)return S.done;
-  try{const raw=localStorage.getItem("ht-"+y+"-"+m);return raw?JSON.parse(raw).done||{}:{}}catch(_){return{}}
-}
-function activeIdx(){return S.filterIdx.length===0?S.habits.map((_,i)=>i):S.filterIdx.filter(i=>i<S.habits.length)}
-/* Completion rate for a month (active habits, 0-100) */
-function monthRate(y,m,idxList){
-  const done=getMonthDone(y,m);const de=elapsed(m,y);
-  const idx=idxList||activeIdx();
-  if(!idx.length||de===0)return null;
-  const rates=idx.map(hi=>{
-    const h=S.habits[hi];
-    if(hType(h)==="sessions"){
-      const n=h.freq||1,total=de*n;
-      let c=0;
-      for(let d=1;d<=de;d++){const v=done[hi+"-"+d];if(Array.isArray(v))c+=v.filter(s=>s>0).length;}
-      return total>0?Math.round(c/total*100):0;
-    }
-    const c=Array.from({length:de},(_,d)=>isDayDoneFromDone(done,hi,d+1)).filter(Boolean).length;
-    return Math.round(c/de*100);
+/* ============ renderers ============ */
+function fitSlots(root){
+  (root||document).querySelectorAll('.slot b, .slot em').forEach(el=>{
+    el.style.fontSize='';el.style.whiteSpace='';
+    const base=parseFloat(getComputedStyle(el).fontSize),min=el.tagName==='B'?10.5:9.5;let fs=base;
+    if(el.clientWidth===0)return;
+    while(el.scrollWidth>el.clientWidth+1&&fs>min){fs-=.5;el.style.fontSize=fs+'px'}
+    if(el.scrollWidth>el.clientWidth+1)el.style.whiteSpace='normal';
   });
-  return Math.round(rates.reduce((a,b)=>a+b,0)/rates.length);
 }
-
-/* ════ SVG HELPERS ════ */
-function p2c(cx,cy,r,deg){const rad=(deg-90)*Math.PI/180;return[cx+r*Math.cos(rad),cy+r*Math.sin(rad)]}
-function arcP(cx,cy,r1,r2,a1,a2){
-  const[x1,y1]=p2c(cx,cy,r2,a1),[x2,y2]=p2c(cx,cy,r2,a2);
-  const[x3,y3]=p2c(cx,cy,r1,a2),[x4,y4]=p2c(cx,cy,r1,a1);
-  const lg=a2-a1>180?1:0,f=n=>n.toFixed(2);
-  return`M${f(x1)},${f(y1)} A${r2},${r2} 0 ${lg} 1 ${f(x2)},${f(y2)} L${f(x3)},${f(y3)} A${r1},${r1} 0 ${lg} 0 ${f(x4)},${f(y4)}Z`
+function fitQuote(){
+  const el=document.querySelector('.quote blockquote:not([contenteditable])');if(!el)return;
+  el.style.whiteSpace='nowrap';let fs=28;el.style.fontSize=fs+'px';
+  while(el.scrollWidth>el.clientWidth&&fs>16){fs--;el.style.fontSize=fs+'px'}
+  el.style.whiteSpace='';
 }
-
-/* ════ SESSION PICKER ════ */
-let SP={hi:-1,day:-1};
-function openSesPicker(hi,day){
-  SP={hi,day};
-  const h=S.habits[hi];
-  const snames=h.snames&&h.snames.length?h.snames:Array.from({length:h.freq||1},(_,i)=>`Session ${i+1}`);
-  const arr=getDoneVal(hi,day);
-  const d=new Date(S.year,S.month,day);
-  document.getElementById("spTitle").textContent=`${h.n} — ${MONTHS[S.month].slice(0,3)} ${day}`;
-  let rows="";
-  snames.forEach((sn,si)=>{
-    const v=arr[si]||0;
-    rows+=`<div class="sp-row">
-      <span class="sp-name">${esc(sn)}</span>
-      <div class="sp-btns">
-        <button class="sp-btn${v===1?" v1":""}" onclick="setSes(${si},1)">✅ On time</button>
-        <button class="sp-btn${v===2?" v2":""}" onclick="setSes(${si},2)">⏰ Late</button>
-        <button class="sp-btn${v===0?" v0":""}" onclick="setSes(${si},0)">❌</button>
+let fitT;window.addEventListener('resize',()=>{clearTimeout(fitT);fitT=setTimeout(()=>{fitQuote();fitSlots(document.getElementById('main'))},120)});
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{fitQuote();fitSlots(document.getElementById('main'))});
+function render(){
+  applyTheme();
+  applyWeekTheme(ui.tab==='schedule'||ui.tab==='habits'?ui.week:currentWeek());
+  document.getElementById('hTitle').textContent=state.title;
+  document.getElementById('hSub').textContent=state.subtitle;
+  const he=ui.edit&&(ui.tab==='schedule'||ui.tab==='habits');
+  ['hTitle','hSub'].forEach(id=>{const el=document.getElementById(id);if(he)el.setAttribute('contenteditable','true');else el.removeAttribute('contenteditable')});
+  document.getElementById('headBox').classList.toggle('edit-head',he);
+  document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===ui.tab));
+  const m=document.getElementById('main');
+  m.innerHTML=ui.tab==='schedule'?viewSchedule():ui.tab==='habits'?viewHabits():ui.tab==='dash'?viewDash():viewSettings();
+  m.classList.toggle('edit-on',ui.edit);
+  fitQuote();fitSlots(m);
+  if(!render.scrolled){const tc=document.getElementById('todayCol');if(tc){render.scrolled=true;const sc=tc.closest('.scroller');if(sc&&sc.scrollWidth>sc.clientWidth)tc.scrollIntoView({inline:'center',block:'nearest'})}}
+}
+function ring(p,label){const r=31,c=2*Math.PI*r;
+  return `<div class="ring"><svg viewBox="0 0 76 76" aria-hidden="true"><circle cx="38" cy="38" r="${r}" class="bg"/><circle cx="38" cy="38" r="${r}" class="fg" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${(c*(1-p/100)).toFixed(1)}" transform="rotate(-90 38 38)"/></svg><b>${p}%</b><span>${label}</span></div>`}
+function hero(){
+  const n=ui.week,N=state.weeksCount,st=weekStats(n),t=themeOf(n),cur=currentWeek();
+  const tp=st.tP?Math.round(st.tD/st.tP*100):0;
+  let o='';for(let i=1;i<=N;i++)o+=`<option value="${i}" ${i===n?'selected':''}>أسبوع ${i}: ${rangeLabel(i)}${isThisWeek(i)?' (الحالي)':''}</option>`;
+  return `<section class="hero">
+    <span class="deco ${t.deco}"></span>
+    <div class="wk"><div class="wk-num">${n}<small>من ${N} أسبوع</small></div></div>
+    <div class="wk-meta">
+      <div class="wk-range">${rangeLabel(n)}</div>
+      <div class="wk-theme"><i></i>${esc(t.name)}${isThisWeek(n)?' &nbsp;•&nbsp; الأسبوع الحالي':''}${daysToStart()>0&&n===1?` &nbsp;•&nbsp; بيبدأ بعد ${daysToStart()} ${daysToStart()<=10?'أيام':'يوم'}`:''}</div>
+      <div class="wk-ctl">
+        <button class="hbtn" data-act="prev" ${n<=1?'disabled':''} aria-label="الأسبوع السابق">${ICON.prev}</button>
+        <select class="hsel" id="weekSel" aria-label="اختار الأسبوع">${o}</select>
+        <button class="hbtn" data-act="next" ${n>=N?'disabled':''} aria-label="الأسبوع التالي">${ICON.next}</button>
+        ${n!==cur?'<button class="hpill" data-act="today">ارجع للأسبوع الحالي</button>':''}
       </div>
-    </div>`;
-  });
-  document.getElementById("spRows").innerHTML=rows;
-  updateSpFoot();
-  document.getElementById("sesPicker").classList.remove("hidden");
-  document.getElementById("spOverlay").classList.add("show");
-}
-function setSes(si,val){
-  const{hi,day}=SP;
-  const h=S.habits[hi];
-  const arr=getDoneVal(hi,day);
-  arr[si]=val;
-  const allZero=arr.every(v=>v===0);
-  S.done[hi+"-"+day]=allZero?false:arr;
-  save();
-  /* re-render picker rows */
-  const snames=h.snames&&h.snames.length?h.snames:Array.from({length:h.freq||1},(_,i)=>`Session ${i+1}`);
-  const btns=document.querySelectorAll(".sp-row");
-  btns.forEach((row,rowIdx)=>{
-    row.querySelectorAll(".sp-btn").forEach((btn,bi)=>{
-      const vals=[1,2,0];
-      btn.className="sp-btn"+(arr[rowIdx]===vals[bi]?bi===0?" v1":bi===1?" v2":" v0":"");
-    });
-  });
-  updateSpFoot();
-  /* update SVG cell color directly */
-  const path=document.querySelector(`[data-hi="${hi}"][data-day="${day}"]`);
-  if(path){
-    const isTM=S.month===now.getMonth()&&S.year===now.getFullYear();
-    const isT=isTM&&day===now.getDate();
-    path.setAttribute("fill",cellColor(h,hi,day,false,isT));
-  }
-  /* update left col completion */
-  renderTrackerCompletion();
-  if(S.tab==="d")renderDashboard();
-}
-function updateSpFoot(){
-  const{hi,day}=SP;
-  const arr=getDoneVal(hi,day);
-  const done=arr.filter(v=>v>0).length,ontime=arr.filter(v=>v===1).length,late=arr.filter(v=>v===2).length,n=arr.length;
-  document.getElementById("spFoot").innerHTML=
-    `<span>✅ On time: <b>${ontime}</b></span><span>⏰ Late: <b>${late}</b></span><span>Total: <b>${done}/${n}</b></span>`;
-}
-function closeSesPicker(){
-  document.getElementById("sesPicker").classList.add("hidden");
-  document.getElementById("spOverlay").classList.remove("show");
-}
-
-/* ════ HABIT SETTINGS PANEL ════ */
-function openConf(hi){
-  S.openConf=S.openConf===hi?-1:hi;
-  renderTracker();
-}
-function saveConf(hi){
-  const typeEl=document.getElementById(`ct_${hi}`);
-  if(!typeEl)return;
-  const freqEl=document.getElementById(`cf_${hi}`);
-  const snEl=document.getElementById(`cs_${hi}`);
-  const wtEl=document.getElementById(`cw_${hi}`);
-  const h=S.habits[hi];
-  const newType=typeEl.value;
-  h.type=newType;
-  if(newType==="sessions"){
-    h.freq=Math.max(1,Math.min(20,freqEl?parseInt(freqEl.value)||1:h.freq||5));
-    h.snames=snEl?snEl.value.split(",").map(s=>s.trim()).filter(Boolean):(h.snames||[]);
-    delete h.wtarget;
-  } else if(newType==="weekly"){
-    h.wtarget=Math.max(1,Math.min(7,wtEl?parseInt(wtEl.value)||1:h.wtarget||5));
-    delete h.freq;delete h.snames;
-  } else {
-    delete h.freq;delete h.snames;delete h.wtarget;
-  }
-  S.openConf=-1;
-  save();renderAll();
-}
-
-/* ════ STATS ════ */
-function calcStats(){
-  const{month,year,habits,done}=S;
-  const idx=activeIdx();
-  const days=daysIn(month,year);
-  const de=elapsed(month,year);
-  const tod=new Date();
-
-  const hStats=habits.map((h,hi)=>{
-    const isActive=idx.includes(hi);
-    const t=hType(h);
-    let rate=0,ontimePct=0,latePct=0,weekHits=0,totalWeeks=0;
-
-    if(t==="sessions"){
-      const n=h.freq||1,total=de*n;
-      let c=0,ot=0,lt=0;
-      for(let d=1;d<=de;d++){
-        const v=done[hi+"-"+d];
-        if(Array.isArray(v)){c+=v.filter(s=>s>0).length;ot+=v.filter(s=>s===1).length;lt+=v.filter(s=>s===2).length;}
-      }
-      rate=total>0?Math.round(c/total*100):0;
-      ontimePct=c>0?Math.round(ot/c*100):0;
-      latePct=c>0?Math.round(lt/c*100):0;
-    } else {
-      const comp=Array.from({length:de},(_,d)=>isDayDoneFromDone(done,hi,d+1)).filter(Boolean).length;
-      rate=de>0?Math.round(comp/de*100):0;
-      if(t==="weekly"&&h.wtarget){
-        /* count complete weeks */
-        const wt=h.wtarget;
-        for(let wk=1;wk<=de;wk+=7){
-          const wend=Math.min(wk+6,de);
-          let wc=0;for(let d=wk;d<=wend;d++)if(isDayDoneFromDone(done,hi,d))wc++;
-          if(wend-wk+1>=wt){totalWeeks++;if(wc>=wt)weekHits++;}
-        }
-      }
-    }
-    let streak=0;
-    for(let d=de;d>=1;d--){if(isDayDone(hi,d))streak++;else break}
-    let maxS=0,cs=0;
-    for(let d=1;d<=days;d++){if(isDayDone(hi,d)){cs++;maxS=Math.max(maxS,cs)}else cs=0}
-    let lastRate=null;
-    try{
-      let lm=month-1,ly=year;if(lm<0){lm=11;ly--;}
-      const lraw=localStorage.getItem("ht-"+ly+"-"+lm);
-      if(lraw){
-        const lp=JSON.parse(lraw).done||{};const ld=daysIn(lm,ly);
-        if(t==="sessions"){
-          const n=h.freq||1,total=ld*n;
-          let c=0;for(let d=1;d<=ld;d++){const v=lp[hi+"-"+d];if(Array.isArray(v))c+=v.filter(s=>s>0).length;}
-          lastRate=total>0?Math.round(c/total*100):0;
-        } else {
-          const lc=Array.from({length:ld},(_,d)=>isDayDoneFromDone(lp,hi,d+1)).filter(Boolean).length;
-          lastRate=Math.round(lc/ld*100);
-        }
-      }
-    }catch(_){}
-    return{name:h.n,color:h.c,type:t,freq:h.freq,wtarget:h.wtarget,rate,ontimePct,latePct,weekHits,totalWeeks,streak,maxS,lastRate,isActive,idx:hi}
-  });
-
-  const activeHStats=hStats.filter(h=>h.isActive);
-  /* For daily totals, count a day as 1 if ANY active habit done (weighted by sessions ratio) */
-  const dailyTotals=Array.from({length:days},(_,d)=>{
-    return idx.filter(hi=>isDayDoneFromDone(done,hi,d+1)).length;
-  });
-  const maxPerDay=idx.length;
-  const perfectDays=Array.from({length:de},(_,d)=>dailyTotals[d]).filter(v=>v===maxPerDay&&v>0).length;
-  const zeroDays=Array.from({length:de},(_,d)=>dailyTotals[d]).filter(v=>v===0).length;
-  const wC=Array(7).fill(0),wT=Array(7).fill(0);
-  for(let d=1;d<=de;d++){
-    const dw=new Date(year,month,d).getDay();wT[dw]++;
-    idx.forEach(hi=>{if(isDayDoneFromDone(done,hi,d))wC[dw]++;});
-  }
-  const weeklyR=wT.map((t,i)=>t>0&&idx.length>0?Math.round(wC[i]/t/idx.length*100):0);
-  const overallRate=activeHStats.length>0?Math.round(activeHStats.reduce((s,h)=>s+h.rate,0)/activeHStats.length):0;
-  const bestStreak=activeHStats.length>0?activeHStats.reduce((a,b)=>a.streak>b.streak?a:b):null;
-  const isCurrMonth=month===tod.getMonth()&&year===tod.getFullYear();
-  const todayCount=isCurrMonth?idx.filter(hi=>isDayDone(hi,tod.getDate())).length:0;
-  const totalCheckIns=idx.reduce((sum,hi)=>{
-    const h=S.habits[hi];
-    if(hType(h)==="sessions"){let c=0;for(const k in done){if(k.startsWith(hi+"-")&&Array.isArray(done[k]))c+=done[k].filter(v=>v>0).length;}return sum+c;}
-    return sum+Object.keys(done).filter(k=>k.startsWith(hi+"-")&&done[k]).length;
-  },0);
-  return{hStats,activeHStats,dailyTotals,weeklyR,days,de,maxPerDay,overallRate,bestStreak,todayCount,isCurrMonth,perfectDays,zeroDays,totalCheckIns}
-}
-
-/* ════ INSIGHTS ════ */
-function genInsights(st){
-  const{activeHStats,overallRate,bestStreak,de,days,perfectDays,weeklyR}=st;
-  if(!activeHStats.length)return[];
-  const ins=[];
-  const best=activeHStats.reduce((a,b)=>a.rate>b.rate?a:b);
-  if(best.rate>0)ins.push({t:"ok",i:"🏆",h:"Best habit",b:`"${best.name}" — ${best.rate}% this month`});
-  if(bestStreak&&bestStreak.streak>=3)ins.push({t:"fire",i:"🔥",h:"Active streak",b:`${bestStreak.streak} days — "${bestStreak.name}"`});
-  const worst=activeHStats.reduce((a,b)=>a.rate<b.rate?a:b);
-  if(worst.rate<55&&de>4)ins.push({t:"warn",i:"⚠️",h:"Needs attention",b:`"${worst.name}" — only ${worst.rate}%`});
-  if(de<days&&overallRate>0)ins.push({t:"info",i:"📈",h:"Projection",b:`On pace for ~${overallRate}% this month`});
-  const improved=activeHStats.filter(h=>h.lastRate!==null&&h.rate>h.lastRate+5);
-  if(improved.length){const top=improved.reduce((a,b)=>(a.rate-a.lastRate)>(b.rate-b.lastRate)?a:b);ins.push({t:"ok",i:"📊",h:"Most improved",b:`"${top.name}" +${top.rate-top.lastRate}% vs last month`});}
-  if(perfectDays>0)ins.push({t:"fire",i:"⭐",h:"Perfect days",b:`${perfectDays} day${perfectDays>1?"s":""} with ALL habits done!`});
-  const prayerH=activeHStats.find(h=>h.type==="sessions"&&h.ontimePct>0);
-  if(prayerH)ins.push({t:"info",i:"🕌",h:"On-time sessions",b:`"${prayerH.name}": ${prayerH.ontimePct}% on time, ${prayerH.latePct}% late`});
-  const gymH=activeHStats.find(h=>h.type==="weekly"&&h.totalWeeks>0);
-  if(gymH)ins.push({t:gymH.weekHits/gymH.totalWeeks>=.7?"ok":"warn",i:"💪",h:"Weekly target",b:`"${gymH.name}": hit target ${gymH.weekHits}/${gymH.totalWeeks} weeks`});
-  const maxDow=weeklyR.indexOf(Math.max(...weeklyR));
-  if(weeklyR[maxDow]>0)ins.push({t:"info",i:"📅",h:"Strongest day",b:`${DOW[maxDow]} — ${weeklyR[maxDow]}% avg`});
-  return ins.slice(0,7);
-}
-
-/* ════ TRACKER RENDER ════ */
-function renderTracker(){
-  const{month,year,habits,done,notes,excuses}=S;
-  const days=daysIn(month,year);
-  const tod=new Date(),tD=tod.getDate(),tM=tod.getMonth(),tY=tod.getFullYear();
-  const isTM=month===tM&&year===tY;
-  const de=elapsed(month,year);
-
-  let hH=`<div class="sec">HABITS:</div>`;
-  habits.forEach((h,i)=>{
-    const t=hType(h);
-    /* type badge */
-    const badge=t==="sessions"?`<span class="htype s">${h.freq||1}×/day</span>`:t==="weekly"?`<span class="htype w">${h.wtarget||1}×/wk</span>`:"";
-    /* weekly progress */
-    let wprog="";
-    if(t==="weekly"&&h.wtarget&&isTM){
-      const wc=weekDoneCount(i,year,month,tD);
-      const hit=wc>=h.wtarget;
-      wprog=`<span class="wprog${hit?" hit":""}">${wc}/${h.wtarget}wk</span>`;
-    }
-    /* session today progress */
-    let sprogToday="";
-    if(t==="sessions"&&isTM){
-      const arr=getDoneVal(i,tD);
-      const done2=arr.filter(v=>v>0).length;
-      const ot=arr.filter(v=>v===1).length;
-      sprogToday=`<span class="wprog${done2===arr.length?" hit":""}">${done2}/${arr.length}</span>`;
-    }
-    hH+=`<div class="hr">
-      <span class="rnum" style="background:${h.c}">${i+1}</span>
-      <div class="dot" style="background:${h.c}" data-color="${i}" title="Change color"></div>
-      <input type="color" id="clr${i}" value="${h.c}" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none">
-      <span class="hn" data-edit="${i}" title="${esc(h.n)}">${esc(h.n)}</span>
-      ${badge}${wprog||sprogToday}
-      <button class="gbtn" data-conf="${i}" title="Settings">⚙</button>
-      <button class="dbtn" data-del="${i}">&times;</button>
-    </div>`;
-    /* settings panel */
-    if(S.openConf===i){
-      hH+=`<div class="sconf">
-        <label>Type</label>
-        <select id="ct_${i}" onchange="updateConfUI(${i})">
-          <option value="simple"${t==="simple"?" selected":""}>Simple (checkbox)</option>
-          <option value="sessions"${t==="sessions"?" selected":""}>Sessions (N× per day)</option>
-          <option value="weekly"${t==="weekly"?" selected":""}>Weekly target (N× per week)</option>
-        </select>
-        <div id="conf_extra_${i}" style="margin-top:8px">`;
-      if(t==="sessions"){
-        hH+=`<div class="sconf-row">
-          <div><label>Sessions per day</label><input type="number" id="cf_${i}" value="${h.freq||5}" min="1" max="20" style="width:60px"></div>
-          <div style="flex:1"><label>Session names (comma-separated)</label><input type="text" id="cs_${i}" value="${(h.snames||[]).join(", ")}" style="width:100%" placeholder="e.g. Fajr, Dhuhr, Asr, Maghrib, Isha"></div>
-        </div>`;
-      } else if(t==="weekly"){
-        hH+=`<div class="sconf-row">
-          <div><label>Days per week target</label><input type="number" id="cw_${i}" value="${h.wtarget||5}" min="1" max="7" style="width:60px"></div>
-        </div>`;
-      }
-      hH+=`</div>
-        <div class="sconf-row" style="margin-top:10px">
-          <button class="sconf-save" onclick="saveConf(${i})">Save</button>
-          <button class="sconf-cancel" onclick="S.openConf=-1;renderTracker()">Cancel</button>
-        </div>
-      </div>`;
-    }
-  });
-
-  hH+=`<div class="ar">
-    <input class="ai" id="nhi" placeholder="Add habit…" onkeydown="if(event.key==='Enter')addHabit()"/>
-    <button class="abtn" onclick="addHabit()">+</button>
-  </div>
-  <div style="margin-top:18px" id="compList">`;
-  hH+=renderCompletionHTML(habits,done,days,de);
-  hH+=`</div>`;
-
-  const colH=document.getElementById("colH");
-  colH.innerHTML=hH;
-
-  colH.querySelectorAll("[data-del]").forEach(b=>b.addEventListener("click",()=>{
-    const i=+b.dataset.del;
-    S.habits.splice(i,1);
-    S.filterIdx=S.filterIdx.filter(x=>x!==i).map(x=>x>i?x-1:x);
-    if(S.hmHabit===i)S.hmHabit=-1; else if(S.hmHabit>i)S.hmHabit--;
-    if(S.openConf===i)S.openConf=-1; else if(S.openConf>i)S.openConf--;
-    save();renderAll();
-  }));
-  colH.querySelectorAll("[data-edit]").forEach(sp=>sp.addEventListener("click",()=>{
-    const i=+sp.dataset.edit;
-    const inp=document.createElement("input");inp.className="hni";inp.value=S.habits[i].n;
-    sp.replaceWith(inp);inp.focus();
-    const fin=()=>{if(inp.value.trim())S.habits[i].n=inp.value.trim();save();renderAll();};
-    inp.addEventListener("blur",fin);inp.addEventListener("keydown",e=>e.key==="Enter"&&fin());
-  }));
-  colH.querySelectorAll("[data-conf]").forEach(b=>b.addEventListener("click",()=>openConf(+b.dataset.conf)));
-  colH.querySelectorAll("[data-color]").forEach(dot=>{
-    const i=+dot.dataset.color;const ci=document.getElementById("clr"+i);
-    dot.addEventListener("click",()=>ci.click());
-    ci.addEventListener("input",e=>{S.habits[i].c=e.target.value;dot.style.background=e.target.value;});
-    ci.addEventListener("change",e=>{S.habits[i].c=e.target.value;save();renderAll();});
-  });
-
-  renderSVG();
-
-  document.getElementById("colN").innerHTML=`
-  <div class="sec">NOTE &amp; REFLECTION</div>
-  <textarea class="nota" id="nta" rows="6" placeholder="Your thoughts…">${esc(notes)}</textarea>
-  <div class="sec" style="margin-top:20px">EXCUSES I OVERCAME</div>
-  <textarea class="nota" id="eta" rows="5" placeholder="What did you push through?" style="color:#C8442A">${esc(excuses)}</textarea>
-  <div class="qbox" style="margin-top:18px">
-    <div class="qt">"إذا وقعت، ارجع للانتظام"<br><span style="font-size:11px;color:#888">If you fall, return to discipline.</span></div>
-  </div>`;
-  document.getElementById("nta").oninput=e=>{S.notes=e.target.value;save();};
-  document.getElementById("eta").oninput=e=>{S.excuses=e.target.value;save();};
-}
-
-function renderCompletionHTML(habits,done,days,de){
-  let html=`<div style="font-weight:bold;text-transform:uppercase;letter-spacing:1px;font-size:9px;color:#888;border-bottom:1px solid #C5BAA8;padding-bottom:3px;margin-bottom:8px">COMPLETION THIS MONTH</div>`;
-  habits.forEach((h,i)=>{
-    const t=hType(h);
-    let pct=0;
-    if(t==="sessions"){
-      const n=h.freq||1,total=de*n;let c=0;
-      for(let d=1;d<=de;d++){const v=done[i+"-"+d];if(Array.isArray(v))c+=v.filter(s=>s>0).length;}
-      pct=total>0?Math.round(c/total*100):0;
-    } else {
-      const cnt=Array.from({length:days},(_,d)=>isDayDoneFromDone(done,i,d+1)).filter(Boolean).length;
-      pct=de>0?Math.round(cnt/de*100):0;
-    }
-    html+=`<div style="margin-bottom:7px">
-    <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px;color:#888">
-      <span style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(h.n)}</span>
-      <span style="font-weight:bold;color:#1A1A1A">${pct}%</span>
     </div>
-    <div class="pbg"><div class="pb" style="width:${pct}%;background:${h.c}"></div></div></div>`;
-  });
-  return html;
+    <div class="rings">${ring(st.pct,'الجدول')}${ring(st.hPct,'العادات')}${ring(tp,'المهام')}</div>
+  </section>`;
 }
-function renderTrackerCompletion(){
-  const{habits,done}=S;const days=daysIn(S.month,S.year);const de=elapsed(S.month,S.year);
-  const el=document.getElementById("compList");
-  if(el)el.innerHTML=renderCompletionHTML(habits,done,days,de);
-}
-
-function updateConfUI(i){
-  const t=document.getElementById(`ct_${i}`).value;
-  const ex=document.getElementById(`conf_extra_${i}`);
-  if(!ex)return;
-  if(t==="sessions"){
-    ex.innerHTML=`<div class="sconf-row">
-      <div><label>Sessions per day</label><input type="number" id="cf_${i}" value="${S.habits[i].freq||5}" min="1" max="20" style="width:60px"></div>
-      <div style="flex:1"><label>Session names (comma-separated)</label><input type="text" id="cs_${i}" value="${(S.habits[i].snames||[]).join(", ")}" style="width:100%" placeholder="e.g. Fajr, Dhuhr, Asr, Maghrib, Isha"></div>
-    </div>`;
-  } else if(t==="weekly"){
-    ex.innerHTML=`<div class="sconf-row"><div><label>Days per week target</label><input type="number" id="cw_${i}" value="${S.habits[i].wtarget||5}" min="1" max="7" style="width:60px"></div></div>`;
-  } else {
-    ex.innerHTML="";
-  }
-}
-
-function renderSVG(){
-  const{month,year,habits,done}=S;
-  const days=daysIn(month,year);
-  /* ── Start at 12 o'clock (deg=0=top). Small gap there for number badges ── */
-  const NUMGAP=12; /* degrees reserved at top (centered on 0) for number badges */
-  const SS=NUMGAP/2;        /* day-1 starts here (just clockwise of top) */
-  const RDEG=360-NUMGAP;    /* degrees available for day cells */
-  const GAP=1.0;            /* gap between adjacent cells */
-  const seg=RDEG/days;
-  const tod=new Date(),tD=tod.getDate(),tM=tod.getMonth(),tY=tod.getFullYear();
-  const isTM=month===tM&&year===tY;
-  const cx=220,cy=220,IR=52,RA=148;
-  const RW=habits.length>0?RA/habits.length:24;const LR=IR+RA+15;
-  const svg=document.getElementById("svg");
-  let s=`<circle cx="${cx}" cy="${cy}" r="216" fill="#FEFAF0" stroke="#C5BAA8" stroke-width="0.5"/>
-  <circle cx="${cx}" cy="${cy}" r="${IR-5}" fill="none" stroke="#C5BAA8" stroke-width="0.5" stroke-dasharray="3 3"/>`;
-  const N=habits.length;
-  habits.forEach((h,hi)=>{
-    const ri=N-1-hi; /* REVERSED: hi=0 → outermost ring */
-    const r2=IR+RW*(ri+1),r1=r2-RW+1.5;
-    /* ── Day cells ── */
-    for(let di=0;di<days;di++){
-      const d=di+1,sl=SS+di*seg+GAP/2,el=SS+(di+1)*seg-GAP/2;
-      const isFuture=isTM&&d>tD;const isT=isTM&&d===tD;
-      const fill=cellColor(h,hi,d,isFuture,isT);
-      const stroke=(isT&&!isDayDone(hi,d))?"#3B82F6":"#C5BAA8",sw=isT?.9:.4;
-      s+=`<path class="cell" d="${arcP(cx,cy,r1,r2,sl,el)}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" data-hi="${hi}" data-day="${d}"/>`;
-    }
-    /* ── Number badge at top (0°) in the gap ── */
-    const rm=(r1+r2)/2;               /* middle radius of this ring */
-    const[bx,by]=p2c(cx,cy,rm,0);     /* 0° = exactly 12 o'clock */
-    const br=Math.min(RW*0.38,7.5);   /* badge radius, scales with ring width */
-    const fs=Math.max(6,Math.min(br*1.35,10)); /* font size */
-    s+=`<circle cx="${bx.toFixed(1)}" cy="${by.toFixed(1)}" r="${br.toFixed(1)}" fill="${h.c}" stroke="#FEFAF0" stroke-width="1.5"/>`;
-    s+=`<text x="${bx.toFixed(1)}" y="${by.toFixed(1)}" text-anchor="middle" dominant-baseline="central" font-size="${fs.toFixed(1)}" font-weight="bold" fill="#fff" pointer-events="none">${hi+1}</text>`;
-  });
-  /* ── Day number labels (outer ring) ── */
-  for(let di=0;di<days;di++){
-    const d=di+1,a=SS+di*seg+seg/2;const[x,y]=p2c(cx,cy,LR,a);const isT=isTM&&d===tD;
-    s+=`<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="middle" dominant-baseline="central" font-size="${days>29?8:9.5}" font-weight="${isT?"bold":"normal"}" fill="${isT?"#2563EB":"#888"}">${d}</text>`;
-  }
-  s+=`<text x="${cx}" y="${cy-10}" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="bold" letter-spacing="2" fill="#555">${MONTHS[month].slice(0,3).toUpperCase()}</text>
-  <text x="${cx}" y="${cy+10}" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#888">${year}</text>`;
-  svg.innerHTML=s;
-  svg.querySelectorAll("[data-hi]").forEach(p=>p.addEventListener("click",()=>{
-    const hi=+p.dataset.hi,day=+p.dataset.day;
-    const h=S.habits[hi];
-    if(hType(h)==="sessions"){openSesPicker(hi,day);return;}
-    S.done[hi+"-"+day]=!isDayDone(hi,day);
-    save();renderAll();
-  }));
-}
-
-/* ════ FILTER BAR ════ */
-function renderFilterBar(){
-  const{habits,filterIdx,annualYear}=S;
-  const allOn=filterIdx.length===0;
-  let html=`<span class="fbar-label">Filter:</span><div class="fbar-chips">`;
-  html+=`<button class="fchip${allOn?" on":""}" style="${allOn?"background:#1A1A1A":""}" onclick="setFilter(-1)">All</button>`;
-  habits.forEach((h,i)=>{
-    const on=filterIdx.includes(i);
-    const badge=hType(h)==="sessions"?` <span style="opacity:.7">${h.freq}×</span>`:hType(h)==="weekly"?` <span style="opacity:.7">${h.wtarget}×wk</span>`:"";
-    html+=`<button class="fchip${on?" on":""}" style="${on?"background:"+h.c+";border-color:"+h.c:""}" onclick="setFilter(${i})">${esc(h.n)}${badge}</button>`;
-  });
-  html+=`</div><div class="fbar-sep"></div>
-  <div class="fbar-year">
-    <span class="fbar-label">Annual:</span>
-    <button class="fynbtn" onclick="shiftAnnualYear(-1)">&#8249;</button>
-    <span class="fylbl" id="annYrLbl">${annualYear}</span>
-    <button class="fynbtn" onclick="shiftAnnualYear(1)">&#8250;</button>
+function toolbar(withView){
+  const w=state.weeks[ui.week],custom=!!(w&&w.plan);
+  return `<div class="toolbar">
+    ${withView?`<div class="seg" role="group" aria-label="طريقة العرض"><button data-view="week" aria-pressed="${ui.view==='week'}">الأسبوع كله</button><button data-view="day" aria-pressed="${ui.view==='day'}">يوم بيوم</button></div>`:''}
+    <span class="status ${custom?'custom':''}"><i></i>${custom?'خطة خاصة بالأسبوع ده':'ماشي على الجدول الأساسي'}</span>
+    <span class="grow"></span>
+    <button class="btn ${ui.edit?'on':''}" data-act="edit">${ui.edit?ICON.check+' خلصت تعديل':ICON.edit+' تعديل'}</button>
+    <button class="btn primary" data-act="print-week">${ICON.print} طباعة / PDF</button>
   </div>`;
-  document.getElementById("filterBar").innerHTML=html;
 }
-function setFilter(idx){
-  if(idx===-1){S.filterIdx=[];}
-  else{
-    if(!Number.isInteger(idx)||idx<0||idx>=S.habits.length)return;
-    const pos=S.filterIdx.indexOf(idx);
-    if(pos===-1)S.filterIdx.push(idx);else S.filterIdx.splice(pos,1);
-    if(S.filterIdx.length===S.habits.length)S.filterIdx=[];
-  }
-  renderDashboard();
-}
-function shiftAnnualYear(d){
-  S.annualYear+=d;
-  const upd=(id,txt)=>{const el=document.getElementById(id);if(el)el.textContent=txt;};
-  upd("annYrLbl",S.annualYear);
-  upd("yearLabel",S.annualYear);
-  upd("mVsMTitle",`Month vs month — ${S.annualYear}`);
-  renderAnnualCharts();
-  renderHeatmap();
+function editPanel(){
+  const w=state.weeks[ui.week],custom=!!(w&&w.plan),cur=w&&w.theme;
+  return `<div class="editpanel">
+    <div class="ep-head"><i></i>وضع التعديل شغال</div>
+    <div class="ep-row"><span class="ep-label">التعديل يتطبق على</span>
+      <div class="radio-seg"><label><input type="radio" name="scope" value="week" ${ui.scope==='week'?'checked':''}>الأسبوع ده بس</label>
+      <label><input type="radio" name="scope" value="master" ${ui.scope==='master'?'checked':''}>الجدول الأساسي (من الأسبوع ده ورايح)</label></div></div>
+    <div class="ep-row"><span class="ep-label">شكل الأسبوع</span>
+      <div class="swatches"><button class="sw-auto" data-theme-pick="" aria-pressed="${!cur}">تلقائي</button>
+      ${THEMES.map(t=>`<button class="sw" style="--a:${t.a};--b:${t.b}" data-theme-pick="${t.id}" aria-pressed="${cur===t.id}" title="${t.name}" aria-label="${t.name}"></button>`).join('')}</div></div>
+    <div class="ep-row"><span class="ep-label">أدوات الأسبوع</span>
+      <button class="btn sm" data-act="addrow">${ICON.plus} إضافة فترة</button>
+      ${ui.week>1?'<button class="btn sm" data-act="copyprev">انسخ خطة الأسبوع اللي فات</button>':''}
+      ${custom?'<button class="btn sm" data-act="revert">رجّعه للجدول الأساسي</button><button class="btn sm" data-act="promote">اعتمده كجدول أساسي</button>':''}</div>
+    <div class="ep-row"><p class="hint">عدّل العنوان والوصف من الشريط اللي فوق مباشرة، وغيّر الأوقات من عمود الوقت، واضغط على أي خانة تعدّلها. تعديل الجدول الأساسي بيطبّق على الأسابيع الجاية بس، والأسابيع اللي فاتت بتفضل زي ما هي عشان أرقام الداشبورد متتغيرش.</p></div>
+  </div>`;
 }
 
-/* ════ DASHBOARD ════ */
-function renderDashboard(){
-  const{month,year,habits}=S;
-  const st=calcStats();
-  const{hStats,activeHStats,dailyTotals,weeklyR,days,de,maxPerDay,overallRate,bestStreak,todayCount,isCurrMonth,perfectDays,zeroDays,totalCheckIns}=st;
-
-  for(let i=0;i<habits.length+5;i++)destroyChart("ch"+i);
-  ["cDaily","cWeekly","cTrend","cMonthVsMonth","cWeekOW","cDayOfWeekYear","cRunning","cRadar"].forEach(id=>destroyChart(id));
-
-  renderFilterBar();
-
-  /* Summary row 1 */
-  const bsName=bestStreak?bestStreak.name.length>14?bestStreak.name.slice(0,14)+"…":bestStreak.name:"—";
-  document.getElementById("sumRow").innerHTML=`
-  <div class="sc teal"><div class="slbl">${isCurrMonth?"Today":"That day"}</div><div class="sval">${todayCount}<span style="font-size:16px;color:#888">/${activeIdx().length}</span></div><div class="ssub">${isCurrMonth?"habits done today":"N/A for past months"}</div></div>
-  <div class="sc blue"><div class="slbl">This month</div><div class="sval">${overallRate}%</div><div class="ssub">overall completion</div></div>
-  <div class="sc amber"><div class="slbl">Best streak</div><div class="sval">${bestStreak?bestStreak.streak:0}</div><div class="ssub">${bsName}</div></div>
-  <div class="sc purple"><div class="slbl">Habits</div><div class="sval">${habits.length}</div><div class="ssub">${activeIdx().length} in filter</div></div>`;
-
-  /* Summary row 2 */
-  const yearRate=(()=>{let sm=0,c=0;for(let m=0;m<12;m++){const r=monthRate(year,m);if(r!==null){sm+=r;c++;}}return c?Math.round(sm/c):0})();
-  let lm2=month-1,ly2=year;if(lm2<0){lm2=11;ly2--;}
-  const prevRate=monthRate(ly2,lm2);
-  const diff=prevRate!==null?overallRate-prevRate:null;
-  const diffHtml=diff===null?"—":diff>0?`<span class="pill up">+${diff}%</span>`:diff<0?`<span class="pill dn">${diff}%</span>`:`<span class="pill eq">Same</span>`;
-  document.getElementById("sumRow2").innerHTML=`
-  <div class="sc green"><div class="slbl">Perfect days</div><div class="sval">${perfectDays}</div><div class="ssub">all active done</div></div>
-  <div class="sc red"><div class="slbl">Zero days</div><div class="sval">${zeroDays}</div><div class="ssub">nothing done</div></div>
-  <div class="sc teal"><div class="slbl">Total sessions</div><div class="sval">${totalCheckIns}</div><div class="ssub">check-ins this month</div></div>
-  <div class="sc blue"><div class="slbl">Year avg</div><div class="sval">${yearRate}%</div><div class="ssub">vs last month: ${diffHtml}</div></div>`;
-
-  /* Insights */
-  const ins=genInsights(st);
-  document.getElementById("insRow").innerHTML=ins.length
-    ?ins.map(({t,i,h,b})=>`<div class="ins ${t}"><span class="ico">${i}</span><div><strong>${h}</strong>${b}</div></div>`).join("")
-    :`<div class="ins info"><span class="ico">💡</span><div><strong>Getting started</strong>Start tracking to see insights.</div></div>`;
-
-  /* Daily chart */
-  document.getElementById("dailyTitle").textContent=`Daily completions — ${MONTHS[month]} ${year}`;
-  const dLabels=Array.from({length:days},(_,i)=>i+1);
-  const dColors=dailyTotals.map(v=>v===maxPerDay&&v>0?"#4EC9C4":v>maxPerDay/2?"#60A5FA":"#DDD5C2");
-  mkChart("cDaily","bar",{labels:dLabels,datasets:[{data:dailyTotals,backgroundColor:dColors,borderRadius:3,borderSkipped:false}]},{
-    responsive:true,maintainAspectRatio:false,animation:{duration:500},
-    plugins:{legend:{display:false},tooltip:{callbacks:{title:i=>`Day ${i[0].label}`,label:i=>`${i.raw}/${maxPerDay} habits`}}},
-    scales:{x:{grid:{color:"rgba(0,0,0,0.04)"},ticks:{font:{size:9},color:"#888"}},y:{beginAtZero:true,max:Math.max(maxPerDay,1),ticks:{stepSize:1,font:{size:9},color:"#888"},grid:{color:"rgba(0,0,0,0.06)"}}}
-  });
-
-  /* Habit cards */
-  const idx=activeIdx();
-  document.getElementById("habGrid").innerHTML=hStats.map((h,hi)=>{
-    const trend=h.lastRate===null?"":h.rate>h.lastRate+3?`<span class="trend-up">↑${h.rate-h.lastRate}%</span>`:h.rate<h.lastRate-3?`<span class="trend-dn">↓${h.lastRate-h.rate}%</span>`:`<span style="color:#888">→</span>`;
-    const miniCal=Array.from({length:days},(_,d)=>{
-      const done2=isDayDoneFromDone(S.done,h.idx,d+1);
-      const ratio=dayRatio(h.idx,d+1);
-      const isToday=new Date().getMonth()===month&&new Date().getFullYear()===year&&new Date().getDate()===d+1;
-      const bg=done2?blendCol("#DDD5C2",h.color,Math.max(ratio,.3)):isToday?"#DBEAFE":"#E0D8C8";
-      return`<div class="md${isToday?" td":""}" style="background:${bg}" title="Day ${d+1}"></div>`;
-    }).join("");
-    /* type-specific extra stats */
-    let extra="";
-    if(h.type==="sessions"){
-      extra=`<div class="sp-stats"><span class="sp-stat g">✅ ${h.ontimePct}% on time</span><span class="sp-stat o">⏰ ${h.latePct}% late</span></div>`;
-    } else if(h.type==="weekly"&&h.totalWeeks>0){
-      extra=`<div class="sp-stats"><span class="sp-stat g">💪 ${h.weekHits}/${h.totalWeeks} weeks on target</span></div>`;
+function slotHtml(c,sid,i,done,interactive){
+  const cat=catOf(c.c),tag=interactive?'button':'div';
+  return `<${tag} class="slot ${done?'done':''}" style="--c:${cat.color}" ${interactive?`data-cell="${sid}|${i}" aria-pressed="${done}" title="${ui.edit?'اضغط للتعديل':'اضغط لما تخلّصها'}"`:''}><b><bdi>${esc(c.t)}</bdi>${c.star?'<span class="star">★</span>':''}</b>${c.s?`<em>${esc(c.s)}</em>`:''}<i class="tick" aria-hidden="true">✓</i></${tag}>`;
+}
+function scheduleTable(n,interactive){
+  const plan=getPlan(n),w=state.weeks[n]||{done:{}},done=w.done||{};
+  const slots=[...plan.slots].sort((a,b)=>toMin(a.start)-toMin(b.start));
+  const isCur=isThisWeek(n),ti=todayIdx(),ed=interactive&&ui.edit;
+  let h=`<table class="tt"><thead><tr><th class="time" style="font-size:.8rem;color:var(--muted);font-weight:500">الوقت</th>`;
+  DAYS.forEach((d,i)=>h+=`<th class="${isCur&&i===ti?'is-today':''}" ${isCur&&i===ti?'id="todayCol"':''}>${d}<small>${dayDate(n,i)}</small>${isCur&&i===ti&&interactive?'<span class="today-chip">النهارده</span>':''}</th>`);
+  h+='</tr></thead><tbody>';
+  if(!slots.length)h+=`<tr><td colspan="8"><div class="empty"><b>مفيش فترات في الأسبوع ده</b>اضغط "تعديل" وبعدين "إضافة فترة".</div></td></tr>`;
+  slots.forEach(s=>{
+    h+=ed?`<tr><th class="time" scope="row"><div class="tedit"><label>من<input type="time" data-tslot="${s.id}" data-tf="start" value="${s.start}"></label><label>إلى<input type="time" data-tslot="${s.id}" data-tf="end" value="${s.end}"></label><button class="del" data-delslot="${s.id}">حذف الفترة</button></div></th>`
+      :`<tr><th class="time" scope="row"><b>${fmt12(s.start)}</b><span class="to">إلى ${fmt12(s.end)}</span><span class="du">${durLabel(dur(s))}</span></th>`;
+    const cells=plan.cells[s.id]||[];
+    for(let i=0;i<7;i++){
+      const c=cells[i],cls=isCur&&i===ti?'is-today':'';
+      if(!c||!c.t){h+=`<td class="${cls}">${ed?`<button class="addcell" data-cell="${s.id}|${i}">+ إضافة</button>`:''}</td>`;continue}
+      h+=`<td class="${cls}">${slotHtml(c,s.id,i,!!done[s.id+'_'+i],interactive)}</td>`;
     }
-    const typeBadge=h.type==="sessions"?`<span class="htype s">${h.freq}×/day</span>`:h.type==="weekly"?`<span class="htype w">${h.wtarget}×/wk</span>`:"";
-    return`<div class="hc${h.isActive?"":" dimmed"}">
-      <div class="hc-top">
-        <div class="hc-ring"><canvas id="ch${hi}"></canvas><div class="hc-pct">${h.rate}%</div></div>
-        <div class="hc-meta">
-          <div class="hc-name" title="${esc(h.name)}">${esc(h.name)} ${typeBadge}</div>
-          <div class="hc-row"><span>Streak</span><b>${h.streak} days</b></div>
-          <div class="hc-row"><span>Best streak</span><b>${h.maxS} days</b></div>
-          <div class="hc-row"><span>vs last month</span>${trend||"<span style='color:#888'>—</span>"}</div>
-          ${extra}
-        </div>
-      </div>
-      <div class="minical">${miniCal}</div>
-    </div>`;
-  }).join("");
-
-  hStats.forEach((h,hi)=>{
-    mkChart("ch"+hi,"doughnut",{datasets:[{data:[h.rate,100-h.rate],backgroundColor:[h.color,"#E8E0D0"],borderWidth:0,borderRadius:2}]},
-      {responsive:false,cutout:"72%",animation:{duration:700,delay:hi*60},plugins:{legend:{display:false},tooltip:{enabled:false}}});
+    h+='</tr>';
   });
-
-  /* Habit comparison bars — show on-time vs late for sessions */
-  document.getElementById("habCompBars").innerHTML=activeHStats.length
-    ?activeHStats.map(h=>{
-      const lateW=h.type==="sessions"?Math.round(h.rate*h.latePct/100):0;
-      const ontimeW=h.rate-lateW;
-      return`<div class="hbar-row">
-        <div class="hbar-name" title="${esc(h.name)}">${esc(h.name)}</div>
-        <div class="hbar-track" style="overflow:hidden;border-radius:6px">
-          <div style="display:flex;height:100%">
-            <div style="width:${ontimeW}%;background:${h.color};border-radius:6px 0 0 6px;flex-shrink:0"></div>
-            ${lateW>0?`<div style="width:${lateW}%;background:#FB923C;flex-shrink:0"></div>`:""}
-          </div>
-        </div>
-        <div class="hbar-pct">${h.rate}%${lateW>0?`<span style="font-size:9px;color:#B45309"> (${lateW}%⏰)</span>`:""}</div>
-      </div>`;}).join("")
-    :`<div style="color:#aaa;font-size:12px;padding:12px 0">No habits in filter.</div>`;
-
-  /* Running average */
-  const runData=dailyTotals.map((v,i,arr)=>{
-    const win=arr.slice(Math.max(0,i-6),i+1);
-    const maxP=maxPerDay*win.length;
-    return maxP>0?Math.round(win.reduce((a,b)=>a+b,0)/maxP*100):0;
-  });
-  mkChart("cRunning","line",{
-    labels:dLabels,
-    datasets:[
-      {label:"Daily",data:dailyTotals.map(v=>maxPerDay>0?Math.round(v/maxPerDay*100):0),backgroundColor:"rgba(78,201,196,0.08)",borderColor:"rgba(78,201,196,0.3)",borderWidth:1,fill:true,pointRadius:0,tension:.3},
-      {label:"7-day avg",data:runData,backgroundColor:"transparent",borderColor:"#4EC9C4",borderWidth:2.5,fill:false,pointRadius:0,tension:.4}
-    ]
-  },{
-    responsive:true,maintainAspectRatio:false,animation:{duration:600},
-    plugins:{legend:{display:true,position:"top",labels:{font:{size:9},boxWidth:10,padding:8}},tooltip:{callbacks:{label:i=>`${i.dataset.label}: ${i.raw}%`}}},
-    scales:{x:{grid:{display:false},ticks:{font:{size:9},color:"#888"}},y:{beginAtZero:true,max:100,ticks:{callback:v=>v+"%",font:{size:9},color:"#888"},grid:{color:"rgba(0,0,0,0.05)"}}}
-  });
-
-  /* Radar */
-  const radarWrap=document.getElementById("radarWrap");
-  radarWrap.innerHTML=`<canvas id="cRadar"></canvas>`;
-  if(activeHStats.length>=3){
-    mkChart("cRadar","radar",{
-      labels:activeHStats.map(h=>h.name.length>12?h.name.slice(0,12)+"…":h.name),
-      datasets:[{data:activeHStats.map(h=>h.rate),backgroundColor:"rgba(78,201,196,0.15)",borderColor:"#4EC9C4",borderWidth:2,pointBackgroundColor:activeHStats.map(h=>h.color),pointRadius:4}]
-    },{
-      responsive:true,maintainAspectRatio:false,animation:{duration:700},plugins:{legend:{display:false}},
-      scales:{r:{beginAtZero:true,max:100,ticks:{stepSize:25,font:{size:8},color:"#aaa"},grid:{color:"rgba(0,0,0,0.08)"},pointLabels:{font:{size:10},color:"#555"}}}
-    });
-  } else {
-    radarWrap.innerHTML=`<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#aaa;font-size:12px">Select 3+ habits to see radar</div>`;
+  if(ed)h+=`<tr><td class="addrowcell" colspan="8"><button class="addrowbtn" data-act="addrow">+ إضافة فترة جديدة تحت</button></td></tr>`;
+  const st=weekStats(n);
+  h+=`</tbody><tfoot><tr><th class="time">إنجاز اليوم</th>${st.day.map((d,i)=>{const p=d.p?Math.round(d.d/d.p*100):0;return `<td class="${isCur&&i===ti?'is-today':''}">${d.p?`<div class="minibar"><i style="width:${p}%"></i></div><span>${p}%</span>`:'<span>—</span>'}</td>`}).join('')}</tr></tfoot></table>`;
+  return h;
+}
+function dayView(n){
+  const plan=getPlan(n),w=state.weeks[n]||{done:{}},done=w.done||{},st=weekStats(n),isCur=isThisWeek(n),ti=todayIdx(),i=ui.day,ed=ui.edit;
+  let h=`<div class="daychips" role="group" aria-label="اختار اليوم">${DAYS.map((d,k)=>{const p=st.day[k].p?Math.round(st.day[k].d/st.day[k].p*100):0;
+    return `<button class="daychip ${isCur&&k===ti?'today':''}" data-day="${k}" aria-pressed="${k===i}"><b>${d}</b><span>${dayDate(n,k)}</span><div class="dp"><i style="width:${p}%"></i></div></button>`}).join('')}</div>`;
+  const slots=[...plan.slots].sort((a,b)=>toMin(a.start)-toMin(b.start));
+  let rows='';
+  slots.forEach(s=>{const c=(plan.cells[s.id]||[])[i];
+    if(!c||!c.t){if(ed)rows+=`<div class="tl-row"><div class="tl-time"><b>${fmt12(s.start)}</b><span>إلى ${fmt12(s.end)}</span></div><button class="addcell" data-cell="${s.id}|${i}">+ إضافة</button></div>`;return}
+    rows+=`<div class="tl-row"><div class="tl-time"><b>${fmt12(s.start)}</b><span>إلى ${fmt12(s.end)}</span></div>${slotHtml(c,s.id,i,!!done[s.id+'_'+i],true)}</div>`});
+  h+=`<div class="timeline">${rows||`<div class="empty"><b>يوم ${DAYS[i]} فاضي</b>مفيش حاجة متخططة. ارتاح أو ضيف حاجة من وضع التعديل.</div>`}</div>`;
+  if(ed)h+=`<div style="margin-top:10px"><button class="addrowbtn" data-act="addrow">+ إضافة فترة جديدة</button></div>`;
+  return h;
+}
+function todosHtml(n,interactive){
+  const w=state.weeks[n]||{},list=w.todos||[];
+  let h='';
+  if(!list.length)h+=`<p class="hint">مفيش مهام لسه. ضيف أي حاجة لازم تتعمل الأسبوع ده.</p>`;
+  [...list].sort((a,b)=>(a.done-b.done)||((a.day??9)-(b.day??9))).forEach(t=>{
+    h+=`<div class="todo ${t.done?'done':''}">${interactive?`<input type="checkbox" class="chk" data-todo="${t.id}" ${t.done?'checked':''} aria-label="${esc(t.t)}">`:`<span>${t.done?'✓':'○'}</span>`}
+    <span class="tt-t">${esc(t.t)}</span>${t.day!=null&&t.day!==''?`<span class="dtag">${DAYS[t.day]}</span>`:''}${interactive?`<button class="xbtn" data-deltodo="${t.id}" aria-label="حذف المهمة">✕</button>`:''}</div>`});
+  if(interactive){
+    h+=`<div class="todoadd"><input type="text" id="tdText" placeholder="مهمة جديدة… مثلاً: حل امتحان CMA تجريبي"><select id="tdDay" aria-label="اليوم"><option value="">أي يوم</option>${DAYS.map((d,i)=>`<option value="${i}">${d}</option>`).join('')}</select><button class="btn primary" data-act="addtodo">${ICON.plus} إضافة</button></div>`;
+    const left=list.filter(t=>!t.done).length;
+    if(left&&n<state.weeksCount)h+=`<button class="btn sm ghost" data-act="carrytodo" style="margin-top:10px">انقل ${left} ${left===1?'مهمة مخلصتش':'مهام مخلصتش'} للأسبوع الجاي</button>`;
   }
+  return h;
+}
+function legend(){return `<div class="legend">${state.cats.map(c=>`<span><i style="background:${c.color}"></i>${esc(c.name)}</span>`).join('')}<span><b class="star" style="margin:0">★</b>أولوية</span></div>`}
 
-  /* Weekly pattern */
-  mkChart("cWeekly","bar",{labels:DOW,datasets:[{data:weeklyR,backgroundColor:weeklyR.map(v=>v>=75?"#4EC9C4":v>=50?"#60A5FA":"#DDD5C2"),borderRadius:4,borderSkipped:false}]},{
-    responsive:true,maintainAspectRatio:false,animation:{duration:600},
-    plugins:{legend:{display:false},tooltip:{callbacks:{label:i=>`${i.raw}% completion`}}},
-    scales:{x:{grid:{display:false},ticks:{font:{size:10},color:"#888"}},y:{beginAtZero:true,max:100,ticks:{callback:v=>v+"%",font:{size:9},color:"#888"},grid:{color:"rgba(0,0,0,0.05)"}}}
+function quoteCard(n,interactive){
+  const Q=state.quotes||[];if(!Q.length)return interactive&&ui.edit?`<figure class="quote"><div class="q-edit"><button class="btn sm" data-act="addquote">${ICON.plus} إضافة وصية جديدة</button></div></figure>`:'';
+  const i=(((n-1)+(interactive?ui.qOff:0))%Q.length+Q.length)%Q.length;
+  return `<figure class="quote">
+    <span class="q-mark" aria-hidden="true">”</span>
+    <div class="q-top"><span class="q-label">${esc(state.quotesTitle||'وصايا غالية')}</span><span class="q-count">${i+1} / ${Q.length}</span></div>
+    <blockquote ${interactive&&ui.edit?`contenteditable="true" data-qidx="${i}" spellcheck="false"`:''}>${esc(Q[i])}</blockquote>
+    ${interactive&&ui.edit?`<div class="q-edit"><button class="btn sm" data-act="addquote">${ICON.plus} إضافة وصية جديدة</button>${Q.length>1?`<button class="btn sm danger" data-delquote="${i}">حذف الوصية دي</button>`:''}<p class="hint">اضغط على نص الوصية وعدّل عليه مباشرة، وبيتحفظ أول ما تضغط برّه.</p></div>`:''}
+    ${interactive&&Q.length>1?`<div class="q-nav"><button class="qbtn" data-act="qprev" aria-label="الوصية السابقة">${ICON.prev}</button><div class="q-dots">${Q.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join('')}</div><button class="qbtn" data-act="qnext" aria-label="الوصية التالية">${ICON.next}</button></div>`:''}
+  </figure>`;
+}
+function viewSchedule(){
+  const w=state.weeks[ui.week]||{},list=w.todos||[];
+  let h=hero()+quoteCard(ui.week,true)+toolbar(true);
+  if(ui.edit)h+=editPanel();
+  h+=legend();
+  h+=ui.view==='day'?dayView(ui.week):`<div class="board"><div class="scroller">${scheduleTable(ui.week,true)}</div></div>`;
+  if(!ui.edit)h+=`<p class="hint" style="margin-top:10px">اضغط على أي خانة لما تخلّصها عشان تتسجل في المتابعة.</p>`;
+  h+=`<div class="sec"><h2>حاجات لازم أعملها</h2><span>${list.filter(t=>t.done).length} من ${list.length} خلصت</span></div><div class="card">${todosHtml(ui.week,true)}</div>`;
+  return h;
+}
+function habitsTable(n,interactive){
+  const list=habitsFor(n),w=state.weeks[n]||{habits:{}},hb=w.habits||{},ed=interactive&&ui.edit,isCur=isThisWeek(n),ti=todayIdx();
+  let h=`<table class="ht"><thead><tr><th>العادة</th>${DAYS.map((d,i)=>`<th class="${isCur&&i===ti?'is-today':''}">${d}<small>${dayDate(n,i)}</small></th>`).join('')}<th>الأسبوع</th>${ed?'<th></th>':''}</tr></thead><tbody>`;
+  if(!list.length)h+=`<tr><td colspan="10"><div class="empty"><b>مفيش عادات في الأسبوع ده</b>ضيف عادة من وضع التعديل.</div></td></tr>`;
+  list.forEach(x=>{
+    let c=0;h+=`<tr><td><b>${esc(x.name)}</b>${x.desc?`<small>${esc(x.desc)}</small>`:''}</td>`;
+    for(let i=0;i<7;i++){const on=!!hb[x.id+'_'+i];if(on)c++;const cls=isCur&&i===ti?'is-today':'';
+      h+=interactive?`<td class="${cls}"><input type="checkbox" class="chk" data-habit="${x.id}_${i}" ${on?'checked':''} aria-label="${esc(x.name)} ${DAYS[i]}"></td>`:`<td>${on?'✓':'—'}</td>`}
+    h+=`<td><span class="pill ${pctClass(Math.round(c/7*100))}">${c}/7</span></td>`;
+    if(ed)h+=`<td style="white-space:nowrap"><button class="btn sm" data-act="edithabit" data-id="${x.id}">تعديل</button> <button class="btn sm danger" data-act="delhabit" data-id="${x.id}">إيقاف</button></td>`;
+    h+='</tr>';
   });
-
-  /* 6-month trend */
-  const tLabels=[],tData=[],tColors=[];
-  for(let i=5;i>=0;i--){
-    let m=month-i,y=year;while(m<0){m+=12;y--;}
-    tLabels.push(MONTHS[m].slice(0,3)+" "+y.toString().slice(2));
-    tData.push(i===0?overallRate:(monthRate(y,m)||0));
-    tColors.push(i===0?"#4EC9C4":"#60A5FA");
-  }
-  mkChart("cTrend","line",{labels:tLabels,datasets:[{data:tData,borderColor:"#4EC9C4",backgroundColor:"rgba(78,201,196,0.1)",borderWidth:2.5,pointBackgroundColor:tColors,pointRadius:5,pointHoverRadius:7,tension:.35,fill:true}]},{
-    responsive:true,maintainAspectRatio:false,animation:{duration:700},
-    plugins:{legend:{display:false},tooltip:{callbacks:{label:i=>`${i.raw}% overall`}}},
-    scales:{x:{grid:{display:false},ticks:{font:{size:10},color:"#888"}},y:{beginAtZero:true,max:100,ticks:{callback:v=>v+"%",font:{size:9},color:"#888"},grid:{color:"rgba(0,0,0,0.05)"}}}
-  });
-
-  document.getElementById("yearLabel").textContent=S.annualYear;
-  document.getElementById("mVsMTitle").textContent=`Month vs month — ${S.annualYear}`;
-  renderAnnualCharts();
-  renderHeatmap();
+  return h+'</tbody></table>';
+}
+function viewHabits(){
+  const w=state.weeks[ui.week]||{};
+  let h=hero()+quoteCard(ui.week,true)+toolbar(false);
+  h+=`<div class="board"><div class="scroller">${habitsTable(ui.week,true)}</div>`;
+  if(ui.edit)h+=`<div class="addhabit"><input type="text" id="nhName" placeholder="اسم العادة الجديدة"><input type="text" id="nhDesc" placeholder="وصف قصير (اختياري)"><button class="btn primary" data-act="addhabit">${ICON.plus} إضافة عادة</button></div>
+    <p class="hint" style="padding:0 20px 16px">العادة الجديدة بتبدأ من الأسبوع ده، و"إيقاف" بيوقفها من الأسبوع ده ورايح من غير ما يمسح متابعتك القديمة.</p>`;
+  h+=`</div><div class="sec"><h2>ملاحظات الأسبوع</h2><span>بتتحفظ أول ما تخرج من الخانة</span></div><textarea id="weekNote" placeholder="إيه اللي مشي كويس؟ إيه اللي محتاج يتظبط الأسبوع الجاي؟">${esc(w.note||'')}</textarea>`;
+  return h;
 }
 
-/* ════ ANNUAL CHARTS ════ */
-function renderAnnualCharts(){
-  const yr=S.annualYear;
-  ["cMonthVsMonth","cWeekOW","cDayOfWeekYear"].forEach(id=>destroyChart(id));
-  const mvmData=MONTHS.map((_,m)=>{
-    const isFuture=(yr===now.getFullYear()&&m>now.getMonth())||(yr>now.getFullYear());
-    return isFuture?null:(monthRate(yr,m)??0);
-  });
-  mkChart("cMonthVsMonth","bar",{labels:MONTHS.map(m=>m.slice(0,3)),datasets:[{data:mvmData,backgroundColor:mvmData.map((v,m)=>m===S.month&&yr===S.year?"#4EC9C4":v>=75?"#34D399":v>=50?"#60A5FA":"#DDD5C2"),borderRadius:5,borderSkipped:false}]},{
-    responsive:true,maintainAspectRatio:false,animation:{duration:600},
-    plugins:{legend:{display:false},tooltip:{callbacks:{title:i=>`${MONTHS[i[0].dataIndex]} ${yr}`,label:i=>`${i.raw??0}%`}}},
-    scales:{x:{grid:{display:false},ticks:{font:{size:10},color:"#888"}},y:{beginAtZero:true,max:100,ticks:{callback:v=>v+"%",font:{size:9},color:"#888"},grid:{color:"rgba(0,0,0,0.05)"}}}
-  });
-  const weekMap={};const idx=activeIdx();
-  for(let m=0;m<12;m++){
-    const ld=daysIn(m,yr);const done=getMonthDone(yr,m);
-    for(let d=1;d<=ld;d++){
-      const dt=new Date(yr,m,d);if(dt>new Date())continue;
-      const wn=weekNum(yr,m,d);
-      if(!weekMap[wn])weekMap[wn]={total:0,possible:0};
-      idx.forEach(hi=>{if(isDayDoneFromDone(done,hi,d))weekMap[wn].total++;weekMap[wn].possible++;});
-    }
+function lineChart(labels,series){
+  const W=760,H=230,pl=40,pr=14,pt=14,pb=30,n=labels.length,iw=W-pl-pr,ih=H-pt-pb;
+  const x=i=>pl+(n<=1?iw/2:i*iw/(n-1)),y=v=>pt+ih-v/100*ih;
+  let g='';for(let v=0;v<=100;v+=25)g+=`<line x1="${pl}" x2="${W-pr}" y1="${y(v)}" y2="${y(v)}" class="gl"/><text x="${pl-7}" y="${y(v)+4}" class="ax" text-anchor="end">${v}%</text>`;
+  const step=Math.ceil(n/14);labels.forEach((l,i)=>{if(i%step===0||i===n-1)g+=`<text x="${x(i)}" y="${H-9}" class="ax" text-anchor="middle">${l}</text>`});
+  series.forEach(s=>{g+=`<polyline points="${s.values.map((v,i)=>x(i)+','+y(v)).join(' ')}" fill="none" style="stroke:${s.color}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>`;
+    s.values.forEach((v,i)=>g+=`<circle cx="${x(i)}" cy="${y(v)}" r="3.2" style="fill:${s.color}"><title>أسبوع ${labels[i]}: ${v}%</title></circle>`)});
+  return `<svg viewBox="0 0 ${W} ${H}" class="chart" dir="ltr" role="img" aria-label="منحنى الإنجاز الأسبوعي">${g}</svg>`;
+}
+function hbar(label,p,d,color,right){const pp=p?Math.round(d/p*100):0;
+  return `<div class="hbar"><span>${label}</span><div class="tr"><i class="p" style="width:100%;background:${color}"></i><i style="width:${pp}%;background:${color}"></i></div><span>${right??pp+'%'}</span></div>`}
+
+function viewDash(){
+  const cur=currentWeek(),N=state.weeksCount;
+  ui.from=Math.min(Math.max(ui.from,1),N);ui.to=Math.min(Math.max(ui.to,ui.from),N);
+  const A=aggregate(ui.from,ui.to);
+  const opt=(v)=>{let o='';for(let i=1;i<=N;i++)o+=`<option value="${i}" ${i===v?'selected':''}>أسبوع ${i}</option>`;return o};
+  let h=`<div class="rangebar no-print"><span class="lbl">الفترة من</span><select id="rFrom">${opt(ui.from)}</select><span class="lbl">إلى</span><select id="rTo">${opt(ui.to)}</select>
+    <button class="btn" data-range="todate">لحد النهارده</button><button class="btn" data-range="last4">آخر 4 أسابيع</button><button class="btn" data-range="q">آخر 13 أسبوع</button><button class="btn" data-range="year">السنة كلها</button>
+    <button class="btn primary" data-act="print-report" style="margin-inline-start:auto">${ICON.print} طباعة التقرير / PDF</button></div>`;
+  h+=dashBody(A,cur,true)+allTimeLog();
+  return h;
+}
+function dashBody(A,cur,interactive){
+  const N=state.weeksCount,active=A.weeks.filter(w=>w.pMin);
+  const good=A.weeks.filter(w=>w.pct>=80).length;
+  let h=`<div class="kpis">
+    <div class="kpi lead"><b>${A.pct}%</b><span>نسبة إنجاز الجدول</span></div>
+    <div class="kpi"><b>${hrs(A.dMin)}</b><span>ساعة اتذاكرت من ${hrs(A.pMin)} مخططة</span></div>
+    <div class="kpi"><b>${A.dCnt}</b><span>جلسة خلصت من ${A.pCnt}</span></div>
+    <div class="kpi"><b>${A.hPct}%</b><span>الالتزام بالعادات</span></div>
+    <div class="kpi"><b>${A.tD}/${A.tP}</b><span>مهام خلصت</span></div>
+    <div class="kpi"><b>${good}</b><span>أسبوع فوق 80% من ${A.weeks.length}</span></div>
+  </div>`;
+  h+=`<div class="sec"><h2>ملخص التقرير</h2></div><div class="card"><ul class="insights">${insights(A).map(x=>`<li>${x}</li>`).join('')}</ul></div>`;
+  // heatmap
+  h+=`<div class="sec"><h2>السنة في نظرة (${N} أسبوع)</h2></div><div class="card"><div class="heat">`;
+  for(let n=1;n<=N;n++){const r=weekStats(n),fut=n>cur&&!r.dCnt,l=r.pct>=85?4:r.pct>=65?3:r.pct>=40?2:r.pct>0?1:0;
+    h+=`<button ${interactive?`data-goweek="${n}"`:''} style="--a:${themeOf(n).a}" class="${fut?'fut':'l'+l} ${n>=ui.from&&n<=ui.to?'inr':''} ${n===cur?'cur':''}" title="أسبوع ${n} (${rangeLabel(n)}): ${r.pct}%">${n}</button>`}
+  h+=`</div><p class="hint" style="margin:10px 0 0">كل مربع أسبوع بلونه، وكل ما يغمق كل ما الإنجاز يزيد. المربعات المحاطة بإطار هي الفترة اللي التقرير بيحسبها.${interactive?' اضغط على أي أسبوع تفتحه.':''}</p></div>`;
+  // trend
+  h+=`<div class="sec"><h2>الإنجاز أسبوع بأسبوع</h2></div><div class="card"><div class="keys"><span><i style="background:var(--acc)"></i>الجدول</span><span><i style="background:#C9962B"></i>العادات</span></div>
+    ${lineChart(A.weeks.map(w=>w.n),[{color:'var(--acc-t)',values:A.weeks.map(w=>w.pct)},{color:'#C9962B',values:A.weeks.map(w=>w.hPct)}])}</div>`;
+  // cats & days
+  h+=`<div class="grid2" style="margin-top:14px"><div class="card"><h3>الساعات حسب القسم</h3>`;
+  const cats=Object.keys(A.cat);if(!cats.length)h+='<p class="hint">لسه مفيش بيانات.</p>';
+  cats.forEach(k=>{const c=catOf(k),v=A.cat[k];h+=hbar(esc(c.name),v.p,v.d,c.color,`${hrs(v.d)} / ${hrs(v.p)} س`)});
+  h+=`<p class="hint" style="margin:6px 0 0">الجزء الفاتح هو المخطط، والغامق هو اللي اتعمل.</p></div><div class="card"><h3>أقوى وأضعف أيام الأسبوع</h3>`;
+  A.day.forEach((d,i)=>h+=hbar(DAYS[i],d.p,d.d,'var(--acc-t)'));
+  h+=`</div></div>`;
+  // subjects
+  const subs=Object.entries(A.subj).sort((a,b)=>b[1].p-a[1].p);
+  h+=`<div class="sec"><h2>تفاصيل كل مادة</h2></div><div class="card" style="overflow-x:auto"><table class="dt"><thead><tr><th>المادة</th><th>القسم</th><th>جلسات خلصت</th><th>ساعات خلصت</th><th>ساعات مخططة</th><th>النسبة</th></tr></thead><tbody>`;
+  subs.forEach(([k,v])=>{const p=v.p?Math.round(v.d/v.p*100):0,c=catOf(v.cat);
+    h+=`<tr><td><b style="font-weight:600">${esc(k)}</b></td><td><span class="dot" style="background:${c.color}"></span>${esc(c.name)}</td><td>${v.dc} / ${v.pc}</td><td>${hrs(v.d)}</td><td>${hrs(v.p)}</td><td><span class="pill ${pctClass(p)}">${p}%</span></td></tr>`});
+  h+=`</tbody></table></div>`;
+  // habits
+  h+=`<div class="sec"><h2>العادات</h2></div><div class="card">`;
+  const hk=Object.keys(A.hab);if(!hk.length)h+='<p class="hint">مفيش عادات في الفترة دي.</p>';
+  hk.forEach(id=>{const x=state.habits.find(z=>z.id===id);if(!x)return;const v=A.hab[id];h+=hbar(esc(x.name),v.p,v.d,'#C9962B',`${v.d} / ${v.p} يوم`)});
+  h+=`</div>`;
+  // compare
+  if(interactive){
+    let o=(v)=>{let s='';for(let i=1;i<=N;i++)s+=`<option value="${i}" ${i===v?'selected':''}>أسبوع ${i}</option>`;return s};
+    h+=`<div class="sec"><h2>قارن بين أسبوعين</h2></div><div class="card"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px" class="no-print"><select id="cmpA">${o(ui.cmpA)}</select><span>مع</span><select id="cmpB">${o(ui.cmpB)}</select></div>${compareTable(ui.cmpA,ui.cmpB)}</div>`;
   }
-  const wowL=[],wowD=[],wowC=[];
-  for(let w=1;w<=54;w++){
-    if(weekMap[w]&&weekMap[w].possible>0){
-      const pct=Math.round(weekMap[w].total/weekMap[w].possible*100);
-      wowL.push("W"+w);wowD.push(pct);wowC.push(pct>=80?"#4EC9C4":pct>=50?"#60A5FA":"#DDD5C2");
-    }
-  }
-  mkChart("cWeekOW","bar",{labels:wowL,datasets:[{data:wowD,backgroundColor:wowC,borderRadius:2,borderSkipped:false,barPercentage:.85}]},{
-    responsive:true,maintainAspectRatio:false,animation:{duration:600},
-    plugins:{legend:{display:false},tooltip:{callbacks:{title:i=>`Week ${i[0].label.replace("W","")} — ${yr}`,label:i=>`${i.raw}%`}}},
-    scales:{x:{grid:{display:false},ticks:{font:{size:8},color:"#888",maxRotation:0,autoSkip:true,maxTicksLimit:18}},y:{beginAtZero:true,max:100,ticks:{callback:v=>v+"%",font:{size:9},color:"#888"},grid:{color:"rgba(0,0,0,0.05)"}}}
-  });
-  const dowColors=["#F87171","#FB923C","#F59E0B","#34D399","#60A5FA","#A78BFA","#F472B6"];
-  const dowData=Array.from({length:7},()=>Array(12).fill(null));
-  for(let m=0;m<12;m++){
-    const isFuture=(yr===now.getFullYear()&&m>now.getMonth())||(yr>now.getFullYear());if(isFuture)continue;
-    const de2=elapsed(m,yr);const done=getMonthDone(yr,m);
-    const dowC=Array(7).fill(0),dowT=Array(7).fill(0);
-    for(let d=1;d<=de2;d++){const dw=new Date(yr,m,d).getDay();dowT[dw]++;idx.forEach(hi=>{if(isDayDoneFromDone(done,hi,d))dowC[dw]++;});}
-    DOW.forEach((_,dw)=>{if(dowT[dw]>0&&idx.length>0)dowData[dw][m]=Math.round(dowC[dw]/dowT[dw]/idx.length*100);});
-  }
-  mkChart("cDayOfWeekYear","line",{
-    labels:MONTHS.map(m=>m.slice(0,3)),
-    datasets:DOW.map((day,dw)=>({label:day,data:dowData[dw],borderColor:dowColors[dw],backgroundColor:"transparent",borderWidth:2,pointRadius:3,tension:.4,spanGaps:true}))
-  },{
-    responsive:true,maintainAspectRatio:false,animation:{duration:700},
-    plugins:{legend:{display:true,position:"top",labels:{font:{size:9},boxWidth:10,padding:8}}},
-    scales:{x:{grid:{display:false},ticks:{font:{size:9},color:"#888"}},y:{beginAtZero:true,max:100,ticks:{callback:v=>v+"%",font:{size:9},color:"#888"},grid:{color:"rgba(0,0,0,0.05)"}}}
-  });
+  return h;
+}
+function allTimeLog(){
+  const cur=state.template,inPlan=new Set();
+  Object.values(cur.cells).forEach(r=>(r||[]).forEach(c=>{if(c&&c.t)inPlan.add(c.t.trim())}));
+  const L={};
+  for(let n=1;n<=state.weeksCount;n++){const r=weekStats(n);for(const k in r.subj){const s=r.subj[k];if(!s.dc)continue;
+    const a=L[k]||(L[k]={cat:s.cat,d:0,dc:0,first:n,last:n});a.d+=s.d;a.dc+=s.dc;a.last=n}}
+  const rows=Object.entries(L).sort((a,b)=>b[1].d-a[1].d);
+  let h=`<div class="sec"><h2>سجل كل اللي اشتغلت عليه</h2><span>سجل دائم للسنة كلها، مش بيتمسح لو شلت مادة من الجدول</span></div><div class="card" style="overflow-x:auto">`;
+  if(!rows.length)return h+`<div class="empty"><b>السجل لسه فاضي</b>أول ما تعلّم أي جلسة إنها خلصت هتظهر هنا.</div></div>`;
+  h+=`<table class="dt"><thead><tr><th>المادة</th><th>القسم</th><th>جلسات خلصت</th><th>إجمالي الساعات</th><th>من أسبوع</th><th>آخر أسبوع</th><th>الحالة</th></tr></thead><tbody>`;
+  rows.forEach(([k,v])=>{const c=catOf(v.cat),on=inPlan.has(k);
+    h+=`<tr><td><b style="font-weight:600">${esc(k)}</b></td><td><span class="dot" style="background:${c.color}"></span>${esc(c.name)}</td><td>${v.dc}</td><td>${hrs(v.d)}</td><td>${v.first}</td><td>${v.last}</td><td><span class="tag ${on?'on':'off'}">${on?'في الجدول الأساسي':'خلصت / اتشالت من الجدول'}</span></td></tr>`});
+  return h+'</tbody></table></div>';
+}
+function compareTable(a,b){
+  const A=weekStats(a),B=weekStats(b);
+  const diff=(x,y,u='')=>{const d=Math.round((y-x)*10)/10;return d>0?`<span class="up">+${d}${u}</span>`:d<0?`<span class="down">${d}${u}</span>`:'—'};
+  let h=`<div style="overflow-x:auto"><table class="dt"><thead><tr><th>المقياس</th><th>أسبوع ${a}</th><th>أسبوع ${b}</th><th>الفرق</th></tr></thead><tbody>
+    <tr><td>إنجاز الجدول</td><td>${A.pct}%</td><td>${B.pct}%</td><td>${diff(A.pct,B.pct,'%')}</td></tr>
+    <tr><td>ساعات اتعملت</td><td>${hrs(A.dMin)}</td><td>${hrs(B.dMin)}</td><td>${diff(A.dMin/60,B.dMin/60)}</td></tr>
+    <tr><td>جلسات خلصت</td><td>${A.dCnt}/${A.pCnt}</td><td>${B.dCnt}/${B.pCnt}</td><td>${diff(A.dCnt,B.dCnt)}</td></tr>
+    <tr><td>العادات</td><td>${A.hPct}%</td><td>${B.hPct}%</td><td>${diff(A.hPct,B.hPct,'%')}</td></tr>
+    <tr><td>مهام خلصت</td><td>${A.tD}/${A.tP}</td><td>${B.tD}/${B.tP}</td><td>${diff(A.tD,B.tD)}</td></tr>`;
+  const ks=new Set([...Object.keys(A.cat),...Object.keys(B.cat)]);
+  ks.forEach(k=>{const x=A.cat[k]||{d:0},y=B.cat[k]||{d:0};h+=`<tr><td>ساعات ${esc(catOf(k).name)}</td><td>${hrs(x.d)}</td><td>${hrs(y.d)}</td><td>${diff(x.d/60,y.d/60)}</td></tr>`});
+  return h+'</tbody></table></div>';
+}
+function insights(A){
+  const out=[];
+  if(!A.pMin)return['مفيش خطة في الفترة دي.'];
+  out.push(`خلّصت <b>${A.pct}%</b> من الجدول في الفترة دي: ${hrs(A.dMin)} ساعة من ${hrs(A.pMin)} ساعة مخططة، و${A.hPct}% التزام بالعادات.`);
+  if(A.tP)out.push(`خلّصت ${A.tD} من ${A.tP} مهمة (${Math.round(A.tD/A.tP*100)}%).`);
+  const ws=A.weeks.filter(w=>w.pMin&&w.n<=currentWeek());
+  if(ws.length>1){const b=[...ws].sort((x,y)=>y.pct-x.pct);out.push(`أحسن أسبوع كان أسبوع ${b[0].n} بنسبة ${b[0].pct}%، وأضعف أسبوع كان أسبوع ${b[b.length-1].n} بنسبة ${b[b.length-1].pct}%.`)}
+  const subs=Object.entries(A.subj).filter(([k,v])=>v.pc>=2).map(([k,v])=>[k,Math.round(v.d/v.p*100)]).sort((a,b)=>b[1]-a[1]);
+  if(subs.length>1)out.push(`أكتر مادة ملتزم بيها: <b>${esc(subs[0][0])}</b> (${subs[0][1]}%). أكتر مادة محتاجة اهتمام: <b>${esc(subs[subs.length-1][0])}</b> (${subs[subs.length-1][1]}%).`);
+  const dd=A.day.map((d,i)=>[i,d.p?Math.round(d.d/d.p*100):0]).sort((a,b)=>b[1]-a[1]);
+  if(A.dMin)out.push(`أقوى يوم عندك ${DAYS[dd[0][0]]} (${dd[0][1]}%)، وأضعف يوم ${DAYS[dd[6][0]]} (${dd[6][1]}%).`);
+  const hb=Object.entries(A.hab).map(([id,v])=>[state.habits.find(z=>z.id===id),v.p?Math.round(v.d/v.p*100):0]).filter(x=>x[0]).sort((a,b)=>b[1]-a[1]);
+  if(hb.length>1)out.push(`أكتر عادة ملتزم بيها: ${esc(hb[0][0].name)} (${hb[0][1]}%)، وأقلها: ${esc(hb[hb.length-1][0].name)} (${hb[hb.length-1][1]}%).`);
+  if(ws.length>=8){const l=ws.slice(-4),p=ws.slice(-8,-4),av=a=>Math.round(a.reduce((s,w)=>s+w.pct,0)/a.length),x=av(l),y=av(p);
+    out.push(x>=y?`متوسط آخر 4 أسابيع ${x}% مقابل ${y}% في الـ4 اللي قبلهم، يعني في تحسن.`:`متوسط آخر 4 أسابيع ${x}% مقابل ${y}% في الـ4 اللي قبلهم، يعني في تراجع محتاج تقف عنده.`)}
+  return out;
 }
 
-/* ════ HEATMAP ════ */
-function renderHeatmap(){
-  const yr=S.annualYear;const hi=S.hmHabit;
-  document.getElementById("hmYearLbl").textContent=yr;
-  const tabsEl=document.getElementById("hmTabs");
-  let tabs=`<button class="hm-tab${hi===-1?" on":""}" style="${hi===-1?"background:#1A1A1A":""}" onclick="S.hmHabit=-1;renderHeatmap()">All</button>`;
-  S.habits.forEach((h,i)=>{
-    const on=hi===i;
-    tabs+=`<button class="hm-tab${on?" on":""}" style="${on?"background:"+h.c+";border-color:"+h.c:""}" onclick="S.hmHabit=${i};renderHeatmap()">${esc(h.n.length>12?h.n.slice(0,12)+"…":h.n)}</button>`;
-  });
-  tabsEl.innerHTML=tabs;
-  const LC=["#E8E0D0","#A3E4DF","#4EC9C4","#2A9D96","#1A6B67"];
-  const isLeap=(yr%4===0&&yr%100!==0)||(yr%400===0);
-  const dayCount=isLeap?366:365;
-  const startDow=new Date(yr,0,1).getDay();
-  const activeHIdx=activeIdx();
-  const cells=[];
-  for(let p=0;p<startDow;p++)cells.push(`<div></div>`);
-  for(let dn=0;dn<dayCount;dn++){
-    const dt=new Date(yr,0,dn+1);const m=dt.getMonth(),d=dt.getDate();
-    const isFuture=dt>new Date();
-    let bg="transparent",border="1px dashed #E0D8C8",tip="";
-    if(!isFuture){
-      border="none";const done=getMonthDone(yr,m);
-      let level=0;
-      if(hi===-1){
-        const total=activeHIdx.filter(hii=>isDayDoneFromDone(done,hii,d)).length;
-        const max=activeHIdx.length;
-        if(max>0)level=total===0?0:total===max?4:total/max>=.75?3:total/max>=.4?2:1;
-      } else {
-        const h=S.habits[hi];
-        if(hType(h)==="sessions"){
-          const v=done[hi+"-"+d];const arr=Array.isArray(v)?v:[];
-          const c=arr.filter(s=>s>0).length,n=h.freq||1;
-          level=c===0?0:c===n?4:c/n>=.75?3:c/n>=.4?2:1;
-        } else {
-          level=isDayDoneFromDone(done,hi,d)?4:0;
-        }
-      }
-      bg=LC[level];
-      tip=`${MONTHS[m].slice(0,3)} ${d}`;
-    }
-    cells.push(`<div class="hm-cell" style="background:${bg};border:${border}" title="${tip}"></div>`);
+
+function viewSettings(){
+  return `<div class="sec"><h2>بيانات عامة</h2></div><div class="card form">
+    <label>عنوان الجدول<input type="text" data-set="title" value="${esc(state.title)}"></label>
+    <label>الوصف تحت العنوان<input type="text" data-set="subtitle" value="${esc(state.subtitle)}"></label>
+    <label>الاسم في التقارير المطبوعة<input type="text" data-set="owner" value="${esc(state.owner)}" placeholder="فاضي: هيسألك قبل كل طباعة"></label>
+    <label>بداية أول أسبوع (يوم السبت)<input type="date" data-set="start" value="${state.start}"></label>
+    <label>عدد الأسابيع<input type="number" min="1" max="60" data-set="weeksCount" value="${state.weeksCount}"></label>
+    <label>المظهر<select data-set="theme"><option value="auto" ${state.theme==='auto'?'selected':''}>حسب الجهاز</option><option value="light" ${state.theme==='light'?'selected':''}>فاتح</option><option value="dark" ${state.theme==='dark'?'selected':''}>غامق</option></select></label>
+  </div>
+  <div class="sec"><h2>الوصايا</h2><span>بتظهر في واجهة كل أسبوع، وصية مختلفة كل أسبوع</span></div><div class="card">
+    <div class="form" style="margin-bottom:14px"><label>عنوان الوصايا<input type="text" data-set="quotesTitle" value="${esc(state.quotesTitle||'')}"></label></div>
+    ${(state.quotes||[]).map((q,i)=>`<div class="qrow"><textarea data-quote="${i}" aria-label="وصية ${i+1}">${esc(q)}</textarea><button class="xbtn" data-delquote="${i}" aria-label="حذف الوصية">✕</button></div>`).join('')}
+    <button class="btn" data-act="addquote">${ICON.plus} إضافة وصية</button></div>
+  <div class="sec"><h2>شكل الأسابيع</h2><span>كل أسبوع بياخد شكل وألوان مختلفة تلقائياً</span></div><div class="card">
+    <div class="form" style="margin-bottom:16px"><label>طريقة التلوين<select data-set="fixedTheme"><option value="">شكل مختلف لكل أسبوع (تلقائي)</option>${THEMES.map(t=>`<option value="${t.id}" ${state.fixedTheme===t.id?'selected':''}>نفس الشكل لكل الأسابيع: ${t.name}</option>`).join('')}</select></label></div>
+    <div class="themegrid">${THEMES.map(t=>`<div class="tcard" style="--a:${t.a};--b:${t.b};--tp:${patternURI(t.pat,'#ffffff').replace(/"/g,'&quot;')}"><div class="tp"></div><div>${t.name}</div></div>`).join('')}</div>
+    <p class="hint" style="margin-top:12px">تقدر تختار شكل معيّن لأي أسبوع من وضع التعديل في صفحة الجدول.</p></div>
+  <div class="sec"><h2>الأقسام والألوان</h2></div><div class="card">
+    ${state.cats.map(c=>`<div class="catrow"><input type="color" data-cat="${c.id}" data-f="color" value="${c.color}" aria-label="لون ${esc(c.name)}"><input type="text" data-cat="${c.id}" data-f="name" value="${esc(c.name)}"><button class="btn sm danger" data-act="delcat" data-id="${c.id}">حذف</button></div>`).join('')}
+    <button class="btn" data-act="addcat">+ إضافة قسم</button></div>
+  <div class="sec"><h2>البيانات</h2></div><div class="card">
+    <p class="hint" style="margin-top:0">كل البيانات محفوظة في المتصفح ده بس. اعمل نسخة احتياطية كل فترة، وتقدر ترجعها على أي جهاز تاني.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn primary" data-act="export">تنزيل نسخة احتياطية</button>
+      <label class="btn" style="cursor:pointer">استرجاع نسخة<input type="file" id="importFile" accept=".json,application/json" hidden></label>
+      <button class="btn danger" data-act="resetall">مسح كل البيانات والبدء من جديد</button>
+    </div></div>`;
+}
+
+
+/* ============ modal ============ */
+const dlg=document.getElementById('dlg');
+function modal(title,body,actions){
+  document.getElementById('dlgT').textContent=title;document.getElementById('dlgB').innerHTML=body;
+  const a=document.getElementById('dlgA');a.innerHTML='';
+  actions.forEach(x=>{const b=document.createElement('button');b.className='btn '+(x.cls||'');b.textContent=x.label;b.type='button';
+    b.onclick=()=>{if(x.fn&&x.fn()===false)return;dlg.close()};a.appendChild(b)});
+  dlg.showModal();const f=dlg.querySelector('input,select');if(f)f.focus();
+}
+function openCell(slotId,day){
+  const plan=getPlan(ui.week),c=(plan.cells[slotId]||[])[day]||{t:'',s:'',c:(state.cats[0]||{}).id,star:false};
+  const scopeTxt=ui.scope==='week'?'التعديل هيتطبق على الأسبوع ده بس.':'التعديل هيتطبق على الجدول الأساسي من الأسبوع ده ورايح.';
+  modal(`${DAYS[day]} — تعديل الخانة`,`<div class="form">
+    <label>المادة / النشاط<input type="text" id="fT" value="${esc(c.t)}"></label>
+    <label>التفاصيل<input type="text" id="fS" value="${esc(c.s||'')}"></label>
+    <label>القسم<select id="fC">${state.cats.map(x=>`<option value="${x.id}" ${x.id===c.c?'selected':''}>${esc(x.name)}</option>`).join('')}</select></label>
+    <label class="ck"><input type="checkbox" id="fStar" ${c.star?'checked':''}>أولوية ★</label>
+    <label class="ck"><input type="checkbox" id="fRow">طبّق على كل أيام الفترة دي</label>
+    <p class="hint" style="margin:0">${scopeTxt}</p></div>`,
+  [{label:'إلغاء'},
+   {label:'مسح الخانة',cls:'danger',fn:()=>{const p=editablePlan(),row=document.getElementById('fRow').checked;p.cells[slotId]=p.cells[slotId]||Array(7).fill(null);
+      if(row)p.cells[slotId]=Array(7).fill(null);else p.cells[slotId][day]=null;save();render()}},
+   {label:'حفظ',cls:'primary',fn:()=>{const v={t:document.getElementById('fT').value.trim(),s:document.getElementById('fS').value.trim(),c:document.getElementById('fC').value,star:document.getElementById('fStar').checked};
+      if(!v.t){toast('اكتب اسم المادة الأول');return false}
+      const p=editablePlan(),row=document.getElementById('fRow').checked;p.cells[slotId]=p.cells[slotId]||Array(7).fill(null);
+      if(row)p.cells[slotId]=Array.from({length:7},()=>({...v}));else p.cells[slotId][day]=v;save();render();toast('اتحفظ')}}]);
+}
+function openSlot(id){
+  const s=getPlan(ui.week).slots.find(x=>x.id===id);if(!s)return;
+  modal('تعديل وقت الفترة',`<div class="form"><label>من<input type="time" id="fA" value="${s.start}"></label><label>إلى<input type="time" id="fB" value="${s.end}"></label></div>`,
+  [{label:'إلغاء'},
+   {label:'حذف الفترة',cls:'danger',fn:()=>{if(!confirm('تحذف الفترة دي بكل خاناتها؟'))return false;const p=editablePlan();p.slots=p.slots.filter(x=>x.id!==id);delete p.cells[id];save();render()}},
+   {label:'حفظ',cls:'primary',fn:()=>{const a=document.getElementById('fA').value,b=document.getElementById('fB').value;if(!a||!b)return false;
+      const p=editablePlan(),x=p.slots.find(z=>z.id===id);x.start=a;x.end=b;save();render()}}]);
+}
+
+
+/* ============ events ============ */
+document.addEventListener('click',e=>{
+  const vw=e.target.closest('[data-view]');if(vw){ui.view=vw.dataset.view;render();return}
+  const dy=e.target.closest('[data-day]');if(dy){ui.day=+dy.dataset.day;render();return}
+  const tpk=e.target.closest('[data-theme-pick]');if(tpk){const w=getWeek(ui.week,true),v=tpk.dataset.themePick;if(v)w.theme=v;else delete w.theme;save();render();toast(v?'شكل الأسبوع اتغير':'رجع للشكل التلقائي');return}
+  const tab=e.target.closest('[data-tab]');if(tab){ui.tab=tab.dataset.tab;ui.edit=false;render();return}
+  const gw=e.target.closest('[data-goweek]');if(gw){ui.week=+gw.dataset.goweek;ui.tab='schedule';render();window.scrollTo(0,0);return}
+  const rg=e.target.closest('[data-range]');if(rg){const c=currentWeek(),k=rg.dataset.range;
+    if(k==='todate'){ui.from=1;ui.to=c}if(k==='last4'){ui.to=c;ui.from=Math.max(1,c-3)}if(k==='q'){ui.to=c;ui.from=Math.max(1,c-12)}if(k==='year'){ui.from=1;ui.to=state.weeksCount}render();return}
+  const cell=e.target.closest('[data-cell]');
+  if(cell&&cell.closest('#main')){const [sid,d]=cell.dataset.cell.split('|');
+    if(ui.edit){openCell(sid,+d);return}
+    if(cell.classList.contains('slot')){const w=getWeek(ui.week,true),k=sid+'_'+d;if(w.done[k])delete w.done[k];else w.done[k]=true;save();render()}return}
+  const ds=e.target.closest('[data-delslot]');if(ds){const id=ds.dataset.delslot,k=doneInSlot(ui.week,id);
+    if(!confirm(`تحذف الفترة دي من ${ui.scope==='week'?'الأسبوع ده':'الجدول الأساسي من الأسبوع ده ورايح'}؟\n\nسجل الأسابيع اللي فاتت محفوظ ومش هيتأثر.${k?`\nتنبيه: في ${k} جلسة متعلّمة في الفترة دي الأسبوع ده، هتتشال من حساب الأسبوع ده بس.`:''}`))return;const p=editablePlan();p.slots=p.slots.filter(x=>x.id!==id);delete p.cells[id];save();render();return}
+  const dq=e.target.closest('[data-delquote]');if(dq){if(!confirm('تحذف الوصية دي؟'))return;state.quotes.splice(+dq.dataset.delquote,1);save();render();return}
+  const dt=e.target.closest('[data-deltodo]');if(dt){const w=getWeek(ui.week,true);w.todos=(w.todos||[]).filter(t=>t.id!==dt.dataset.deltodo);save();render();return}
+  const b=e.target.closest('[data-act]');if(!b)return;const act=b.dataset.act;
+  switch(act){
+    case 'qprev':ui.qOff--;render();return;
+    case 'qnext':ui.qOff++;render();return;
+    case 'prev':ui.qOff=0;ui.week=Math.max(1,ui.week-1);ui.day=isThisWeek(ui.week)?todayIdx():0;break;
+    case 'next':ui.qOff=0;ui.week=Math.min(state.weeksCount,ui.week+1);ui.day=isThisWeek(ui.week)?todayIdx():0;break;
+    case 'today':ui.week=currentWeek();ui.day=isThisWeek(ui.week)?todayIdx():0;break;
+    case 'edit':ui.edit=!ui.edit;break;
+    case 'addrow':{const p=editablePlan(),last=[...p.slots].sort((a,b)=>toMin(b.end)-toMin(a.end))[0];const st=last?last.end:'18:00',m=(toMin(st)+60)%1440;
+      const id=uid();p.slots.push({id,start:st,end:`${pad(Math.floor(m/60))}:${pad(m%60)}`});p.cells[id]=Array(7).fill(null);toast('اتضافت فترة جديدة، عدّل وقتها وخاناتها');break}
+    case 'copyprev':{if(!confirm(`تستبدل خطة أسبوع ${ui.week} بخطة أسبوع ${ui.week-1}؟`))return;getWeek(ui.week,true).plan=clone(getPlan(ui.week-1));toast('اتنسخت');break}
+    case 'revert':{if(!confirm('ترجّع الأسبوع ده للجدول الأساسي؟ التعديلات الخاصة بيه هتتمسح.'))return;getWeek(ui.week,true).plan=null;toast('رجع للجدول الأساسي');break}
+    case 'promote':{if(!confirm('تخلي خطة الأسبوع ده هي الجدول الأساسي من الأسبوع ده ورايح؟'))return;freezePast(ui.week);state.template=clone(getPlan(ui.week));getWeek(ui.week,true).plan=null;toast('اتعمدت كجدول أساسي');break}
+    case 'addhabit':{const n=document.getElementById('nhName').value.trim();if(!n){toast('اكتب اسم العادة');return}
+      state.habits.push({id:uid(),name:n,desc:document.getElementById('nhDesc').value.trim(),from:ui.week});toast('العادة اتضافت');break}
+    case 'edithabit':{const x=state.habits.find(z=>z.id===b.dataset.id);
+      modal('تعديل العادة',`<div class="form"><label>الاسم<input type="text" id="hN" value="${esc(x.name)}"></label><label>الوصف<input type="text" id="hD" value="${esc(x.desc||'')}"></label></div>`,
+        [{label:'إلغاء'},{label:'حفظ',cls:'primary',fn:()=>{const v=document.getElementById('hN').value.trim();if(!v)return false;x.name=v;x.desc=document.getElementById('hD').value.trim();save();render()}}]);return}
+    case 'delhabit':{const x=state.habits.find(z=>z.id===b.dataset.id);if(!confirm(`توقف "${x.name}" من أسبوع ${ui.week} ورايح؟ المتابعة القديمة هتفضل في الداشبورد.`))return;
+      if((x.from||1)>=ui.week)state.habits=state.habits.filter(z=>z.id!==x.id);else x.to=ui.week-1;toast('العادة اتوقفت');break}
+    case 'addtodo':{const t=document.getElementById('tdText').value.trim();if(!t){toast('اكتب المهمة الأول');return}
+      const dv=document.getElementById('tdDay').value,w=getWeek(ui.week,true);(w.todos=w.todos||[]).push({id:uid(),t,day:dv===''?null:+dv,done:false});save();render();document.getElementById('tdText').focus();return}
+    case 'carrytodo':{const w=getWeek(ui.week,true),nx=getWeek(ui.week+1,true),left=(w.todos||[]).filter(t=>!t.done);
+      nx.todos=(nx.todos||[]).concat(left.map(t=>({...t,id:uid()})));w.todos=w.todos.filter(t=>t.done);toast(`اتنقلت ${left.length} مهام لأسبوع ${ui.week+1}`);break}
+    case 'addquote':{(state.quotes=state.quotes||[]).push('اكتب الوصية الجديدة هنا');ui.qOff=(state.quotes.length-1)-(ui.week-1);save();render();
+      const bq=document.querySelector('[data-qidx]');if(bq){bq.focus();const r=document.createRange();r.selectNodeContents(bq);const sel=getSelection();sel.removeAllRanges();sel.addRange(r)}else if(ui.tab==='settings'){toast('اتضافت وصية جديدة')}return}
+    case 'addcat':state.cats.push({id:uid(),name:'قسم جديد',color:'#B88A2C'});break;
+    case 'delcat':{if(!confirm('تحذف القسم ده؟ الخانات اللي عليه هتبقى "بدون تصنيف".'))return;state.cats=state.cats.filter(c=>c.id!==b.dataset.id);break}
+    case 'export':{const blob=new Blob([JSON.stringify(state,null,1)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`weekly-planner-backup-${iso(new Date())}.json`;document.body.appendChild(a);a.click();a.remove();return}
+    case 'resetall':{if(!confirm('هتمسح كل الجداول والمتابعة والعادات. متأكد؟'))return;state=defaults();ui.week=currentWeek();toast('اتمسح كل حاجة');break}
+    case 'print-week':askOwner(()=>doPrint('week'));return;
+    case 'print-report':askOwner(()=>doPrint('report'));return;
   }
-  const rem=(startDow+dayCount)%7;if(rem>0)for(let p=0;p<7-rem;p++)cells.push(`<div></div>`);
-  let monthHtml=`<div class="hm-months">`;let lastCol=0;
-  for(let m=0;m<12;m++){
-    const doy=Math.floor((new Date(yr,m,1)-new Date(yr,0,1))/86400000);
-    const col=Math.floor((startDow+doy)/7);
-    monthHtml+=`<div style="min-width:${(col-lastCol)*16}px">${MONTHS[m].slice(0,3)}</div>`;lastCol=col;
+  save();render();
+});
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.id==='weekSel'){ui.week=+t.value;ui.day=isThisWeek(ui.week)?todayIdx():0;render();return}
+  if(t.dataset.tslot){const p=editablePlan(),x=p.slots.find(z=>z.id===t.dataset.tslot);if(x&&t.value){x[t.dataset.tf]=t.value;save();render();toast('الوقت اتعدل')}return}
+  if(t.dataset.todo){const w=getWeek(ui.week,true),x=(w.todos||[]).find(z=>z.id===t.dataset.todo);if(x){x.done=t.checked;save();render()}return}
+  if(t.name==='scope'){ui.scope=t.value;return}
+  if(t.dataset.habit){const w=getWeek(ui.week,true);if(t.checked)w.habits[t.dataset.habit]=true;else delete w.habits[t.dataset.habit];save();render();return}
+  if(t.dataset.quote!=null){const v=t.value.trim();if(v){state.quotes[+t.dataset.quote]=v;save();toast('الوصية اتحفظت')}return}
+  if(t.id==='weekNote'){getWeek(ui.week,true).note=t.value;save();toast('الملاحظات اتحفظت');return}
+  if(t.id==='rFrom'){ui.from=+t.value;if(ui.to<ui.from)ui.to=ui.from;render();return}
+  if(t.id==='rTo'){ui.to=+t.value;if(ui.from>ui.to)ui.from=ui.to;render();return}
+  if(t.id==='cmpA'){ui.cmpA=+t.value;render();return}
+  if(t.id==='cmpB'){ui.cmpB=+t.value;render();return}
+  if(t.dataset.set){const k=t.dataset.set;let v=t.value;if(k==='weeksCount'){v=Math.min(Math.max(parseInt(v)||52,1),60);ui.week=Math.min(ui.week,v)}if(k==='start'&&!v)return;state[k]=v;save();render();toast('اتحفظ');return}
+  if(t.dataset.cat){const c=state.cats.find(x=>x.id===t.dataset.cat);c[t.dataset.f]=t.value;save();render();return}
+  if(t.id==='importFile'&&t.files[0]){const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.template||!d.weeks)throw 0;
+      if(!confirm('النسخة دي هتستبدل كل البيانات الحالية. تكمل؟'))return;state={...defaults(),...d};save();ui.week=currentWeek();render();toast('النسخة اترجعت')}catch(err){toast('الملف ده مش نسخة احتياطية من الجدول')}};r.readAsText(t.files[0])}
+});
+
+document.addEventListener('keydown',e=>{
+  if(e.target.id==='tdText'&&e.key==='Enter'){e.preventDefault();document.querySelector('[data-act="addtodo"]').click()}
+  if(e.target.dataset&&e.target.dataset.qidx!=null&&e.key==='Enter'){e.preventDefault();e.target.blur()}
+  if((e.target.id==='hTitle'||e.target.id==='hSub')&&e.key==='Enter'){e.preventDefault();e.target.blur()}
+});
+document.addEventListener('focusout',e=>{
+  if(e.target.dataset&&e.target.dataset.qidx!=null){const i=+e.target.dataset.qidx,v=e.target.textContent.replace(/\s+/g,' ').trim();
+    if(!v){e.target.textContent=state.quotes[i];return}if(state.quotes[i]!==v){state.quotes[i]=v;save();toast('الوصية اتحفظت')}return}
+  const id=e.target.id;if(id!=='hTitle'&&id!=='hSub')return;
+  const v=e.target.textContent.trim(),k=id==='hTitle'?'title':'subtitle';
+  if(k==='title'&&!v){e.target.textContent=state.title;return}
+  if(state[k]!==v){state[k]=v;save();toast('اتحفظ')}
+});
+
+
+/* ============ print ============ */
+function askOwner(go){
+  if(state.owner){go();return}
+  modal('مين اللي هيتكتب اسمه في التقرير؟',`<div class="form"><label>الاسم<input type="text" id="ownN" placeholder="اكتب الاسم"></label>
+    <label class="ck"><input type="checkbox" id="ownS">احفظ الاسم ده للتقارير الجاية</label>
+    <p class="hint">لو سبته فاضي، التقرير هيتطبع من غير اسم.</p></div>`,
+  [{label:'إلغاء'},{label:'اطبع',cls:'primary',fn:()=>{const v=document.getElementById('ownN').value.trim();
+    if(v&&document.getElementById('ownS').checked){state.owner=v;save()}ui.printOwner=v;setTimeout(go,50)}}]);
+}
+function doPrint(kind){
+  const P=document.getElementById('printArea'),root=document.documentElement,prev=root.getAttribute('data-theme');
+  root.setAttribute('data-theme','light');
+  const who=state.owner||ui.printOwner||'';ui.printOwner='';
+  const foot=`<div class="pr-foot"><span>${who?'Prepared by: '+esc(who):''}</span><span>تاريخ الطباعة: ${fmtD(new Date())} ${new Date().getFullYear()}</span></div>`;
+  if(kind==='week'){
+    const w=state.weeks[ui.week]||{};
+    applyWeekTheme(ui.week);
+    P.innerHTML=`<div class="pr-head"><div><h1>${esc(state.title)}</h1><div class="s">${esc(state.subtitle)}</div></div><div style="text-align:end"><b style="font-size:1.2rem">أسبوع ${ui.week}</b><div class="s">${rangeLabel(ui.week)}</div></div></div>
+      ${quoteCard(ui.week,false)}<div style="height:10px"></div>${legend()}<div class="board"><div class="scroller">${scheduleTable(ui.week,false)}</div></div>
+      ${(w.todos||[]).length?`<h2 class="pr-h2">حاجات لازم أعملها</h2><div class="card">${todosHtml(ui.week,false)}</div>`:''}
+      <h2 class="pr-h2">العادات</h2><div class="board">${habitsTable(ui.week,false)}</div>
+      ${w.note?`<h2 class="pr-h2">ملاحظات الأسبوع</h2><div class="card">${esc(w.note).replace(/\n/g,'<br>')}</div>`:''}${foot}`;
+  }else{
+    const A=aggregate(ui.from,ui.to);
+    P.innerHTML=`<div class="pr-head"><div><h1>تقرير المتابعة</h1><div class="s">${esc(state.title)}</div></div><div style="text-align:end"><b>من أسبوع ${ui.from} إلى أسبوع ${ui.to}</b><div class="s">${fmtD(weekStart(ui.from))} – ${rangeLabel(ui.to).split('– ')[1]}</div></div></div>
+      ${dashBody(A,currentWeek(),false)}${allTimeLog()}<h2 class="pr-h2">مقارنة أسبوع ${ui.cmpA} مع أسبوع ${ui.cmpB}</h2><div class="card">${compareTable(ui.cmpA,ui.cmpB)}</div>${foot}`;
   }
-  monthHtml+=`</div>`;
-  document.getElementById("yearHeatmap").innerHTML=`${monthHtml}
-    <div class="hm-wrap">
-      <div class="hm-dow"><span> </span><span>Mon</span><span> </span><span>Wed</span><span> </span><span>Fri</span><span> </span></div>
-      <div class="heatmap-grid">${cells.join("")}</div>
-    </div>`;
+  document.body.classList.add('printing');fitSlots(P);
+  const done=()=>{document.body.classList.remove('printing');P.innerHTML='';if(prev)root.setAttribute('data-theme',prev);else root.removeAttribute('data-theme');render();window.removeEventListener('afterprint',done)};
+  window.addEventListener('afterprint',done);
+  setTimeout(()=>window.print(),60);
 }
 
-/* ════ ACTIONS ════ */
-function addHabit(){
-  const inp=document.getElementById("nhi");const nm=(inp?inp.value:"").trim();
-  if(!nm)return;
-  S.habits.push({n:nm,c:COLORS[S.habits.length%COLORS.length]});
-  inp.value="";
-  closeSesPicker();
-  S.openConf=-1;
-  save();renderAll();
-}
-function switchTab(tab){
-  S.tab=tab;
-  document.querySelectorAll(".tab").forEach(b=>{const t=b.textContent;b.classList.toggle("on",(tab==="t"&&t.includes("Tracker"))||(tab==="d"&&t.includes("Dashboard"))||(tab==="s"&&t.includes("Scores")));});
-  document.getElementById("tv").style.display=tab==="t"?"block":"none";
-  document.getElementById("dv").style.display=tab==="d"?"block":"none";
-  document.getElementById("sv").style.display=tab==="s"?"block":"none";
-  if(tab==="d")renderDashboard();
-  if(tab==="s")renderScores();
-}
-function renderAll(){
-  document.getElementById("mLbl").textContent=MONTHS[S.month]+" "+S.year;
-  renderTracker();
-  if(S.tab==="d")renderDashboard();
-  if(S.tab==="s")renderScores();
-}
-document.getElementById("pBtn").onclick=()=>{if(S.month===0){S.month=11;S.year--;}else S.month--;loadMonth();renderAll();};
-document.getElementById("nBtn").onclick=()=>{if(S.month===11){S.month=0;S.year++;}else S.month++;loadMonth();renderAll();};
-Chart.defaults.font.family="Georgia,serif";Chart.defaults.color="#888";
-load();renderAll();
-/* ════ SCORE HELPERS ════ */
-function calcPeriodScore(y,m,d1,d2,idx){
-  if(!idx||!idx.length||d2<d1)return 0;
-  const done=getMonthDone(y,m);const days=d2-d1+1;
-  const rates=idx.map(hi=>{
-    const h=S.habits[hi];if(!h)return 0;
-    if(hType(h)==="sessions"){
-      const n=h.freq||1;let c=0;
-      for(let d=d1;d<=d2;d++){const v=done[hi+"-"+d];if(Array.isArray(v))c+=v.filter(s=>s>0).length;}
-      return n*days>0?Math.round(c/(n*days)*100):0;
-    } else {
-      let c=0;for(let d=d1;d<=d2;d++)if(isDayDoneFromDone(done,hi,d))c++;
-      return Math.round(c/days*100);
-    }
-  });
-  return rates.length?Math.round(rates.reduce((a,b)=>a+b,0)/rates.length):0;
-}
-
-function scoreGrade(s){
-  if(s>=90)return{g:"A+",c:"#059669",bg:"#D1FAE5"};
-  if(s>=80)return{g:"A", c:"#0D9488",bg:"#CCFBF1"};
-  if(s>=70)return{g:"B+",c:"#4EC9C4",bg:"#E0F2FE"};
-  if(s>=60)return{g:"B", c:"#2563EB",bg:"#DBEAFE"};
-  if(s>=50)return{g:"C", c:"#D97706",bg:"#FEF3C7"};
-  if(s>=40)return{g:"D", c:"#EA580C",bg:"#FED7AA"};
-  return{g:"F",c:"#DC2626",bg:"#FEE2E2"};
-}
-
-function calcWeekScores(y,m){
-  const ld=daysIn(m,y),de=elapsed(m,y),idx=activeIdx();
-  const scores=[];
-  for(let w=0;w<5;w++){
-    const start=w*7+1;if(start>de)break;
-    const end=Math.min((w+1)*7,ld,de);
-    scores.push({label:`W${w+1} (${start}-${end})`,short:`W${w+1}`,score:calcPeriodScore(y,m,start,end,idx)});
-  }
-  return scores;
-}
-
-function calcMonthScores(y){
-  const idx=activeIdx(),todayM=now.getMonth(),todayY=now.getFullYear();
-  return MONTHS.map((_,m)=>{
-    if((y>todayY)||(y===todayY&&m>todayM))return null;
-    const de=elapsed(m,y);
-    return de>0?calcPeriodScore(y,m,1,de,idx):null;
-  });
-}
-
-/* ════ SCORES RENDER ════ */
-function renderScores(){
-  const{month,year}=S;
-  const idx=activeIdx();
-  ["cWkScore","cMoScore","cYrComp","cScHist"].forEach(id=>destroyChart(id));
-
-  /* Current week/month scores */
-  const de=elapsed(month,year);
-  const isCM=month===now.getMonth()&&year===now.getFullYear();
-  const todayDay=isCM?now.getDate():de;
-  const weekN=Math.floor((todayDay-1)/7);
-  const wStart=weekN*7+1,wEnd=Math.min(wStart+6,de);
-  const currWeekScore=calcPeriodScore(year,month,wStart,wEnd,idx);
-  const currMonthScore=calcPeriodScore(year,month,1,de,idx);
-
-  /* Best week/month across last 24 months */
-  let bestMo={score:0,label:"—"},bestWk={score:0,label:"—"};
-  for(let i=0;i<24;i++){
-    let m=month-i,y=year;while(m<0){m+=12;y--;}
-    const isFut=(y>now.getFullYear())||(y===now.getFullYear()&&m>now.getMonth());
-    if(isFut)continue;
-    const de2=elapsed(m,y);if(!de2)continue;
-    const ms=calcPeriodScore(y,m,1,de2,idx);
-    if(ms>bestMo.score)bestMo={score:ms,label:MONTHS[m].slice(0,3)+" "+y};
-    calcWeekScores(y,m).forEach((ws,wi)=>{
-      if(ws.score>bestWk.score)bestWk={score:ws.score,label:`W${wi+1} ${MONTHS[m].slice(0,3)} ${y}`};
-    });
-  }
-  const yearMoScores=calcMonthScores(year).filter(s=>s!==null);
-  const yearAvg=yearMoScores.length?Math.round(yearMoScores.reduce((a,b)=>a+b,0)/yearMoScores.length):0;
-
-  /* ─── Score cards ─── */
-  const mk=(score,lbl,sub)=>{const g=scoreGrade(score);return`<div class="sc ${score>=70?"teal":score>=50?"blue":"amber"}">
-    <div class="slbl">${lbl}</div>
-    <div class="sval">${score}<span style="font-size:16px">%</span></div>
-    <div style="margin-top:5px"><span class="sg" style="background:${g.bg};color:${g.c}">${g.g}</span></div>
-    <div class="ssub" style="margin-top:4px">${sub}</div></div>`;};
-  const bmg=scoreGrade(bestMo.score),bwg=scoreGrade(bestWk.score);
-  document.getElementById("scSumRow").innerHTML=
-    mk(currWeekScore,"This Week","W"+(weekN+1)+" of "+MONTHS[month].slice(0,3))+
-    mk(currMonthScore,"This Month",MONTHS[month]+" "+year)+
-    mk(yearAvg,"Year Average","All months in "+year)+
-    `<div class="sc purple"><div class="slbl">Best Month</div><div class="sval">${bestMo.score}<span style="font-size:16px">%</span></div>
-     <div style="margin-top:5px"><span class="sg" style="background:${bmg.bg};color:${bmg.c}">${bmg.g}</span></div><div class="ssub">${bestMo.label}</div></div>`+
-    `<div class="sc green"><div class="slbl">Best Week</div><div class="sval">${bestWk.score}<span style="font-size:16px">%</span></div>
-     <div style="margin-top:5px"><span class="sg" style="background:${bwg.bg};color:${bwg.c}">${bwg.g}</span></div><div class="ssub">${bestWk.label}</div></div>`;
-
-  document.getElementById("scWkTitle").textContent=`Weekly scores — ${MONTHS[month]} ${year}`;
-  document.getElementById("scMoTitle").textContent=`Monthly scores — ${year}`;
-
-  /* ─── Weekly scores chart ─── */
-  const wkS=calcWeekScores(year,month);
-  mkChart("cWkScore","bar",{
-    labels:wkS.map(w=>w.short),
-    datasets:[{
-      data:wkS.map(w=>w.score),
-      backgroundColor:wkS.map(w=>scoreGrade(w.score).c),
-      borderRadius:7,borderSkipped:false
-    }]
-  },{
-    responsive:true,maintainAspectRatio:false,animation:{duration:600},
-    plugins:{legend:{display:false},tooltip:{callbacks:{
-      title:i=>wkS[i[0].dataIndex].label,
-      label:i=>`Score: ${i.raw}%  Grade: ${scoreGrade(i.raw).g}`
-    }}},
-    scales:{
-      x:{grid:{display:false},ticks:{font:{size:11},color:"#888"}},
-      y:{beginAtZero:true,max:100,ticks:{callback:v=>v+"%",font:{size:9},color:"#888"},grid:{color:"rgba(0,0,0,0.05)"}}
-    }
-  });
-
-  /* ─── Monthly scores chart ─── */
-  const moS=calcMonthScores(year);
-  mkChart("cMoScore","bar",{
-    labels:MONTHS.map(m=>m.slice(0,3)),
-    datasets:[{
-      data:moS.map(s=>s??0),
-      backgroundColor:moS.map((s,m2)=>s===null?"#E8E0D0":m2===month&&year===S.year?"#1A1A1A":scoreGrade(s).c),
-      borderRadius:5,borderSkipped:false
-    }]
-  },{
-    responsive:true,maintainAspectRatio:false,animation:{duration:700},
-    plugins:{legend:{display:false},tooltip:{callbacks:{
-      title:i=>`${MONTHS[i[0].dataIndex]} ${year}`,
-      label:i=>moS[i[0].dataIndex]!==null?`Score: ${i.raw}%  Grade: ${scoreGrade(i.raw).g}`:"No data yet"
-    }}},
-    scales:{
-      x:{grid:{display:false},ticks:{font:{size:10},color:"#888"}},
-      y:{beginAtZero:true,max:100,ticks:{callback:v=>v+"%",font:{size:9},color:"#888"},grid:{color:"rgba(0,0,0,0.05)"}}
-    }
-  });
-
-  /* ─── Year vs year comparison ─── */
-  const yrColors=["#4EC9C4","#60A5FA","#A78BFA"];
-  const yrDS=[];
-  for(let yi=0;yi<3;yi++){
-    const y2=year-yi;
-    const sc=calcMonthScores(y2);
-    if(sc.some(s=>s!==null)){
-      yrDS.push({
-        label:String(y2),data:sc,
-        borderColor:yrColors[yi],backgroundColor:"transparent",
-        borderWidth:yi===0?2.5:1.5,
-        pointBackgroundColor:sc.map(s=>s!==null?yrColors[yi]:"transparent"),
-        pointRadius:3,pointHoverRadius:6,
-        tension:.35,spanGaps:true,
-        borderDash:yi>0?[5,3]:[]
-      });
-    }
-  }
-  mkChart("cYrComp","line",{
-    labels:MONTHS.map(m=>m.slice(0,3)),datasets:yrDS
-  },{
-    responsive:true,maintainAspectRatio:false,animation:{duration:700},
-    plugins:{legend:{display:true,position:"top",labels:{font:{size:10},boxWidth:12,padding:8}},
-      tooltip:{callbacks:{label:i=>i.raw!==null?`${i.dataset.label}: ${i.raw}% (${scoreGrade(i.raw).g})`:`${i.dataset.label}: no data`}}},
-    scales:{
-      x:{grid:{display:false},ticks:{font:{size:10},color:"#888"}},
-      y:{beginAtZero:true,max:100,ticks:{callback:v=>v+"%",font:{size:9},color:"#888"},grid:{color:"rgba(0,0,0,0.05)"}}
-    }
-  });
-
-  /* ─── Score history line (18 months) ─── */
-  const histL=[],histD=[],histC=[];
-  for(let i=17;i>=0;i--){
-    let m=month-i,y=year;while(m<0){m+=12;y--;}
-    if((y>now.getFullYear())||(y===now.getFullYear()&&m>now.getMonth()))continue;
-    const de3=elapsed(m,y);if(!de3)continue;
-    const s=calcPeriodScore(y,m,1,de3,idx);
-    histL.push(MONTHS[m].slice(0,3)+" "+String(y).slice(2));
-    histD.push(s);histC.push(scoreGrade(s).c);
-  }
-  mkChart("cScHist","line",{
-    labels:histL,
-    datasets:[{
-      data:histD,borderColor:"#4EC9C4",backgroundColor:"rgba(78,201,196,0.08)",
-      borderWidth:2.5,pointBackgroundColor:histC,pointRadius:5,pointHoverRadius:7,
-      tension:.35,fill:true
-    }]
-  },{
-    responsive:true,maintainAspectRatio:false,animation:{duration:800},
-    plugins:{legend:{display:false},tooltip:{callbacks:{
-      label:i=>`${i.raw}%  Grade: ${scoreGrade(i.raw).g}`
-    }}},
-    scales:{
-      x:{grid:{display:false},ticks:{font:{size:9},color:"#888",maxRotation:40}},
-      y:{beginAtZero:true,max:100,ticks:{callback:v=>v+"%",font:{size:9},color:"#888"},grid:{color:"rgba(0,0,0,0.05)"}}
-    }
-  });
-
-  /* ─── Scorecard table ─── */
-  let rows="";
-  for(let i=0;i<18;i++){
-    let m=month-i,y=year;while(m<0){m+=12;y--;}
-    if((y>now.getFullYear())||(y===now.getFullYear()&&m>now.getMonth()))continue;
-    const de4=elapsed(m,y);if(!de4)continue;
-    const s=calcPeriodScore(y,m,1,de4,idx);
-    let pm2=m-1,py2=y;if(pm2<0){pm2=11;py2--;}
-    const de5=elapsed(pm2,py2);
-    const ps=de5>0?calcPeriodScore(py2,pm2,1,de5,idx):null;
-    const df=ps!==null?s-ps:null;
-    const dfHtml=df===null?"—":df>0?`<span style="color:#059669;font-weight:bold">↑ +${df}%</span>`:df<0?`<span style="color:#DC2626;font-weight:bold">↓ ${df}%</span>`:`<span style="color:#888">→ 0%</span>`;
-    const sg2=scoreGrade(s);
-    /* weekly breakdown */
-    const wkSc=calcWeekScores(y,m);
-    const wkCells=wkSc.map(w=>{const wg=scoreGrade(w.score);return`<span class="sg" style="background:${wg.bg};color:${wg.c};font-size:9px;padding:1px 5px;margin:0 1px">${w.short}:${w.score}%</span>`;}).join("");
-    const isCurrent=m===month&&y===year;
-    rows+=`<tr style="${isCurrent?"background:#F0FAF9":""}">
-      <td style="font-weight:bold;color:#1A1A1A">${MONTHS[m].slice(0,3)} ${y}${isCurrent?`<span style="font-size:9px;color:#4EC9C4;margin-left:4px">← current</span>`:""}</td>
-      <td><span style="font-size:20px;font-weight:bold">${s}%</span></td>
-      <td><span class="sg" style="background:${sg2.bg};color:${sg2.c}">${sg2.g}</span></td>
-      <td>${dfHtml}</td>
-      <td style="font-size:10px">${wkCells}</td>
-    </tr>`;
-  }
-  document.getElementById("scTable").innerHTML=`
-    <table style="width:100%;border-collapse:collapse;font-size:12px">
-      <thead><tr style="border-bottom:2px solid #D4C9B0;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#999">
-        <th style="text-align:left;padding:7px 8px">Month</th>
-        <th style="text-align:left;padding:7px 8px">Score</th>
-        <th style="text-align:left;padding:7px 8px">Grade</th>
-        <th style="text-align:left;padding:7px 8px">vs Previous</th>
-        <th style="text-align:left;padding:7px 8px">Weekly Breakdown</th>
-      </tr></thead>
-      <tbody>${rows}</tbody>
-    </table>`;
-}
+render();
 </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>الجدول الأسبوعي والمتابعة السنوية</title>
+<title>Weekly Plan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Kufi+Arabic:wght@600;700&family=Readex+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -350,7 +350,23 @@ dialog::backdrop{background:rgba(14,17,32,.5);backdrop-filter:blur(2px)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 
 /* ---------- print ---------- */
-#printArea{display:none}
+#printArea{display:none;font-size:11px}
+#printArea .board,#printArea .card,#printArea .kpi{box-shadow:none}
+#printArea .scroller{overflow:visible}
+#printArea table.tt,#printArea table.ht{min-width:0}
+#printArea .slot{min-height:44px;padding:5px 7px}
+#printArea .quote{padding:10px 18px;margin-top:8px}#printArea .quote blockquote{font-size:1.1rem;line-height:1.6}#printArea .q-mark{font-size:5rem}
+#printArea.pr-week .pr-h2{margin:10px 0 6px}
+#printArea.pr-week .card{padding:10px 14px}
+#printArea.pr-week .tt thead th{padding:8px 4px 6px}
+#printArea.pr-week .tt .time{padding:6px 10px}
+#printArea.pr-week .ht th,#printArea.pr-week .ht td{padding:6px 6px}
+#printArea.pr-week .legend{margin:6px 0}
+#printArea .pr-bottom{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:14px;align-items:start}
+#printArea .pr-bottom>div:only-child{grid-column:1/-1}
+#printArea .pr-todos{display:grid;grid-template-columns:1fr 1fr;column-gap:14px}
+#printArea .pr-todos .todo{padding:5px 2px}
+#printArea.pr-week .ht td small{font-size:.75em}
 .pr-head{position:relative;overflow:hidden;background:var(--acc);color:#fff;border-radius:14px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;isolation:isolate}
 .pr-head::before{content:"";position:absolute;inset:0;background-image:var(--pat);opacity:.16;z-index:-1}
 .pr-head h1{font-family:"Noto Kufi Arabic","Readex Pro",sans-serif;font-size:1.5rem;margin:0}
@@ -368,6 +384,9 @@ dialog::backdrop{background:rgba(14,17,32,.5);backdrop-filter:blur(2px)}
   table.tt,table.ht{min-width:0}
   .slot{min-height:52px;padding:6px 7px}
   .card,.kpi,.tt tr,.hbar,.board,.quote{break-inside:avoid}
+  #printArea.one-page{break-inside:avoid;page-break-inside:avoid}
+  #printArea .pr-bottom{break-inside:avoid;page-break-inside:avoid}
+  #printArea .pr-h2{break-after:avoid;page-break-after:avoid}
   .quote{padding:12px 20px}.quote blockquote{font-size:1.15rem}.q-mark{font-size:6rem}
   .no-print{display:none!important}
   .grid2{grid-template-columns:1fr 1fr}
@@ -391,6 +410,22 @@ dialog::backdrop{background:rgba(14,17,32,.5);backdrop-filter:blur(2px)}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 
+/* ---------- language modes ---------- */
+.bi{display:block;direction:ltr;unicode-bidi:isolate;font-size:.9em;opacity:.8}
+.empty .bi{text-align:center}
+.slot .bi{display:block;direction:ltr;text-align:left;font-size:11.5px;font-weight:500;color:var(--ink-soft);opacity:.9;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-style:normal}
+.q-en{direction:ltr;text-align:left;margin:8px 0 0;font-family:"Amiri",serif;font-size:1.05rem;line-height:1.6;color:var(--ink-soft)}
+.langseg button{padding:6px 11px;white-space:nowrap}
+.rangebar .langseg{margin-inline-start:auto}
+[dir=ltr] .slot,[dir=ltr] .slot b,[dir=ltr] .slot em,[dir=ltr] .todo .tt-t,[dir=ltr] .ht td b,[dir=ltr] .ht td small{text-align:left}
+[dir=ltr] .slot b{padding-left:0;padding-right:22px}
+[dir=ltr] .slot .tick{left:auto;right:8px}
+[dir=ltr] .q-mark{left:auto;right:22px}
+[dir=ltr] .hero::before{-webkit-mask-image:linear-gradient(to right,#000 10%,transparent 85%);mask-image:linear-gradient(to right,#000 10%,transparent 85%)}
+[dir=ltr] .hbtn svg,[dir=ltr] .qbtn svg{transform:scaleX(-1)}
+[dir=ltr] .quote blockquote{font-family:"Amiri",serif}
+.daychip.today::before{content:var(--today-lbl,"النهارده")}
+
 </style>
 </head>
 <body>
@@ -412,7 +447,10 @@ dialog::backdrop{background:rgba(14,17,32,.5);backdrop-filter:blur(2px)}
 
 /* ============ data ============ */
 const KEY='weekly-planner-52-v1';
-const DAYS=['السبت','الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة'];
+const DAYS_AR=['السبت','الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة'];
+const DAYS_EN=['Saturday','Sunday','Monday','Tuesday','Wednesday','Thursday','Friday'];
+const DAYS_EN_S=['Sat','Sun','Mon','Tue','Wed','Thu','Fri'];
+let DAYS=DAYS_AR.slice();
 const DAY_MS=864e5;
 const uid=()=>Math.random().toString(36).slice(2,9);
 const clone=o=>JSON.parse(JSON.stringify(o));
@@ -475,23 +513,67 @@ try{state=JSON.parse(localStorage.getItem(KEY))}catch(e){state=null}
 if(!state||!state.template){state=defaults()}else{const raw=state;state={...defaults(),...raw};
   if(raw.owner==='Mohamed Ghaith'){state.owner='';try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
   if(raw.startV!==2){state.start='2026-10-10';state.startV=2;try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){toast('تعذّر الحفظ في المتصفح، اعمل نسخة احتياطية من الإعدادات')}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){toast(T('تعذّر الحفظ في المتصفح، اعمل نسخة احتياطية من الإعدادات','Could not save in this browser. Download a backup from Settings.'))}}
+
+/* ============ language: ar | bi | en ============ */
+const L=()=>(state&&state.lang==='en')?'en':'ar';
+function T(a,e){const l=L();return l==='en'?e:l==='bi'?`${a} · ${e}`:a}
+function TP(a,e){const l=L();return l==='en'?e:l==='bi'?`${a}<span class="bi">${e}</span>`:a}
+const TR={
+  'الجدول الأسبوعي':'Weekly Schedule','قرآن ومهارات ومحاسبة، كل يوم بخطوة ثابتة':'Quran, skills & accounting — one steady step every day',
+  'وصايا غالية':'Precious Advice',
+  'حريٌّ بك أن تتذكّر أن السعي لطلب العلم هو توفيقٌ من الله، ورزقٌ ساقه إليك.':'Remember that the pursuit of knowledge is a success granted by Allah, a provision He has guided to you.',
+  'الانتفاع بالعلم فتحٌ من الله ومِنّة، لذلك لا بد من تجديد النية، وإظهار الحاجة والافتقار إلى المولى سبحانه.':'Benefiting from knowledge is an opening and a favor from Allah, so keep renewing your intention and show your need of Him.',
+  'تخلّص من كل فكرةٍ تُشعرك أن ما تقوم به هو من حولك وقوتك، وإيّاك أن تُعجب بنفسك.':'Let go of any thought that what you achieve is by your own might and power, and beware of self-admiration.',
+  'طريق العلم طريقٌ محفوفٌ بالابتلاءات وقواطع الطريق، لذلك فأنت تحتاج إلى الصبر والمجاهدة.':'The path of knowledge is full of trials and obstacles, so you need patience and steady effort.',
+  'قد يُحرم المرء فضل العلم ويُحجب عنه بسبب ذنب، فلا يفارقنّ لسانك الاستغفار.':'A person may be deprived of the blessing of knowledge because of a sin, so never let seeking forgiveness leave your tongue.',
+  'الدعاء من أقوى الأسلحة، فلا تفتر أن تدعو الله أن يشرح صدرك، وينفعك بهذا العلم، ويوفقك للعمل الصالح، وأن تكون من أهل الجنة.':'Supplication is among the strongest weapons: keep asking Allah to open your heart, benefit you with this knowledge, guide you to good deeds, and make you among the people of Paradise.',
+  'القرآن والذكر':'Quran & Dhikr','المهارات التقنية':'Technical Skills','المحاسبة والشهادات':'Accounting & Certifications','مراجعة':'Review',
+  'حفظ القرآن':'Quran Memorization','حفظ + أذكار + نفع':'Memorize + adhkar + benefit','دوال، Pivot، Power Query':'Functions, Pivot, Power Query',
+  'أدوات الذكاء الاصطناعي في الشغل':'AI tools at work','تمارين منطق وتحليل':'Logic & analysis drills','نماذج بيانات و DAX':'Data models & DAX',
+  'تطبيق عملي ومشروع صغير':'Hands-on mini project','محاسبة وتقارير Odoo':'Odoo accounting & reports','اختبار ومراجعة':'Test & review',
+  'مذاكرة + أسئلة MCQ':'Study + MCQ practice','أساسيات + حل تمارين':'Basics + exercises','معيار جديد':'A new standard','قراءة + أفكار':'Reading + ideas',
+  'حالات عملية':'Case studies','تلخيص الأسبوع':'Summarize the week','مراجعة المعايير':'Standards review','تطبيق على فكرة':'Apply to an idea',
+  'مراجعة وتخطيط':'Review & Planning','تجهيز الأسبوع الجاي':'Prepare next week',
+  'القراءة':'Reading','ولو 15 صفحة في اليوم':'At least 15 pages a day','مفيش سوشيال ميديا':'No social media','بدون تصفح عشوائي':'No mindless scrolling',
+  'تدوين اليوميات':'Journaling','دقائق في آخر اليوم':'A few minutes at the end of the day','غض البصر':'Lowering the gaze','طول اليوم':'All day long',
+  'كحلي وذهبي':'Navy & Gold','زمردي ورملي':'Emerald & Sand','عنابي ومشمشي':'Bordeaux & Apricot','بترولي وبرتقالي':'Petrol & Orange',
+  'بنفسجي ملكي':'Royal Purple','فحمي ونحاسي':'Charcoal & Copper','زيتوني وكريمي':'Olive & Cream','كوبالت ومرجاني':'Cobalt & Coral',
+  'توتي وتركواز':'Berry & Turquoise','صنوبري وذهبي':'Pine & Gold','طوبي ورملي':'Terracotta & Sand','نيلي وتركواز':'Indigo & Turquoise','جرافيت وليموني':'Graphite & Lime',
+  'قسم جديد':'New category','اكتب الوصية الجديدة هنا':'Write the new advice here'
+};
+const trOf=s=>TR[String(s??'').trim()];
+/* translate user/default content: unknown text passes through unchanged */
+function C(s){const e=trOf(s),l=L();if(!e||l==='ar')return s;return l==='en'?e:`${s} · ${e}`}
+function syncLang(){const l=L(),r=document.documentElement;
+  DAYS=l==='en'?DAYS_EN.slice():l==='bi'?DAYS_AR.map((d,i)=>`${d} · ${DAYS_EN_S[i]}`):DAYS_AR.slice();
+  r.lang=l==='en'?'en':'ar';r.dir=l==='en'?'ltr':'rtl';
+  r.style.setProperty('--today-lbl',JSON.stringify(T('النهارده','Today')));
+  const tabs={schedule:T('الجدول','Schedule'),habits:T('العادات','Habits'),dash:T('الداشبورد والتقارير','Dashboard & Reports'),settings:T('الإعدادات','Settings')};
+  document.querySelectorAll('.tabs button').forEach(b=>b.textContent=tabs[b.dataset.tab]);
+  document.querySelector('.tabs').setAttribute('aria-label',T('الأقسام','Sections'));
+  document.title='Weekly Plan';
+}
+function langSeg(){const l=L();
+  return `<div class="seg langseg no-print" role="group" aria-label="Language / اللغة"><button data-lang="ar" aria-pressed="${l==='ar'}">عربي</button><button data-lang="en" aria-pressed="${l==='en'}">English</button></div>`}
 
 /* ============ helpers ============ */
 function currentWeek(){const s=parseISO(state.start);const n=Math.floor((new Date()-s)/DAY_MS/7)+1;return Math.min(Math.max(n,1),state.weeksCount)}
 function isThisWeek(n){const a=weekStart(n),now=new Date();return now>=a&&now<new Date(a.getTime()+7*DAY_MS)}
 function daysToStart(){return Math.ceil((parseISO(state.start)-new Date())/DAY_MS)}
 function weekStart(n){const d=parseISO(state.start);d.setDate(d.getDate()+(n-1)*7);return d}
-const fmtD=d=>d.toLocaleDateString('ar-EG-u-nu-latn',{day:'numeric',month:'short'});
+const fmtD=d=>d.toLocaleDateString(L()==='en'?'en-GB':'ar-EG-u-nu-latn',{day:'numeric',month:'short'});
 function rangeLabel(n){const a=weekStart(n),b=new Date(a);b.setDate(b.getDate()+6);return `${fmtD(a)} – ${fmtD(b)}`}
 function dayDate(n,i){const d=weekStart(n);d.setDate(d.getDate()+i);return fmtD(d)}
 function todayIdx(){return (new Date().getDay()+1)%7}
 const toMin=t=>{const [h,m]=t.split(':').map(Number);return h*60+m};
 function dur(s){let d=toMin(s.end)-toMin(s.start);if(d<=0)d+=1440;return d}
-function fmt12(t){const [h,m]=t.split(':').map(Number);return `${h%12||12}:${pad(m)} ${h<12?'ص':'م'}`}
-function durLabel(m){if(m%60===0)return m===60?'ساعة':m===120?'ساعتين':`${m/60} ساعات`;if(m===90)return 'ساعة ونص';if(m<60)return `${m} دقيقة`;return `${Math.floor(m/60)} س و ${m%60} د`}
+function fmt12(t){const [h,m]=t.split(':').map(Number),en=L()==='en';return `${h%12||12}:${pad(m)} ${h<12?(en?'AM':'ص'):(en?'PM':'م')}`}
+function durLabelAr(m){if(m%60===0)return m===60?'ساعة':m===120?'ساعتين':`${m/60} ساعات`;if(m===90)return 'ساعة ونص';if(m<60)return `${m} دقيقة`;return `${Math.floor(m/60)} س و ${m%60} د`}
+function durLabelEn(m){if(m%60===0)return m===60?'1 hr':`${m/60} hrs`;if(m===90)return '1.5 hrs';if(m<60)return `${m} min`;return `${Math.floor(m/60)} h ${m%60} m`}
+function durLabel(m){return T(durLabelAr(m),durLabelEn(m))}
 const hrs=m=>{const v=Math.round(m/6)/10;return String(v)};
-const catOf=id=>state.cats.find(c=>c.id===id)||{id:'',name:'بدون تصنيف',color:'#8A90A8'};
+const catOf=id=>state.cats.find(c=>c.id===id)||{id:'',name:T('بدون تصنيف','Uncategorized'),color:'#8A90A8'};
 const getWeek=(n,create)=>{if(!state.weeks[n]&&create)state.weeks[n]={plan:null,done:{},habits:{},note:''};return state.weeks[n]};
 const getPlan=n=>(state.weeks[n]&&state.weeks[n].plan)||state.template;
 const habitsFor=n=>state.habits.filter(h=>(h.from||1)<=n&&(!h.to||n<=h.to));
@@ -615,11 +697,11 @@ function fitQuote(){
 let fitT;window.addEventListener('resize',()=>{clearTimeout(fitT);fitT=setTimeout(()=>{fitQuote();fitSlots(document.getElementById('main'))},120)});
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{fitQuote();fitSlots(document.getElementById('main'))});
 function render(){
-  applyTheme();
+  applyTheme();syncLang();
   applyWeekTheme(ui.tab==='schedule'||ui.tab==='habits'?ui.week:currentWeek());
-  document.getElementById('hTitle').textContent=state.title;
-  document.getElementById('hSub').textContent=state.subtitle;
   const he=ui.edit&&(ui.tab==='schedule'||ui.tab==='habits');
+  document.getElementById('hTitle').textContent=he?state.title:C(state.title);
+  document.getElementById('hSub').textContent=he?state.subtitle:C(state.subtitle);
   ['hTitle','hSub'].forEach(id=>{const el=document.getElementById(id);if(he)el.setAttribute('contenteditable','true');else el.removeAttribute('contenteditable')});
   document.getElementById('headBox').classList.toggle('edit-head',he);
   document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===ui.tab));
@@ -634,117 +716,127 @@ function ring(p,label){const r=31,c=2*Math.PI*r;
 function hero(){
   const n=ui.week,N=state.weeksCount,st=weekStats(n),t=themeOf(n),cur=currentWeek();
   const tp=st.tP?Math.round(st.tD/st.tP*100):0;
-  let o='';for(let i=1;i<=N;i++)o+=`<option value="${i}" ${i===n?'selected':''}>أسبوع ${i}: ${rangeLabel(i)}${isThisWeek(i)?' (الحالي)':''}</option>`;
+  let o='';for(let i=1;i<=N;i++)o+=`<option value="${i}" ${i===n?'selected':''}>${T('أسبوع','Week')} ${i}: ${rangeLabel(i)}${isThisWeek(i)?` (${T('الحالي','current')})`:''}</option>`;
   return `<section class="hero">
     <span class="deco ${t.deco}"></span>
-    <div class="wk"><div class="wk-num">${n}<small>من ${N} أسبوع</small></div></div>
+    <div class="wk"><div class="wk-num">${n}<small>${T(`من ${N} أسبوع`,`of ${N} weeks`)}</small></div></div>
     <div class="wk-meta">
       <div class="wk-range">${rangeLabel(n)}</div>
-      <div class="wk-theme"><i></i>${esc(t.name)}${isThisWeek(n)?' &nbsp;•&nbsp; الأسبوع الحالي':''}${daysToStart()>0&&n===1?` &nbsp;•&nbsp; بيبدأ بعد ${daysToStart()} ${daysToStart()<=10?'أيام':'يوم'}`:''}</div>
+      <div class="wk-theme"><i></i>${esc(C(t.name))}${isThisWeek(n)?' &nbsp;•&nbsp; '+T('الأسبوع الحالي','Current week'):''}${daysToStart()>0&&n===1?` &nbsp;•&nbsp; ${T(`بيبدأ بعد ${daysToStart()} ${daysToStart()<=10?'أيام':'يوم'}`,`Starts in ${daysToStart()} day${daysToStart()===1?'':'s'}`)}`:''}</div>
       <div class="wk-ctl">
-        <button class="hbtn" data-act="prev" ${n<=1?'disabled':''} aria-label="الأسبوع السابق">${ICON.prev}</button>
-        <select class="hsel" id="weekSel" aria-label="اختار الأسبوع">${o}</select>
-        <button class="hbtn" data-act="next" ${n>=N?'disabled':''} aria-label="الأسبوع التالي">${ICON.next}</button>
-        ${n!==cur?'<button class="hpill" data-act="today">ارجع للأسبوع الحالي</button>':''}
+        <button class="hbtn" data-act="prev" ${n<=1?'disabled':''} aria-label="${T('الأسبوع السابق','Previous week')}">${ICON.prev}</button>
+        <select class="hsel" id="weekSel" aria-label="${T('اختار الأسبوع','Choose week')}">${o}</select>
+        <button class="hbtn" data-act="next" ${n>=N?'disabled':''} aria-label="${T('الأسبوع التالي','Next week')}">${ICON.next}</button>
+        ${n!==cur?`<button class="hpill" data-act="today">${T('ارجع للأسبوع الحالي','Back to current week')}</button>`:''}
       </div>
     </div>
-    <div class="rings">${ring(st.pct,'الجدول')}${ring(st.hPct,'العادات')}${ring(tp,'المهام')}</div>
+    <div class="rings">${ring(st.pct,T('الجدول','Schedule'))}${ring(st.hPct,T('العادات','Habits'))}${ring(tp,T('المهام','Tasks'))}</div>
   </section>`;
 }
 function toolbar(withView){
   const w=state.weeks[ui.week],custom=!!(w&&w.plan);
   return `<div class="toolbar">
-    ${withView?`<div class="seg" role="group" aria-label="طريقة العرض"><button data-view="week" aria-pressed="${ui.view==='week'}">الأسبوع كله</button><button data-view="day" aria-pressed="${ui.view==='day'}">يوم بيوم</button></div>`:''}
-    <span class="status ${custom?'custom':''}"><i></i>${custom?'خطة خاصة بالأسبوع ده':'ماشي على الجدول الأساسي'}</span>
+    ${withView?`<div class="seg" role="group" aria-label="${T('طريقة العرض','View')}"><button data-view="week" aria-pressed="${ui.view==='week'}">${T('الأسبوع كله','Whole week')}</button><button data-view="day" aria-pressed="${ui.view==='day'}">${T('يوم بيوم','Day by day')}</button></div>`:''}
+    <span class="status ${custom?'custom':''}"><i></i>${custom?T('خطة خاصة بالأسبوع ده','Custom plan for this week'):T('ماشي على الجدول الأساسي','Following the master schedule')}</span>
     <span class="grow"></span>
-    <button class="btn ${ui.edit?'on':''}" data-act="edit">${ui.edit?ICON.check+' خلصت تعديل':ICON.edit+' تعديل'}</button>
-    <button class="btn primary" data-act="print-week">${ICON.print} طباعة / PDF</button>
+    <button class="btn ${ui.edit?'on':''}" data-act="edit">${ui.edit?ICON.check+' '+T('خلصت تعديل','Done editing'):ICON.edit+' '+T('تعديل','Edit')}</button>
+    ${langSeg()}
+    <button class="btn primary" data-act="print-week">${ICON.print} ${T('طباعة','Print')} / PDF</button>
   </div>`;
 }
 function editPanel(){
   const w=state.weeks[ui.week],custom=!!(w&&w.plan),cur=w&&w.theme;
   return `<div class="editpanel">
-    <div class="ep-head"><i></i>وضع التعديل شغال</div>
-    <div class="ep-row"><span class="ep-label">التعديل يتطبق على</span>
-      <div class="radio-seg"><label><input type="radio" name="scope" value="week" ${ui.scope==='week'?'checked':''}>الأسبوع ده بس</label>
-      <label><input type="radio" name="scope" value="master" ${ui.scope==='master'?'checked':''}>الجدول الأساسي (من الأسبوع ده ورايح)</label></div></div>
-    <div class="ep-row"><span class="ep-label">شكل الأسبوع</span>
-      <div class="swatches"><button class="sw-auto" data-theme-pick="" aria-pressed="${!cur}">تلقائي</button>
-      ${THEMES.map(t=>`<button class="sw" style="--a:${t.a};--b:${t.b}" data-theme-pick="${t.id}" aria-pressed="${cur===t.id}" title="${t.name}" aria-label="${t.name}"></button>`).join('')}</div></div>
-    <div class="ep-row"><span class="ep-label">أدوات الأسبوع</span>
-      <button class="btn sm" data-act="addrow">${ICON.plus} إضافة فترة</button>
-      ${ui.week>1?'<button class="btn sm" data-act="copyprev">انسخ خطة الأسبوع اللي فات</button>':''}
-      ${custom?'<button class="btn sm" data-act="revert">رجّعه للجدول الأساسي</button><button class="btn sm" data-act="promote">اعتمده كجدول أساسي</button>':''}</div>
-    <div class="ep-row"><p class="hint">عدّل العنوان والوصف من الشريط اللي فوق مباشرة، وغيّر الأوقات من عمود الوقت، واضغط على أي خانة تعدّلها. تعديل الجدول الأساسي بيطبّق على الأسابيع الجاية بس، والأسابيع اللي فاتت بتفضل زي ما هي عشان أرقام الداشبورد متتغيرش.</p></div>
+    <div class="ep-head"><i></i>${T('وضع التعديل شغال','Edit mode is on')}</div>
+    <div class="ep-row"><span class="ep-label">${T('التعديل يتطبق على','Changes apply to')}</span>
+      <div class="radio-seg"><label><input type="radio" name="scope" value="week" ${ui.scope==='week'?'checked':''}>${T('الأسبوع ده بس','This week only')}</label>
+      <label><input type="radio" name="scope" value="master" ${ui.scope==='master'?'checked':''}>${T('الجدول الأساسي (من الأسبوع ده ورايح)','Master schedule (this week onward)')}</label></div></div>
+    <div class="ep-row"><span class="ep-label">${T('شكل الأسبوع','Week style')}</span>
+      <div class="swatches"><button class="sw-auto" data-theme-pick="" aria-pressed="${!cur}">${T('تلقائي','Auto')}</button>
+      ${THEMES.map(t=>`<button class="sw" style="--a:${t.a};--b:${t.b}" data-theme-pick="${t.id}" aria-pressed="${cur===t.id}" title="${esc(C(t.name))}" aria-label="${esc(C(t.name))}"></button>`).join('')}</div></div>
+    <div class="ep-row"><span class="ep-label">${T('أدوات الأسبوع','Week tools')}</span>
+      <button class="btn sm" data-act="addrow">${ICON.plus} ${T('إضافة فترة','Add time slot')}</button>
+      ${ui.week>1?`<button class="btn sm" data-act="copyprev">${T('انسخ خطة الأسبوع اللي فات','Copy last week’s plan')}</button>`:''}
+      ${custom?`<button class="btn sm" data-act="revert">${T('رجّعه للجدول الأساسي','Revert to master schedule')}</button><button class="btn sm" data-act="promote">${T('اعتمده كجدول أساسي','Make it the master schedule')}</button>`:''}</div>
+    <div class="ep-row"><p class="hint">${TP('عدّل العنوان والوصف من الشريط اللي فوق مباشرة، وغيّر الأوقات من عمود الوقت، واضغط على أي خانة تعدّلها. تعديل الجدول الأساسي بيطبّق على الأسابيع الجاية بس، والأسابيع اللي فاتت بتفضل زي ما هي عشان أرقام الداشبورد متتغيرش.','Edit the title and subtitle directly in the top bar, change times from the time column, and tap any cell to edit it. Master-schedule edits apply to upcoming weeks only; past weeks stay as they are so the dashboard numbers don’t change.')}</p></div>
   </div>`;
 }
 
 function slotHtml(c,sid,i,done,interactive){
   const cat=catOf(c.c),tag=interactive?'button':'div';
-  return `<${tag} class="slot ${done?'done':''}" style="--c:${cat.color}" ${interactive?`data-cell="${sid}|${i}" aria-pressed="${done}" title="${ui.edit?'اضغط للتعديل':'اضغط لما تخلّصها'}"`:''}><b><bdi>${esc(c.t)}</bdi>${c.star?'<span class="star">★</span>':''}</b>${c.s?`<em>${esc(c.s)}</em>`:''}<i class="tick" aria-hidden="true">✓</i></${tag}>`;
+  return `<${tag} class="slot ${done?'done':''}" style="--c:${cat.color}" ${interactive?`data-cell="${sid}|${i}" aria-pressed="${done}" title="${ui.edit?T('اضغط للتعديل','Tap to edit'):T('اضغط لما تخلّصها','Tap when done')}"`:''}>${slotText(c)}<i class="tick" aria-hidden="true">✓</i></${tag}>`;
+}
+function slotText(c){
+  const l=L(),et=trOf(c.t),es=c.s?trOf(c.s):'',star=c.star?'<span class="star">★</span>':'';
+  if(l==='en')return `<b><bdi>${esc(et||c.t)}</bdi>${star}</b>${c.s?`<em>${esc(es||c.s)}</em>`:''}`;
+  let h=`<b><bdi>${esc(c.t)}</bdi>${star}</b>${c.s?`<em>${esc(c.s)}</em>`:''}`;
+  if(l==='bi'&&(et||es))h+=`<em class="bi">${[et,es].filter(Boolean).map(esc).join(' — ')}</em>`;
+  return h;
 }
 function scheduleTable(n,interactive){
   const plan=getPlan(n),w=state.weeks[n]||{done:{}},done=w.done||{};
   const slots=[...plan.slots].sort((a,b)=>toMin(a.start)-toMin(b.start));
   const isCur=isThisWeek(n),ti=todayIdx(),ed=interactive&&ui.edit;
-  let h=`<table class="tt"><thead><tr><th class="time" style="font-size:.8rem;color:var(--muted);font-weight:500">الوقت</th>`;
-  DAYS.forEach((d,i)=>h+=`<th class="${isCur&&i===ti?'is-today':''}" ${isCur&&i===ti?'id="todayCol"':''}>${d}<small>${dayDate(n,i)}</small>${isCur&&i===ti&&interactive?'<span class="today-chip">النهارده</span>':''}</th>`);
+  let h=`<table class="tt"><thead><tr><th class="time" style="font-size:.8rem;color:var(--muted);font-weight:500">${T('الوقت','Time')}</th>`;
+  DAYS.forEach((d,i)=>h+=`<th class="${isCur&&i===ti?'is-today':''}" ${isCur&&i===ti?'id="todayCol"':''}>${d}<small>${dayDate(n,i)}</small>${isCur&&i===ti&&interactive?`<span class="today-chip">${T('النهارده','Today')}</span>`:''}</th>`);
   h+='</tr></thead><tbody>';
-  if(!slots.length)h+=`<tr><td colspan="8"><div class="empty"><b>مفيش فترات في الأسبوع ده</b>اضغط "تعديل" وبعدين "إضافة فترة".</div></td></tr>`;
+  if(!slots.length)h+=`<tr><td colspan="8"><div class="empty"><b>${T('مفيش فترات في الأسبوع ده','No time slots this week')}</b>${TP('اضغط "تعديل" وبعدين "إضافة فترة".','Tap “Edit”, then “Add time slot”.')}</div></td></tr>`;
   slots.forEach(s=>{
-    h+=ed?`<tr><th class="time" scope="row"><div class="tedit"><label>من<input type="time" data-tslot="${s.id}" data-tf="start" value="${s.start}"></label><label>إلى<input type="time" data-tslot="${s.id}" data-tf="end" value="${s.end}"></label><button class="del" data-delslot="${s.id}">حذف الفترة</button></div></th>`
-      :`<tr><th class="time" scope="row"><b>${fmt12(s.start)}</b><span class="to">إلى ${fmt12(s.end)}</span><span class="du">${durLabel(dur(s))}</span></th>`;
+    h+=ed?`<tr><th class="time" scope="row"><div class="tedit"><label>${T('من','From')}<input type="time" data-tslot="${s.id}" data-tf="start" value="${s.start}"></label><label>${T('إلى','To')}<input type="time" data-tslot="${s.id}" data-tf="end" value="${s.end}"></label><button class="del" data-delslot="${s.id}">${T('حذف الفترة','Delete slot')}</button></div></th>`
+      :`<tr><th class="time" scope="row"><b>${fmt12(s.start)}</b><span class="to">${L()==='en'?'to':'إلى'} ${fmt12(s.end)}</span><span class="du">${durLabel(dur(s))}</span></th>`;
     const cells=plan.cells[s.id]||[];
     for(let i=0;i<7;i++){
       const c=cells[i],cls=isCur&&i===ti?'is-today':'';
-      if(!c||!c.t){h+=`<td class="${cls}">${ed?`<button class="addcell" data-cell="${s.id}|${i}">+ إضافة</button>`:''}</td>`;continue}
+      if(!c||!c.t){h+=`<td class="${cls}">${ed?`<button class="addcell" data-cell="${s.id}|${i}">+ ${T('إضافة','Add')}</button>`:''}</td>`;continue}
       h+=`<td class="${cls}">${slotHtml(c,s.id,i,!!done[s.id+'_'+i],interactive)}</td>`;
     }
     h+='</tr>';
   });
-  if(ed)h+=`<tr><td class="addrowcell" colspan="8"><button class="addrowbtn" data-act="addrow">+ إضافة فترة جديدة تحت</button></td></tr>`;
+  if(ed)h+=`<tr><td class="addrowcell" colspan="8"><button class="addrowbtn" data-act="addrow">+ ${T('إضافة فترة جديدة تحت','Add a new slot below')}</button></td></tr>`;
   const st=weekStats(n);
-  h+=`</tbody><tfoot><tr><th class="time">إنجاز اليوم</th>${st.day.map((d,i)=>{const p=d.p?Math.round(d.d/d.p*100):0;return `<td class="${isCur&&i===ti?'is-today':''}">${d.p?`<div class="minibar"><i style="width:${p}%"></i></div><span>${p}%</span>`:'<span>—</span>'}</td>`}).join('')}</tr></tfoot></table>`;
+  h+=`</tbody><tfoot><tr><th class="time">${T('إنجاز اليوم','Daily progress')}</th>${st.day.map((d,i)=>{const p=d.p?Math.round(d.d/d.p*100):0;return `<td class="${isCur&&i===ti?'is-today':''}">${d.p?`<div class="minibar"><i style="width:${p}%"></i></div><span>${p}%</span>`:'<span>—</span>'}</td>`}).join('')}</tr></tfoot></table>`;
   return h;
 }
 function dayView(n){
   const plan=getPlan(n),w=state.weeks[n]||{done:{}},done=w.done||{},st=weekStats(n),isCur=isThisWeek(n),ti=todayIdx(),i=ui.day,ed=ui.edit;
-  let h=`<div class="daychips" role="group" aria-label="اختار اليوم">${DAYS.map((d,k)=>{const p=st.day[k].p?Math.round(st.day[k].d/st.day[k].p*100):0;
+  let h=`<div class="daychips" role="group" aria-label="${T('اختار اليوم','Choose day')}">${DAYS.map((d,k)=>{const p=st.day[k].p?Math.round(st.day[k].d/st.day[k].p*100):0;
     return `<button class="daychip ${isCur&&k===ti?'today':''}" data-day="${k}" aria-pressed="${k===i}"><b>${d}</b><span>${dayDate(n,k)}</span><div class="dp"><i style="width:${p}%"></i></div></button>`}).join('')}</div>`;
   const slots=[...plan.slots].sort((a,b)=>toMin(a.start)-toMin(b.start));
   let rows='';
   slots.forEach(s=>{const c=(plan.cells[s.id]||[])[i];
-    if(!c||!c.t){if(ed)rows+=`<div class="tl-row"><div class="tl-time"><b>${fmt12(s.start)}</b><span>إلى ${fmt12(s.end)}</span></div><button class="addcell" data-cell="${s.id}|${i}">+ إضافة</button></div>`;return}
-    rows+=`<div class="tl-row"><div class="tl-time"><b>${fmt12(s.start)}</b><span>إلى ${fmt12(s.end)}</span></div>${slotHtml(c,s.id,i,!!done[s.id+'_'+i],true)}</div>`});
-  h+=`<div class="timeline">${rows||`<div class="empty"><b>يوم ${DAYS[i]} فاضي</b>مفيش حاجة متخططة. ارتاح أو ضيف حاجة من وضع التعديل.</div>`}</div>`;
-  if(ed)h+=`<div style="margin-top:10px"><button class="addrowbtn" data-act="addrow">+ إضافة فترة جديدة</button></div>`;
+    if(!c||!c.t){if(ed)rows+=`<div class="tl-row"><div class="tl-time"><b>${fmt12(s.start)}</b><span>${L()==='en'?'to':'إلى'} ${fmt12(s.end)}</span></div><button class="addcell" data-cell="${s.id}|${i}">+ ${T('إضافة','Add')}</button></div>`;return}
+    rows+=`<div class="tl-row"><div class="tl-time"><b>${fmt12(s.start)}</b><span>${L()==='en'?'to':'إلى'} ${fmt12(s.end)}</span></div>${slotHtml(c,s.id,i,!!done[s.id+'_'+i],true)}</div>`});
+  h+=`<div class="timeline">${rows||`<div class="empty"><b>${T(`يوم ${DAYS_AR[i]} فاضي`,`${DAYS_EN[i]} is free`)}</b>${TP('مفيش حاجة متخططة. ارتاح أو ضيف حاجة من وضع التعديل.','Nothing planned. Rest, or add something from edit mode.')}</div>`}</div>`;
+  if(ed)h+=`<div style="margin-top:10px"><button class="addrowbtn" data-act="addrow">+ ${T('إضافة فترة جديدة','Add a new slot')}</button></div>`;
   return h;
 }
 function todosHtml(n,interactive){
   const w=state.weeks[n]||{},list=w.todos||[];
   let h='';
-  if(!list.length)h+=`<p class="hint">مفيش مهام لسه. ضيف أي حاجة لازم تتعمل الأسبوع ده.</p>`;
+  if(!list.length)h+=`<p class="hint">${TP('مفيش مهام لسه. ضيف أي حاجة لازم تتعمل الأسبوع ده.','No tasks yet. Add anything that must get done this week.')}</p>`;
   [...list].sort((a,b)=>(a.done-b.done)||((a.day??9)-(b.day??9))).forEach(t=>{
     h+=`<div class="todo ${t.done?'done':''}">${interactive?`<input type="checkbox" class="chk" data-todo="${t.id}" ${t.done?'checked':''} aria-label="${esc(t.t)}">`:`<span>${t.done?'✓':'○'}</span>`}
-    <span class="tt-t">${esc(t.t)}</span>${t.day!=null&&t.day!==''?`<span class="dtag">${DAYS[t.day]}</span>`:''}${interactive?`<button class="xbtn" data-deltodo="${t.id}" aria-label="حذف المهمة">✕</button>`:''}</div>`});
+    <span class="tt-t">${esc(t.t)}</span>${t.day!=null&&t.day!==''?`<span class="dtag">${DAYS[t.day]}</span>`:''}${interactive?`<button class="xbtn" data-deltodo="${t.id}" aria-label="${T('حذف المهمة','Delete task')}">✕</button>`:''}</div>`});
   if(interactive){
-    h+=`<div class="todoadd"><input type="text" id="tdText" placeholder="مهمة جديدة… مثلاً: حل امتحان CMA تجريبي"><select id="tdDay" aria-label="اليوم"><option value="">أي يوم</option>${DAYS.map((d,i)=>`<option value="${i}">${d}</option>`).join('')}</select><button class="btn primary" data-act="addtodo">${ICON.plus} إضافة</button></div>`;
+    h+=`<div class="todoadd"><input type="text" id="tdText" placeholder="${T('مهمة جديدة… مثلاً: حل امتحان CMA تجريبي','New task… e.g. take a CMA mock exam')}"><select id="tdDay" aria-label="${T('اليوم','Day')}"><option value="">${T('أي يوم','Any day')}</option>${DAYS.map((d,i)=>`<option value="${i}">${d}</option>`).join('')}</select><button class="btn primary" data-act="addtodo">${ICON.plus} ${T('إضافة','Add')}</button></div>`;
     const left=list.filter(t=>!t.done).length;
-    if(left&&n<state.weeksCount)h+=`<button class="btn sm ghost" data-act="carrytodo" style="margin-top:10px">انقل ${left} ${left===1?'مهمة مخلصتش':'مهام مخلصتش'} للأسبوع الجاي</button>`;
+    if(left&&n<state.weeksCount)h+=`<button class="btn sm ghost" data-act="carrytodo" style="margin-top:10px">${T(`انقل ${left} ${left===1?'مهمة مخلصتش':'مهام مخلصتش'} للأسبوع الجاي`,`Move ${left} unfinished task${left===1?'':'s'} to next week`)}</button>`;
   }
   return h;
 }
-function legend(){return `<div class="legend">${state.cats.map(c=>`<span><i style="background:${c.color}"></i>${esc(c.name)}</span>`).join('')}<span><b class="star" style="margin:0">★</b>أولوية</span></div>`}
+function legend(){return `<div class="legend">${state.cats.map(c=>`<span><i style="background:${c.color}"></i>${esc(C(c.name))}</span>`).join('')}<span><b class="star" style="margin:0">★</b>${T('أولوية','Priority')}</span></div>`}
 
 function quoteCard(n,interactive){
-  const Q=state.quotes||[];if(!Q.length)return interactive&&ui.edit?`<figure class="quote"><div class="q-edit"><button class="btn sm" data-act="addquote">${ICON.plus} إضافة وصية جديدة</button></div></figure>`:'';
+  const Q=state.quotes||[];if(!Q.length)return interactive&&ui.edit?`<figure class="quote"><div class="q-edit"><button class="btn sm" data-act="addquote">${ICON.plus} ${T('إضافة وصية جديدة','Add new advice')}</button></div></figure>`:'';
   const i=(((n-1)+(interactive?ui.qOff:0))%Q.length+Q.length)%Q.length;
   return `<figure class="quote">
     <span class="q-mark" aria-hidden="true">”</span>
-    <div class="q-top"><span class="q-label">${esc(state.quotesTitle||'وصايا غالية')}</span><span class="q-count">${i+1} / ${Q.length}</span></div>
-    <blockquote ${interactive&&ui.edit?`contenteditable="true" data-qidx="${i}" spellcheck="false"`:''}>${esc(Q[i])}</blockquote>
-    ${interactive&&ui.edit?`<div class="q-edit"><button class="btn sm" data-act="addquote">${ICON.plus} إضافة وصية جديدة</button>${Q.length>1?`<button class="btn sm danger" data-delquote="${i}">حذف الوصية دي</button>`:''}<p class="hint">اضغط على نص الوصية وعدّل عليه مباشرة، وبيتحفظ أول ما تضغط برّه.</p></div>`:''}
-    ${interactive&&Q.length>1?`<div class="q-nav"><button class="qbtn" data-act="qprev" aria-label="الوصية السابقة">${ICON.prev}</button><div class="q-dots">${Q.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join('')}</div><button class="qbtn" data-act="qnext" aria-label="الوصية التالية">${ICON.next}</button></div>`:''}
+    <div class="q-top"><span class="q-label">${esc(C(state.quotesTitle||'وصايا غالية'))}</span><span class="q-count">${i+1} / ${Q.length}</span></div>
+    ${(()=>{const ed=interactive&&ui.edit,l=L(),en=trOf(Q[i]);
+      const main=ed||l!=='en'||!en?Q[i]:en;
+      return `<blockquote ${ed?`contenteditable="true" data-qidx="${i}" spellcheck="false"`:''}>${esc(main)}</blockquote>${!ed&&l==='bi'&&en?`<p class="q-en">${esc(en)}</p>`:''}`})()}
+    ${interactive&&ui.edit?`<div class="q-edit"><button class="btn sm" data-act="addquote">${ICON.plus} ${T('إضافة وصية جديدة','Add new advice')}</button>${Q.length>1?`<button class="btn sm danger" data-delquote="${i}">${T('حذف الوصية دي','Delete this advice')}</button>`:''}<p class="hint">${TP('اضغط على نص الوصية وعدّل عليه مباشرة، وبيتحفظ أول ما تضغط برّه.','Click the text to edit it directly; it saves as soon as you click outside.')}</p></div>`:''}
+    ${interactive&&Q.length>1?`<div class="q-nav"><button class="qbtn" data-act="qprev" aria-label="${T('الوصية السابقة','Previous advice')}">${ICON.prev}</button><div class="q-dots">${Q.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join('')}</div><button class="qbtn" data-act="qnext" aria-label="${T('الوصية التالية','Next advice')}">${ICON.next}</button></div>`:''}
   </figure>`;
 }
 function viewSchedule(){
@@ -753,20 +845,20 @@ function viewSchedule(){
   if(ui.edit)h+=editPanel();
   h+=legend();
   h+=ui.view==='day'?dayView(ui.week):`<div class="board"><div class="scroller">${scheduleTable(ui.week,true)}</div></div>`;
-  if(!ui.edit)h+=`<p class="hint" style="margin-top:10px">اضغط على أي خانة لما تخلّصها عشان تتسجل في المتابعة.</p>`;
-  h+=`<div class="sec"><h2>حاجات لازم أعملها</h2><span>${list.filter(t=>t.done).length} من ${list.length} خلصت</span></div><div class="card">${todosHtml(ui.week,true)}</div>`;
+  if(!ui.edit)h+=`<p class="hint" style="margin-top:10px">${TP('اضغط على أي خانة لما تخلّصها عشان تتسجل في المتابعة.','Tap any cell when you finish it so it counts in your tracking.')}</p>`;
+  h+=`<div class="sec"><h2>${T('حاجات لازم أعملها','Must-do tasks')}</h2><span>${T(`${list.filter(t=>t.done).length} من ${list.length} خلصت`,`${list.filter(t=>t.done).length} of ${list.length} done`)}</span></div><div class="card">${todosHtml(ui.week,true)}</div>`;
   return h;
 }
 function habitsTable(n,interactive){
   const list=habitsFor(n),w=state.weeks[n]||{habits:{}},hb=w.habits||{},ed=interactive&&ui.edit,isCur=isThisWeek(n),ti=todayIdx();
-  let h=`<table class="ht"><thead><tr><th>العادة</th>${DAYS.map((d,i)=>`<th class="${isCur&&i===ti?'is-today':''}">${d}<small>${dayDate(n,i)}</small></th>`).join('')}<th>الأسبوع</th>${ed?'<th></th>':''}</tr></thead><tbody>`;
-  if(!list.length)h+=`<tr><td colspan="10"><div class="empty"><b>مفيش عادات في الأسبوع ده</b>ضيف عادة من وضع التعديل.</div></td></tr>`;
+  let h=`<table class="ht"><thead><tr><th>${T('العادة','Habit')}</th>${DAYS.map((d,i)=>`<th class="${isCur&&i===ti?'is-today':''}">${d}<small>${dayDate(n,i)}</small></th>`).join('')}<th>${T('الأسبوع','Week')}</th>${ed?'<th></th>':''}</tr></thead><tbody>`;
+  if(!list.length)h+=`<tr><td colspan="10"><div class="empty"><b>${T('مفيش عادات في الأسبوع ده','No habits this week')}</b>${TP('ضيف عادة من وضع التعديل.','Add a habit from edit mode.')}</div></td></tr>`;
   list.forEach(x=>{
-    let c=0;h+=`<tr><td><b>${esc(x.name)}</b>${x.desc?`<small>${esc(x.desc)}</small>`:''}</td>`;
+    let c=0;h+=`<tr><td><b>${esc(C(x.name))}</b>${x.desc?`<small>${esc(C(x.desc))}</small>`:''}</td>`;
     for(let i=0;i<7;i++){const on=!!hb[x.id+'_'+i];if(on)c++;const cls=isCur&&i===ti?'is-today':'';
-      h+=interactive?`<td class="${cls}"><input type="checkbox" class="chk" data-habit="${x.id}_${i}" ${on?'checked':''} aria-label="${esc(x.name)} ${DAYS[i]}"></td>`:`<td>${on?'✓':'—'}</td>`}
+      h+=interactive?`<td class="${cls}"><input type="checkbox" class="chk" data-habit="${x.id}_${i}" ${on?'checked':''} aria-label="${esc(C(x.name))} ${DAYS[i]}"></td>`:`<td>${on?'✓':'—'}</td>`}
     h+=`<td><span class="pill ${pctClass(Math.round(c/7*100))}">${c}/7</span></td>`;
-    if(ed)h+=`<td style="white-space:nowrap"><button class="btn sm" data-act="edithabit" data-id="${x.id}">تعديل</button> <button class="btn sm danger" data-act="delhabit" data-id="${x.id}">إيقاف</button></td>`;
+    if(ed)h+=`<td style="white-space:nowrap"><button class="btn sm" data-act="edithabit" data-id="${x.id}">${T('تعديل','Edit')}</button> <button class="btn sm danger" data-act="delhabit" data-id="${x.id}">${T('إيقاف','Stop')}</button></td>`;
     h+='</tr>';
   });
   return h+'</tbody></table>';
@@ -775,9 +867,9 @@ function viewHabits(){
   const w=state.weeks[ui.week]||{};
   let h=hero()+quoteCard(ui.week,true)+toolbar(false);
   h+=`<div class="board"><div class="scroller">${habitsTable(ui.week,true)}</div>`;
-  if(ui.edit)h+=`<div class="addhabit"><input type="text" id="nhName" placeholder="اسم العادة الجديدة"><input type="text" id="nhDesc" placeholder="وصف قصير (اختياري)"><button class="btn primary" data-act="addhabit">${ICON.plus} إضافة عادة</button></div>
-    <p class="hint" style="padding:0 20px 16px">العادة الجديدة بتبدأ من الأسبوع ده، و"إيقاف" بيوقفها من الأسبوع ده ورايح من غير ما يمسح متابعتك القديمة.</p>`;
-  h+=`</div><div class="sec"><h2>ملاحظات الأسبوع</h2><span>بتتحفظ أول ما تخرج من الخانة</span></div><textarea id="weekNote" placeholder="إيه اللي مشي كويس؟ إيه اللي محتاج يتظبط الأسبوع الجاي؟">${esc(w.note||'')}</textarea>`;
+  if(ui.edit)h+=`<div class="addhabit"><input type="text" id="nhName" placeholder="${T('اسم العادة الجديدة','New habit name')}"><input type="text" id="nhDesc" placeholder="${T('وصف قصير (اختياري)','Short description (optional)')}"><button class="btn primary" data-act="addhabit">${ICON.plus} ${T('إضافة عادة','Add habit')}</button></div>
+    <p class="hint" style="padding:0 20px 16px">${TP('العادة الجديدة بتبدأ من الأسبوع ده، و"إيقاف" بيوقفها من الأسبوع ده ورايح من غير ما يمسح متابعتك القديمة.','A new habit starts from this week; “Stop” ends it from this week onward without erasing your past tracking.')}</p>`;
+  h+=`</div><div class="sec"><h2>${T('ملاحظات الأسبوع','Week notes')}</h2><span>${T('بتتحفظ أول ما تخرج من الخانة','Saved as soon as you leave the box')}</span></div><textarea id="weekNote" placeholder="${T('إيه اللي مشي كويس؟ إيه اللي محتاج يتظبط الأسبوع الجاي؟','What went well? What needs fixing next week?')}">${esc(w.note||'')}</textarea>`;
   return h;
 }
 
@@ -787,8 +879,8 @@ function lineChart(labels,series){
   let g='';for(let v=0;v<=100;v+=25)g+=`<line x1="${pl}" x2="${W-pr}" y1="${y(v)}" y2="${y(v)}" class="gl"/><text x="${pl-7}" y="${y(v)+4}" class="ax" text-anchor="end">${v}%</text>`;
   const step=Math.ceil(n/14);labels.forEach((l,i)=>{if(i%step===0||i===n-1)g+=`<text x="${x(i)}" y="${H-9}" class="ax" text-anchor="middle">${l}</text>`});
   series.forEach(s=>{g+=`<polyline points="${s.values.map((v,i)=>x(i)+','+y(v)).join(' ')}" fill="none" style="stroke:${s.color}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>`;
-    s.values.forEach((v,i)=>g+=`<circle cx="${x(i)}" cy="${y(v)}" r="3.2" style="fill:${s.color}"><title>أسبوع ${labels[i]}: ${v}%</title></circle>`)});
-  return `<svg viewBox="0 0 ${W} ${H}" class="chart" dir="ltr" role="img" aria-label="منحنى الإنجاز الأسبوعي">${g}</svg>`;
+    s.values.forEach((v,i)=>g+=`<circle cx="${x(i)}" cy="${y(v)}" r="3.2" style="fill:${s.color}"><title>${T('أسبوع','Week')} ${labels[i]}: ${v}%</title></circle>`)});
+  return `<svg viewBox="0 0 ${W} ${H}" class="chart" dir="ltr" role="img" aria-label="${T('منحنى الإنجاز الأسبوعي','Weekly progress chart')}">${g}</svg>`;
 }
 function hbar(label,p,d,color,right){const pp=p?Math.round(d/p*100):0;
   return `<div class="hbar"><span>${label}</span><div class="tr"><i class="p" style="width:100%;background:${color}"></i><i style="width:${pp}%;background:${color}"></i></div><span>${right??pp+'%'}</span></div>`}
@@ -797,10 +889,10 @@ function viewDash(){
   const cur=currentWeek(),N=state.weeksCount;
   ui.from=Math.min(Math.max(ui.from,1),N);ui.to=Math.min(Math.max(ui.to,ui.from),N);
   const A=aggregate(ui.from,ui.to);
-  const opt=(v)=>{let o='';for(let i=1;i<=N;i++)o+=`<option value="${i}" ${i===v?'selected':''}>أسبوع ${i}</option>`;return o};
-  let h=`<div class="rangebar no-print"><span class="lbl">الفترة من</span><select id="rFrom">${opt(ui.from)}</select><span class="lbl">إلى</span><select id="rTo">${opt(ui.to)}</select>
-    <button class="btn" data-range="todate">لحد النهارده</button><button class="btn" data-range="last4">آخر 4 أسابيع</button><button class="btn" data-range="q">آخر 13 أسبوع</button><button class="btn" data-range="year">السنة كلها</button>
-    <button class="btn primary" data-act="print-report" style="margin-inline-start:auto">${ICON.print} طباعة التقرير / PDF</button></div>`;
+  const opt=(v)=>{let o='';for(let i=1;i<=N;i++)o+=`<option value="${i}" ${i===v?'selected':''}>${T('أسبوع','Week')} ${i}</option>`;return o};
+  let h=`<div class="rangebar no-print"><span class="lbl">${T('الفترة من','Period from')}</span><select id="rFrom">${opt(ui.from)}</select><span class="lbl">${T('إلى','to')}</span><select id="rTo">${opt(ui.to)}</select>
+    <button class="btn" data-range="todate">${T('لحد النهارده','To date')}</button><button class="btn" data-range="last4">${T('آخر 4 أسابيع','Last 4 weeks')}</button><button class="btn" data-range="q">${T('آخر 13 أسبوع','Last 13 weeks')}</button><button class="btn" data-range="year">${T('السنة كلها','Whole year')}</button>
+    ${langSeg()}<button class="btn primary" data-act="print-report">${ICON.print} ${T('طباعة التقرير','Print report')} / PDF</button></div>`;
   h+=dashBody(A,cur,true)+allTimeLog();
   return h;
 }
@@ -808,44 +900,44 @@ function dashBody(A,cur,interactive){
   const N=state.weeksCount,active=A.weeks.filter(w=>w.pMin);
   const good=A.weeks.filter(w=>w.pct>=80).length;
   let h=`<div class="kpis">
-    <div class="kpi lead"><b>${A.pct}%</b><span>نسبة إنجاز الجدول</span></div>
-    <div class="kpi"><b>${hrs(A.dMin)}</b><span>ساعة اتذاكرت من ${hrs(A.pMin)} مخططة</span></div>
-    <div class="kpi"><b>${A.dCnt}</b><span>جلسة خلصت من ${A.pCnt}</span></div>
-    <div class="kpi"><b>${A.hPct}%</b><span>الالتزام بالعادات</span></div>
-    <div class="kpi"><b>${A.tD}/${A.tP}</b><span>مهام خلصت</span></div>
-    <div class="kpi"><b>${good}</b><span>أسبوع فوق 80% من ${A.weeks.length}</span></div>
+    <div class="kpi lead"><b>${A.pct}%</b><span>${T('نسبة إنجاز الجدول','Schedule completion')}</span></div>
+    <div class="kpi"><b>${hrs(A.dMin)}</b><span>${T(`ساعة اتذاكرت من ${hrs(A.pMin)} مخططة`,`hours studied of ${hrs(A.pMin)} planned`)}</span></div>
+    <div class="kpi"><b>${A.dCnt}</b><span>${T(`جلسة خلصت من ${A.pCnt}`,`sessions done of ${A.pCnt}`)}</span></div>
+    <div class="kpi"><b>${A.hPct}%</b><span>${T('الالتزام بالعادات','Habit consistency')}</span></div>
+    <div class="kpi"><b>${A.tD}/${A.tP}</b><span>${T('مهام خلصت','Tasks done')}</span></div>
+    <div class="kpi"><b>${good}</b><span>${T(`أسبوع فوق 80% من ${A.weeks.length}`,`weeks above 80% of ${A.weeks.length}`)}</span></div>
   </div>`;
-  h+=`<div class="sec"><h2>ملخص التقرير</h2></div><div class="card"><ul class="insights">${insights(A).map(x=>`<li>${x}</li>`).join('')}</ul></div>`;
+  h+=`<div class="sec"><h2>${T('ملخص التقرير','Report summary')}</h2></div><div class="card"><ul class="insights">${insights(A).map(x=>`<li><div>${x}</div></li>`).join('')}</ul></div>`;
   // heatmap
-  h+=`<div class="sec"><h2>السنة في نظرة (${N} أسبوع)</h2></div><div class="card"><div class="heat">`;
+  h+=`<div class="sec"><h2>${T(`السنة في نظرة (${N} أسبوع)`,`The year at a glance (${N} weeks)`)}</h2></div><div class="card"><div class="heat">`;
   for(let n=1;n<=N;n++){const r=weekStats(n),fut=n>cur&&!r.dCnt,l=r.pct>=85?4:r.pct>=65?3:r.pct>=40?2:r.pct>0?1:0;
-    h+=`<button ${interactive?`data-goweek="${n}"`:''} style="--a:${themeOf(n).a}" class="${fut?'fut':'l'+l} ${n>=ui.from&&n<=ui.to?'inr':''} ${n===cur?'cur':''}" title="أسبوع ${n} (${rangeLabel(n)}): ${r.pct}%">${n}</button>`}
-  h+=`</div><p class="hint" style="margin:10px 0 0">كل مربع أسبوع بلونه، وكل ما يغمق كل ما الإنجاز يزيد. المربعات المحاطة بإطار هي الفترة اللي التقرير بيحسبها.${interactive?' اضغط على أي أسبوع تفتحه.':''}</p></div>`;
+    h+=`<button ${interactive?`data-goweek="${n}"`:''} style="--a:${themeOf(n).a}" class="${fut?'fut':'l'+l} ${n>=ui.from&&n<=ui.to?'inr':''} ${n===cur?'cur':''}" title="${T('أسبوع','Week')} ${n} (${rangeLabel(n)}): ${r.pct}%">${n}</button>`}
+  h+=`</div><p class="hint" style="margin:10px 0 0">${TP('كل مربع أسبوع بلونه، وكل ما يغمق كل ما الإنجاز يزيد. المربعات المحاطة بإطار هي الفترة اللي التقرير بيحسبها.'+(interactive?' اضغط على أي أسبوع تفتحه.':''),'Each square is a week in its own color; the darker it is, the higher the completion. Outlined squares are the period the report covers.'+(interactive?' Tap any week to open it.':''))}</p></div>`;
   // trend
-  h+=`<div class="sec"><h2>الإنجاز أسبوع بأسبوع</h2></div><div class="card"><div class="keys"><span><i style="background:var(--acc)"></i>الجدول</span><span><i style="background:#C9962B"></i>العادات</span></div>
+  h+=`<div class="sec"><h2>${T('الإنجاز أسبوع بأسبوع','Progress week by week')}</h2></div><div class="card"><div class="keys"><span><i style="background:var(--acc)"></i>${T('الجدول','Schedule')}</span><span><i style="background:#C9962B"></i>${T('العادات','Habits')}</span></div>
     ${lineChart(A.weeks.map(w=>w.n),[{color:'var(--acc-t)',values:A.weeks.map(w=>w.pct)},{color:'#C9962B',values:A.weeks.map(w=>w.hPct)}])}</div>`;
   // cats & days
-  h+=`<div class="grid2" style="margin-top:14px"><div class="card"><h3>الساعات حسب القسم</h3>`;
-  const cats=Object.keys(A.cat);if(!cats.length)h+='<p class="hint">لسه مفيش بيانات.</p>';
-  cats.forEach(k=>{const c=catOf(k),v=A.cat[k];h+=hbar(esc(c.name),v.p,v.d,c.color,`${hrs(v.d)} / ${hrs(v.p)} س`)});
-  h+=`<p class="hint" style="margin:6px 0 0">الجزء الفاتح هو المخطط، والغامق هو اللي اتعمل.</p></div><div class="card"><h3>أقوى وأضعف أيام الأسبوع</h3>`;
+  h+=`<div class="grid2" style="margin-top:14px"><div class="card"><h3>${T('الساعات حسب القسم','Hours by category')}</h3>`;
+  const cats=Object.keys(A.cat);if(!cats.length)h+=`<p class="hint">${T('لسه مفيش بيانات.','No data yet.')}</p>`;
+  cats.forEach(k=>{const c=catOf(k),v=A.cat[k];h+=hbar(esc(C(c.name)),v.p,v.d,c.color,`${hrs(v.d)} / ${hrs(v.p)} ${T('س','h')}`)});
+  h+=`<p class="hint" style="margin:6px 0 0">${TP('الجزء الفاتح هو المخطط، والغامق هو اللي اتعمل.','The light part is planned; the dark part is what got done.')}</p></div><div class="card"><h3>${T('أقوى وأضعف أيام الأسبوع','Strongest and weakest weekdays')}</h3>`;
   A.day.forEach((d,i)=>h+=hbar(DAYS[i],d.p,d.d,'var(--acc-t)'));
   h+=`</div></div>`;
   // subjects
   const subs=Object.entries(A.subj).sort((a,b)=>b[1].p-a[1].p);
-  h+=`<div class="sec"><h2>تفاصيل كل مادة</h2></div><div class="card" style="overflow-x:auto"><table class="dt"><thead><tr><th>المادة</th><th>القسم</th><th>جلسات خلصت</th><th>ساعات خلصت</th><th>ساعات مخططة</th><th>النسبة</th></tr></thead><tbody>`;
+  h+=`<div class="sec"><h2>${T('تفاصيل كل مادة','Subject details')}</h2></div><div class="card" style="overflow-x:auto"><table class="dt"><thead><tr><th>${T('المادة','Subject')}</th><th>${T('القسم','Category')}</th><th>${T('جلسات خلصت','Sessions done')}</th><th>${T('ساعات خلصت','Hours done')}</th><th>${T('ساعات مخططة','Hours planned')}</th><th>${T('النسبة','Rate')}</th></tr></thead><tbody>`;
   subs.forEach(([k,v])=>{const p=v.p?Math.round(v.d/v.p*100):0,c=catOf(v.cat);
-    h+=`<tr><td><b style="font-weight:600">${esc(k)}</b></td><td><span class="dot" style="background:${c.color}"></span>${esc(c.name)}</td><td>${v.dc} / ${v.pc}</td><td>${hrs(v.d)}</td><td>${hrs(v.p)}</td><td><span class="pill ${pctClass(p)}">${p}%</span></td></tr>`});
+    h+=`<tr><td><b style="font-weight:600">${esc(C(k))}</b></td><td><span class="dot" style="background:${c.color}"></span>${esc(C(c.name))}</td><td>${v.dc} / ${v.pc}</td><td>${hrs(v.d)}</td><td>${hrs(v.p)}</td><td><span class="pill ${pctClass(p)}">${p}%</span></td></tr>`});
   h+=`</tbody></table></div>`;
   // habits
-  h+=`<div class="sec"><h2>العادات</h2></div><div class="card">`;
-  const hk=Object.keys(A.hab);if(!hk.length)h+='<p class="hint">مفيش عادات في الفترة دي.</p>';
-  hk.forEach(id=>{const x=state.habits.find(z=>z.id===id);if(!x)return;const v=A.hab[id];h+=hbar(esc(x.name),v.p,v.d,'#C9962B',`${v.d} / ${v.p} يوم`)});
+  h+=`<div class="sec"><h2>${T('العادات','Habits')}</h2></div><div class="card">`;
+  const hk=Object.keys(A.hab);if(!hk.length)h+=`<p class="hint">${T('مفيش عادات في الفترة دي.','No habits in this period.')}</p>`;
+  hk.forEach(id=>{const x=state.habits.find(z=>z.id===id);if(!x)return;const v=A.hab[id];h+=hbar(esc(C(x.name)),v.p,v.d,'#C9962B',`${v.d} / ${v.p} ${T('يوم','days')}`)});
   h+=`</div>`;
   // compare
   if(interactive){
-    let o=(v)=>{let s='';for(let i=1;i<=N;i++)s+=`<option value="${i}" ${i===v?'selected':''}>أسبوع ${i}</option>`;return s};
-    h+=`<div class="sec"><h2>قارن بين أسبوعين</h2></div><div class="card"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px" class="no-print"><select id="cmpA">${o(ui.cmpA)}</select><span>مع</span><select id="cmpB">${o(ui.cmpB)}</select></div>${compareTable(ui.cmpA,ui.cmpB)}</div>`;
+    let o=(v)=>{let s='';for(let i=1;i<=N;i++)s+=`<option value="${i}" ${i===v?'selected':''}>${T('أسبوع','Week')} ${i}</option>`;return s};
+    h+=`<div class="sec"><h2>${T('قارن بين أسبوعين','Compare two weeks')}</h2></div><div class="card"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px" class="no-print"><select id="cmpA">${o(ui.cmpA)}</select><span>${T('مع','vs')}</span><select id="cmpB">${o(ui.cmpB)}</select></div>${compareTable(ui.cmpA,ui.cmpB)}</div>`;
   }
   return h;
 }
@@ -856,71 +948,72 @@ function allTimeLog(){
   for(let n=1;n<=state.weeksCount;n++){const r=weekStats(n);for(const k in r.subj){const s=r.subj[k];if(!s.dc)continue;
     const a=L[k]||(L[k]={cat:s.cat,d:0,dc:0,first:n,last:n});a.d+=s.d;a.dc+=s.dc;a.last=n}}
   const rows=Object.entries(L).sort((a,b)=>b[1].d-a[1].d);
-  let h=`<div class="sec"><h2>سجل كل اللي اشتغلت عليه</h2><span>سجل دائم للسنة كلها، مش بيتمسح لو شلت مادة من الجدول</span></div><div class="card" style="overflow-x:auto">`;
-  if(!rows.length)return h+`<div class="empty"><b>السجل لسه فاضي</b>أول ما تعلّم أي جلسة إنها خلصت هتظهر هنا.</div></div>`;
-  h+=`<table class="dt"><thead><tr><th>المادة</th><th>القسم</th><th>جلسات خلصت</th><th>إجمالي الساعات</th><th>من أسبوع</th><th>آخر أسبوع</th><th>الحالة</th></tr></thead><tbody>`;
+  let h=`<div class="sec"><h2>${T('سجل كل اللي اشتغلت عليه','Everything you worked on')}</h2><span>${T('سجل دائم للسنة كلها، مش بيتمسح لو شلت مادة من الجدول','A permanent log for the whole year — not erased if you remove a subject')}</span></div><div class="card" style="overflow-x:auto">`;
+  if(!rows.length)return h+`<div class="empty"><b>${T('السجل لسه فاضي','The log is empty')}</b>${TP('أول ما تعلّم أي جلسة إنها خلصت هتظهر هنا.','As soon as you mark a session done, it will appear here.')}</div></div>`;
+  h+=`<table class="dt"><thead><tr><th>${T('المادة','Subject')}</th><th>${T('القسم','Category')}</th><th>${T('جلسات خلصت','Sessions done')}</th><th>${T('إجمالي الساعات','Total hours')}</th><th>${T('من أسبوع','First week')}</th><th>${T('آخر أسبوع','Last week')}</th><th>${T('الحالة','Status')}</th></tr></thead><tbody>`;
   rows.forEach(([k,v])=>{const c=catOf(v.cat),on=inPlan.has(k);
-    h+=`<tr><td><b style="font-weight:600">${esc(k)}</b></td><td><span class="dot" style="background:${c.color}"></span>${esc(c.name)}</td><td>${v.dc}</td><td>${hrs(v.d)}</td><td>${v.first}</td><td>${v.last}</td><td><span class="tag ${on?'on':'off'}">${on?'في الجدول الأساسي':'خلصت / اتشالت من الجدول'}</span></td></tr>`});
+    h+=`<tr><td><b style="font-weight:600">${esc(C(k))}</b></td><td><span class="dot" style="background:${c.color}"></span>${esc(C(c.name))}</td><td>${v.dc}</td><td>${hrs(v.d)}</td><td>${v.first}</td><td>${v.last}</td><td><span class="tag ${on?'on':'off'}">${on?T('في الجدول الأساسي','In master schedule'):T('خلصت / اتشالت من الجدول','Finished / removed')}</span></td></tr>`});
   return h+'</tbody></table></div>';
 }
 function compareTable(a,b){
   const A=weekStats(a),B=weekStats(b);
   const diff=(x,y,u='')=>{const d=Math.round((y-x)*10)/10;return d>0?`<span class="up">+${d}${u}</span>`:d<0?`<span class="down">${d}${u}</span>`:'—'};
-  let h=`<div style="overflow-x:auto"><table class="dt"><thead><tr><th>المقياس</th><th>أسبوع ${a}</th><th>أسبوع ${b}</th><th>الفرق</th></tr></thead><tbody>
-    <tr><td>إنجاز الجدول</td><td>${A.pct}%</td><td>${B.pct}%</td><td>${diff(A.pct,B.pct,'%')}</td></tr>
-    <tr><td>ساعات اتعملت</td><td>${hrs(A.dMin)}</td><td>${hrs(B.dMin)}</td><td>${diff(A.dMin/60,B.dMin/60)}</td></tr>
-    <tr><td>جلسات خلصت</td><td>${A.dCnt}/${A.pCnt}</td><td>${B.dCnt}/${B.pCnt}</td><td>${diff(A.dCnt,B.dCnt)}</td></tr>
-    <tr><td>العادات</td><td>${A.hPct}%</td><td>${B.hPct}%</td><td>${diff(A.hPct,B.hPct,'%')}</td></tr>
-    <tr><td>مهام خلصت</td><td>${A.tD}/${A.tP}</td><td>${B.tD}/${B.tP}</td><td>${diff(A.tD,B.tD)}</td></tr>`;
+  let h=`<div style="overflow-x:auto"><table class="dt"><thead><tr><th>${T('المقياس','Metric')}</th><th>${T('أسبوع','Week')} ${a}</th><th>${T('أسبوع','Week')} ${b}</th><th>${T('الفرق','Change')}</th></tr></thead><tbody>
+    <tr><td>${T('إنجاز الجدول','Schedule completion')}</td><td>${A.pct}%</td><td>${B.pct}%</td><td>${diff(A.pct,B.pct,'%')}</td></tr>
+    <tr><td>${T('ساعات اتعملت','Hours done')}</td><td>${hrs(A.dMin)}</td><td>${hrs(B.dMin)}</td><td>${diff(A.dMin/60,B.dMin/60)}</td></tr>
+    <tr><td>${T('جلسات خلصت','Sessions done')}</td><td>${A.dCnt}/${A.pCnt}</td><td>${B.dCnt}/${B.pCnt}</td><td>${diff(A.dCnt,B.dCnt)}</td></tr>
+    <tr><td>${T('العادات','Habits')}</td><td>${A.hPct}%</td><td>${B.hPct}%</td><td>${diff(A.hPct,B.hPct,'%')}</td></tr>
+    <tr><td>${T('مهام خلصت','Tasks done')}</td><td>${A.tD}/${A.tP}</td><td>${B.tD}/${B.tP}</td><td>${diff(A.tD,B.tD)}</td></tr>`;
   const ks=new Set([...Object.keys(A.cat),...Object.keys(B.cat)]);
-  ks.forEach(k=>{const x=A.cat[k]||{d:0},y=B.cat[k]||{d:0};h+=`<tr><td>ساعات ${esc(catOf(k).name)}</td><td>${hrs(x.d)}</td><td>${hrs(y.d)}</td><td>${diff(x.d/60,y.d/60)}</td></tr>`});
+  ks.forEach(k=>{const x=A.cat[k]||{d:0},y=B.cat[k]||{d:0};h+=`<tr><td>${T('ساعات','Hours:')} ${esc(C(catOf(k).name))}</td><td>${hrs(x.d)}</td><td>${hrs(y.d)}</td><td>${diff(x.d/60,y.d/60)}</td></tr>`});
   return h+'</tbody></table></div>';
 }
 function insights(A){
   const out=[];
-  if(!A.pMin)return['مفيش خطة في الفترة دي.'];
-  out.push(`خلّصت <b>${A.pct}%</b> من الجدول في الفترة دي: ${hrs(A.dMin)} ساعة من ${hrs(A.pMin)} ساعة مخططة، و${A.hPct}% التزام بالعادات.`);
-  if(A.tP)out.push(`خلّصت ${A.tD} من ${A.tP} مهمة (${Math.round(A.tD/A.tP*100)}%).`);
+  if(!A.pMin)return[T('مفيش خطة في الفترة دي.','No plan in this period.')];
+  out.push(TP(`خلّصت <b>${A.pct}%</b> من الجدول في الفترة دي: ${hrs(A.dMin)} ساعة من ${hrs(A.pMin)} ساعة مخططة، و${A.hPct}% التزام بالعادات.`,`You completed <b>${A.pct}%</b> of the schedule in this period: ${hrs(A.dMin)} of ${hrs(A.pMin)} planned hours, with ${A.hPct}% habit consistency.`));
+  if(A.tP)out.push(TP(`خلّصت ${A.tD} من ${A.tP} مهمة (${Math.round(A.tD/A.tP*100)}%).`,`You finished ${A.tD} of ${A.tP} tasks (${Math.round(A.tD/A.tP*100)}%).`));
   const ws=A.weeks.filter(w=>w.pMin&&w.n<=currentWeek());
-  if(ws.length>1){const b=[...ws].sort((x,y)=>y.pct-x.pct);out.push(`أحسن أسبوع كان أسبوع ${b[0].n} بنسبة ${b[0].pct}%، وأضعف أسبوع كان أسبوع ${b[b.length-1].n} بنسبة ${b[b.length-1].pct}%.`)}
+  if(ws.length>1){const b=[...ws].sort((x,y)=>y.pct-x.pct);out.push(TP(`أحسن أسبوع كان أسبوع ${b[0].n} بنسبة ${b[0].pct}%، وأضعف أسبوع كان أسبوع ${b[b.length-1].n} بنسبة ${b[b.length-1].pct}%.`,`Best week was week ${b[0].n} at ${b[0].pct}%; weakest was week ${b[b.length-1].n} at ${b[b.length-1].pct}%.`))}
   const subs=Object.entries(A.subj).filter(([k,v])=>v.pc>=2).map(([k,v])=>[k,Math.round(v.d/v.p*100)]).sort((a,b)=>b[1]-a[1]);
-  if(subs.length>1)out.push(`أكتر مادة ملتزم بيها: <b>${esc(subs[0][0])}</b> (${subs[0][1]}%). أكتر مادة محتاجة اهتمام: <b>${esc(subs[subs.length-1][0])}</b> (${subs[subs.length-1][1]}%).`);
+  if(subs.length>1){const a0=esc(subs[0][0]),a1=esc(subs[subs.length-1][0]),e0=esc(trOf(subs[0][0])||subs[0][0]),e1=esc(trOf(subs[subs.length-1][0])||subs[subs.length-1][0]);out.push(TP(`أكتر مادة ملتزم بيها: <b>${a0}</b> (${subs[0][1]}%). أكتر مادة محتاجة اهتمام: <b>${a1}</b> (${subs[subs.length-1][1]}%).`,`Most consistent subject: <b>${e0}</b> (${subs[0][1]}%). Needs the most attention: <b>${e1}</b> (${subs[subs.length-1][1]}%).`))}
   const dd=A.day.map((d,i)=>[i,d.p?Math.round(d.d/d.p*100):0]).sort((a,b)=>b[1]-a[1]);
-  if(A.dMin)out.push(`أقوى يوم عندك ${DAYS[dd[0][0]]} (${dd[0][1]}%)، وأضعف يوم ${DAYS[dd[6][0]]} (${dd[6][1]}%).`);
+  if(A.dMin)out.push(TP(`أقوى يوم عندك ${DAYS_AR[dd[0][0]]} (${dd[0][1]}%)، وأضعف يوم ${DAYS_AR[dd[6][0]]} (${dd[6][1]}%).`,`Your strongest day is ${DAYS_EN[dd[0][0]]} (${dd[0][1]}%) and your weakest is ${DAYS_EN[dd[6][0]]} (${dd[6][1]}%).`));
   const hb=Object.entries(A.hab).map(([id,v])=>[state.habits.find(z=>z.id===id),v.p?Math.round(v.d/v.p*100):0]).filter(x=>x[0]).sort((a,b)=>b[1]-a[1]);
-  if(hb.length>1)out.push(`أكتر عادة ملتزم بيها: ${esc(hb[0][0].name)} (${hb[0][1]}%)، وأقلها: ${esc(hb[hb.length-1][0].name)} (${hb[hb.length-1][1]}%).`);
+  if(hb.length>1){const n0=hb[0][0].name,n1=hb[hb.length-1][0].name,a0=esc(n0),a1=esc(n1),e0=esc(trOf(n0)||n0),e1=esc(trOf(n1)||n1);out.push(TP(`أكتر عادة ملتزم بيها: ${a0} (${hb[0][1]}%)، وأقلها: ${a1} (${hb[hb.length-1][1]}%).`,`Most consistent habit: ${e0} (${hb[0][1]}%); least: ${e1} (${hb[hb.length-1][1]}%).`))}
   if(ws.length>=8){const l=ws.slice(-4),p=ws.slice(-8,-4),av=a=>Math.round(a.reduce((s,w)=>s+w.pct,0)/a.length),x=av(l),y=av(p);
-    out.push(x>=y?`متوسط آخر 4 أسابيع ${x}% مقابل ${y}% في الـ4 اللي قبلهم، يعني في تحسن.`:`متوسط آخر 4 أسابيع ${x}% مقابل ${y}% في الـ4 اللي قبلهم، يعني في تراجع محتاج تقف عنده.`)}
+    out.push(x>=y?TP(`متوسط آخر 4 أسابيع ${x}% مقابل ${y}% في الـ4 اللي قبلهم، يعني في تحسن.`,`Last 4 weeks averaged ${x}% vs ${y}% in the 4 before — that’s an improvement.`):TP(`متوسط آخر 4 أسابيع ${x}% مقابل ${y}% في الـ4 اللي قبلهم، يعني في تراجع محتاج تقف عنده.`,`Last 4 weeks averaged ${x}% vs ${y}% in the 4 before — a drop worth looking into.`))}
   return out;
 }
 
 
 function viewSettings(){
-  return `<div class="sec"><h2>بيانات عامة</h2></div><div class="card form">
-    <label>عنوان الجدول<input type="text" data-set="title" value="${esc(state.title)}"></label>
-    <label>الوصف تحت العنوان<input type="text" data-set="subtitle" value="${esc(state.subtitle)}"></label>
-    <label>الاسم في التقارير المطبوعة<input type="text" data-set="owner" value="${esc(state.owner)}" placeholder="فاضي: هيسألك قبل كل طباعة"></label>
-    <label>بداية أول أسبوع (يوم السبت)<input type="date" data-set="start" value="${state.start}"></label>
-    <label>عدد الأسابيع<input type="number" min="1" max="60" data-set="weeksCount" value="${state.weeksCount}"></label>
-    <label>المظهر<select data-set="theme"><option value="auto" ${state.theme==='auto'?'selected':''}>حسب الجهاز</option><option value="light" ${state.theme==='light'?'selected':''}>فاتح</option><option value="dark" ${state.theme==='dark'?'selected':''}>غامق</option></select></label>
+  return `<div class="sec"><h2>${T('بيانات عامة','General')}</h2></div><div class="card form">
+    <label>${T('لغة العرض','Display language')}<select data-set="lang"><option value="ar" ${L()==='ar'?'selected':''}>عربي</option><option value="en" ${L()==='en'?'selected':''}>English</option></select></label>
+    <label>${T('عنوان الجدول','Schedule title')}<input type="text" data-set="title" value="${esc(state.title)}"></label>
+    <label>${T('الوصف تحت العنوان','Subtitle')}<input type="text" data-set="subtitle" value="${esc(state.subtitle)}"></label>
+    <label>${T('الاسم في التقارير المطبوعة','Name on printed reports')}<input type="text" data-set="owner" value="${esc(state.owner)}" placeholder="${T('فاضي: هيسألك قبل كل طباعة','Empty: you’ll be asked before every print')}"></label>
+    <label>${T('بداية أول أسبوع (يوم السبت)','First week starts (a Saturday)')}<input type="date" data-set="start" value="${state.start}"></label>
+    <label>${T('عدد الأسابيع','Number of weeks')}<input type="number" min="1" max="60" data-set="weeksCount" value="${state.weeksCount}"></label>
+    <label>${T('المظهر','Appearance')}<select data-set="theme"><option value="auto" ${state.theme==='auto'?'selected':''}>${T('حسب الجهاز','System')}</option><option value="light" ${state.theme==='light'?'selected':''}>${T('فاتح','Light')}</option><option value="dark" ${state.theme==='dark'?'selected':''}>${T('غامق','Dark')}</option></select></label>
   </div>
-  <div class="sec"><h2>الوصايا</h2><span>بتظهر في واجهة كل أسبوع، وصية مختلفة كل أسبوع</span></div><div class="card">
-    <div class="form" style="margin-bottom:14px"><label>عنوان الوصايا<input type="text" data-set="quotesTitle" value="${esc(state.quotesTitle||'')}"></label></div>
-    ${(state.quotes||[]).map((q,i)=>`<div class="qrow"><textarea data-quote="${i}" aria-label="وصية ${i+1}">${esc(q)}</textarea><button class="xbtn" data-delquote="${i}" aria-label="حذف الوصية">✕</button></div>`).join('')}
-    <button class="btn" data-act="addquote">${ICON.plus} إضافة وصية</button></div>
-  <div class="sec"><h2>شكل الأسابيع</h2><span>كل أسبوع بياخد شكل وألوان مختلفة تلقائياً</span></div><div class="card">
-    <div class="form" style="margin-bottom:16px"><label>طريقة التلوين<select data-set="fixedTheme"><option value="">شكل مختلف لكل أسبوع (تلقائي)</option>${THEMES.map(t=>`<option value="${t.id}" ${state.fixedTheme===t.id?'selected':''}>نفس الشكل لكل الأسابيع: ${t.name}</option>`).join('')}</select></label></div>
-    <div class="themegrid">${THEMES.map(t=>`<div class="tcard" style="--a:${t.a};--b:${t.b};--tp:${patternURI(t.pat,'#ffffff').replace(/"/g,'&quot;')}"><div class="tp"></div><div>${t.name}</div></div>`).join('')}</div>
-    <p class="hint" style="margin-top:12px">تقدر تختار شكل معيّن لأي أسبوع من وضع التعديل في صفحة الجدول.</p></div>
-  <div class="sec"><h2>الأقسام والألوان</h2></div><div class="card">
-    ${state.cats.map(c=>`<div class="catrow"><input type="color" data-cat="${c.id}" data-f="color" value="${c.color}" aria-label="لون ${esc(c.name)}"><input type="text" data-cat="${c.id}" data-f="name" value="${esc(c.name)}"><button class="btn sm danger" data-act="delcat" data-id="${c.id}">حذف</button></div>`).join('')}
-    <button class="btn" data-act="addcat">+ إضافة قسم</button></div>
-  <div class="sec"><h2>البيانات</h2></div><div class="card">
-    <p class="hint" style="margin-top:0">كل البيانات محفوظة في المتصفح ده بس. اعمل نسخة احتياطية كل فترة، وتقدر ترجعها على أي جهاز تاني.</p>
+  <div class="sec"><h2>${T('الوصايا','Advice')}</h2><span>${T('بتظهر في واجهة كل أسبوع، وصية مختلفة كل أسبوع','Shown at the top of each week — a different one every week')}</span></div><div class="card">
+    <div class="form" style="margin-bottom:14px"><label>${T('عنوان الوصايا','Advice title')}<input type="text" data-set="quotesTitle" value="${esc(state.quotesTitle||'')}"></label></div>
+    ${(state.quotes||[]).map((q,i)=>`<div class="qrow"><textarea data-quote="${i}" aria-label="${T('وصية','Advice')} ${i+1}">${esc(q)}</textarea><button class="xbtn" data-delquote="${i}" aria-label="${T('حذف الوصية','Delete advice')}">✕</button></div>`).join('')}
+    <button class="btn" data-act="addquote">${ICON.plus} ${T('إضافة وصية','Add advice')}</button></div>
+  <div class="sec"><h2>${T('شكل الأسابيع','Week styles')}</h2><span>${T('كل أسبوع بياخد شكل وألوان مختلفة تلقائياً','Each week automatically gets a different look and colors')}</span></div><div class="card">
+    <div class="form" style="margin-bottom:16px"><label>${T('طريقة التلوين','Coloring')}<select data-set="fixedTheme"><option value="">${T('شكل مختلف لكل أسبوع (تلقائي)','Different style each week (auto)')}</option>${THEMES.map(t=>`<option value="${t.id}" ${state.fixedTheme===t.id?'selected':''}>${T('نفس الشكل لكل الأسابيع:','Same style for all weeks:')} ${esc(C(t.name))}</option>`).join('')}</select></label></div>
+    <div class="themegrid">${THEMES.map(t=>`<div class="tcard" style="--a:${t.a};--b:${t.b};--tp:${patternURI(t.pat,'#ffffff').replace(/"/g,'&quot;')}"><div class="tp"></div><div>${esc(C(t.name))}</div></div>`).join('')}</div>
+    <p class="hint" style="margin-top:12px">${TP('تقدر تختار شكل معيّن لأي أسبوع من وضع التعديل في صفحة الجدول.','You can pick a specific style for any week from edit mode on the Schedule page.')}</p></div>
+  <div class="sec"><h2>${T('الأقسام والألوان','Categories & colors')}</h2></div><div class="card">
+    ${state.cats.map(c=>`<div class="catrow"><input type="color" data-cat="${c.id}" data-f="color" value="${c.color}" aria-label="${T('لون','Color:')} ${esc(c.name)}"><input type="text" data-cat="${c.id}" data-f="name" value="${esc(c.name)}"><button class="btn sm danger" data-act="delcat" data-id="${c.id}">${T('حذف','Delete')}</button></div>`).join('')}
+    <button class="btn" data-act="addcat">+ ${T('إضافة قسم','Add category')}</button></div>
+  <div class="sec"><h2>${T('البيانات','Data')}</h2></div><div class="card">
+    <p class="hint" style="margin-top:0">${TP('كل البيانات محفوظة في المتصفح ده بس. اعمل نسخة احتياطية كل فترة، وتقدر ترجعها على أي جهاز تاني.','All data is stored in this browser only. Download a backup regularly; you can restore it on any other device.')}</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn primary" data-act="export">تنزيل نسخة احتياطية</button>
-      <label class="btn" style="cursor:pointer">استرجاع نسخة<input type="file" id="importFile" accept=".json,application/json" hidden></label>
-      <button class="btn danger" data-act="resetall">مسح كل البيانات والبدء من جديد</button>
+      <button class="btn primary" data-act="export">${T('تنزيل نسخة احتياطية','Download backup')}</button>
+      <label class="btn" style="cursor:pointer">${T('استرجاع نسخة','Restore backup')}<input type="file" id="importFile" accept=".json,application/json" hidden></label>
+      <button class="btn danger" data-act="resetall">${T('مسح كل البيانات والبدء من جديد','Erase all data and start over')}</button>
     </div></div>`;
 }
 
@@ -936,37 +1029,38 @@ function modal(title,body,actions){
 }
 function openCell(slotId,day){
   const plan=getPlan(ui.week),c=(plan.cells[slotId]||[])[day]||{t:'',s:'',c:(state.cats[0]||{}).id,star:false};
-  const scopeTxt=ui.scope==='week'?'التعديل هيتطبق على الأسبوع ده بس.':'التعديل هيتطبق على الجدول الأساسي من الأسبوع ده ورايح.';
-  modal(`${DAYS[day]} — تعديل الخانة`,`<div class="form">
-    <label>المادة / النشاط<input type="text" id="fT" value="${esc(c.t)}"></label>
-    <label>التفاصيل<input type="text" id="fS" value="${esc(c.s||'')}"></label>
-    <label>القسم<select id="fC">${state.cats.map(x=>`<option value="${x.id}" ${x.id===c.c?'selected':''}>${esc(x.name)}</option>`).join('')}</select></label>
-    <label class="ck"><input type="checkbox" id="fStar" ${c.star?'checked':''}>أولوية ★</label>
-    <label class="ck"><input type="checkbox" id="fRow">طبّق على كل أيام الفترة دي</label>
+  const scopeTxt=ui.scope==='week'?T('التعديل هيتطبق على الأسبوع ده بس.','This change applies to this week only.'):T('التعديل هيتطبق على الجدول الأساسي من الأسبوع ده ورايح.','This change applies to the master schedule from this week onward.');
+  modal(`${DAYS[day]} — ${T('تعديل الخانة','Edit cell')}`,`<div class="form">
+    <label>${T('المادة / النشاط','Subject / activity')}<input type="text" id="fT" value="${esc(c.t)}"></label>
+    <label>${T('التفاصيل','Details')}<input type="text" id="fS" value="${esc(c.s||'')}"></label>
+    <label>${T('القسم','Category')}<select id="fC">${state.cats.map(x=>`<option value="${x.id}" ${x.id===c.c?'selected':''}>${esc(C(x.name))}</option>`).join('')}</select></label>
+    <label class="ck"><input type="checkbox" id="fStar" ${c.star?'checked':''}>${T('أولوية','Priority')} ★</label>
+    <label class="ck"><input type="checkbox" id="fRow">${T('طبّق على كل أيام الفترة دي','Apply to every day in this slot')}</label>
     <p class="hint" style="margin:0">${scopeTxt}</p></div>`,
-  [{label:'إلغاء'},
-   {label:'مسح الخانة',cls:'danger',fn:()=>{const p=editablePlan(),row=document.getElementById('fRow').checked;p.cells[slotId]=p.cells[slotId]||Array(7).fill(null);
+  [{label:T('إلغاء','Cancel')},
+   {label:T('مسح الخانة','Clear cell'),cls:'danger',fn:()=>{const p=editablePlan(),row=document.getElementById('fRow').checked;p.cells[slotId]=p.cells[slotId]||Array(7).fill(null);
       if(row)p.cells[slotId]=Array(7).fill(null);else p.cells[slotId][day]=null;save();render()}},
-   {label:'حفظ',cls:'primary',fn:()=>{const v={t:document.getElementById('fT').value.trim(),s:document.getElementById('fS').value.trim(),c:document.getElementById('fC').value,star:document.getElementById('fStar').checked};
-      if(!v.t){toast('اكتب اسم المادة الأول');return false}
+   {label:T('حفظ','Save'),cls:'primary',fn:()=>{const v={t:document.getElementById('fT').value.trim(),s:document.getElementById('fS').value.trim(),c:document.getElementById('fC').value,star:document.getElementById('fStar').checked};
+      if(!v.t){toast(T('اكتب اسم المادة الأول','Enter the subject name first'));return false}
       const p=editablePlan(),row=document.getElementById('fRow').checked;p.cells[slotId]=p.cells[slotId]||Array(7).fill(null);
-      if(row)p.cells[slotId]=Array.from({length:7},()=>({...v}));else p.cells[slotId][day]=v;save();render();toast('اتحفظ')}}]);
+      if(row)p.cells[slotId]=Array.from({length:7},()=>({...v}));else p.cells[slotId][day]=v;save();render();toast(T('اتحفظ','Saved'))}}]);
 }
 function openSlot(id){
   const s=getPlan(ui.week).slots.find(x=>x.id===id);if(!s)return;
-  modal('تعديل وقت الفترة',`<div class="form"><label>من<input type="time" id="fA" value="${s.start}"></label><label>إلى<input type="time" id="fB" value="${s.end}"></label></div>`,
-  [{label:'إلغاء'},
-   {label:'حذف الفترة',cls:'danger',fn:()=>{if(!confirm('تحذف الفترة دي بكل خاناتها؟'))return false;const p=editablePlan();p.slots=p.slots.filter(x=>x.id!==id);delete p.cells[id];save();render()}},
-   {label:'حفظ',cls:'primary',fn:()=>{const a=document.getElementById('fA').value,b=document.getElementById('fB').value;if(!a||!b)return false;
+  modal(T('تعديل وقت الفترة','Edit slot time'),`<div class="form"><label>${T('من','From')}<input type="time" id="fA" value="${s.start}"></label><label>${T('إلى','To')}<input type="time" id="fB" value="${s.end}"></label></div>`,
+  [{label:T('إلغاء','Cancel')},
+   {label:T('حذف الفترة','Delete slot'),cls:'danger',fn:()=>{if(!confirm(T('تحذف الفترة دي بكل خاناتها؟','Delete this slot and all its cells?')))return false;const p=editablePlan();p.slots=p.slots.filter(x=>x.id!==id);delete p.cells[id];save();render()}},
+   {label:T('حفظ','Save'),cls:'primary',fn:()=>{const a=document.getElementById('fA').value,b=document.getElementById('fB').value;if(!a||!b)return false;
       const p=editablePlan(),x=p.slots.find(z=>z.id===id);x.start=a;x.end=b;save();render()}}]);
 }
 
 
 /* ============ events ============ */
 document.addEventListener('click',e=>{
+  const lg=e.target.closest('[data-lang]');if(lg){state.lang=lg.dataset.lang;save();render();return}
   const vw=e.target.closest('[data-view]');if(vw){ui.view=vw.dataset.view;render();return}
   const dy=e.target.closest('[data-day]');if(dy){ui.day=+dy.dataset.day;render();return}
-  const tpk=e.target.closest('[data-theme-pick]');if(tpk){const w=getWeek(ui.week,true),v=tpk.dataset.themePick;if(v)w.theme=v;else delete w.theme;save();render();toast(v?'شكل الأسبوع اتغير':'رجع للشكل التلقائي');return}
+  const tpk=e.target.closest('[data-theme-pick]');if(tpk){const w=getWeek(ui.week,true),v=tpk.dataset.themePick;if(v)w.theme=v;else delete w.theme;save();render();toast(v?T('شكل الأسبوع اتغير','Week style changed'):T('رجع للشكل التلقائي','Back to auto style'));return}
   const tab=e.target.closest('[data-tab]');if(tab){ui.tab=tab.dataset.tab;ui.edit=false;render();return}
   const gw=e.target.closest('[data-goweek]');if(gw){ui.week=+gw.dataset.goweek;ui.tab='schedule';render();window.scrollTo(0,0);return}
   const rg=e.target.closest('[data-range]');if(rg){const c=currentWeek(),k=rg.dataset.range;
@@ -976,8 +1070,8 @@ document.addEventListener('click',e=>{
     if(ui.edit){openCell(sid,+d);return}
     if(cell.classList.contains('slot')){const w=getWeek(ui.week,true),k=sid+'_'+d;if(w.done[k])delete w.done[k];else w.done[k]=true;save();render()}return}
   const ds=e.target.closest('[data-delslot]');if(ds){const id=ds.dataset.delslot,k=doneInSlot(ui.week,id);
-    if(!confirm(`تحذف الفترة دي من ${ui.scope==='week'?'الأسبوع ده':'الجدول الأساسي من الأسبوع ده ورايح'}؟\n\nسجل الأسابيع اللي فاتت محفوظ ومش هيتأثر.${k?`\nتنبيه: في ${k} جلسة متعلّمة في الفترة دي الأسبوع ده، هتتشال من حساب الأسبوع ده بس.`:''}`))return;const p=editablePlan();p.slots=p.slots.filter(x=>x.id!==id);delete p.cells[id];save();render();return}
-  const dq=e.target.closest('[data-delquote]');if(dq){if(!confirm('تحذف الوصية دي؟'))return;state.quotes.splice(+dq.dataset.delquote,1);save();render();return}
+    if(!confirm(T(`تحذف الفترة دي من ${ui.scope==='week'?'الأسبوع ده':'الجدول الأساسي من الأسبوع ده ورايح'}؟\n\nسجل الأسابيع اللي فاتت محفوظ ومش هيتأثر.${k?`\nتنبيه: في ${k} جلسة متعلّمة في الفترة دي الأسبوع ده، هتتشال من حساب الأسبوع ده بس.`:''}`,`Delete this slot from ${ui.scope==='week'?'this week':'the master schedule from this week onward'}?\n\nPast weeks’ records are kept and won’t be affected.${k?`\nNote: ${k} session(s) marked done in this slot this week will be removed from this week’s totals only.`:''}`)))return;const p=editablePlan();p.slots=p.slots.filter(x=>x.id!==id);delete p.cells[id];save();render();return}
+  const dq=e.target.closest('[data-delquote]');if(dq){if(!confirm(T('تحذف الوصية دي؟','Delete this advice?')))return;state.quotes.splice(+dq.dataset.delquote,1);save();render();return}
   const dt=e.target.closest('[data-deltodo]');if(dt){const w=getWeek(ui.week,true);w.todos=(w.todos||[]).filter(t=>t.id!==dt.dataset.deltodo);save();render();return}
   const b=e.target.closest('[data-act]');if(!b)return;const act=b.dataset.act;
   switch(act){
@@ -988,27 +1082,27 @@ document.addEventListener('click',e=>{
     case 'today':ui.week=currentWeek();ui.day=isThisWeek(ui.week)?todayIdx():0;break;
     case 'edit':ui.edit=!ui.edit;break;
     case 'addrow':{const p=editablePlan(),last=[...p.slots].sort((a,b)=>toMin(b.end)-toMin(a.end))[0];const st=last?last.end:'18:00',m=(toMin(st)+60)%1440;
-      const id=uid();p.slots.push({id,start:st,end:`${pad(Math.floor(m/60))}:${pad(m%60)}`});p.cells[id]=Array(7).fill(null);toast('اتضافت فترة جديدة، عدّل وقتها وخاناتها');break}
-    case 'copyprev':{if(!confirm(`تستبدل خطة أسبوع ${ui.week} بخطة أسبوع ${ui.week-1}؟`))return;getWeek(ui.week,true).plan=clone(getPlan(ui.week-1));toast('اتنسخت');break}
-    case 'revert':{if(!confirm('ترجّع الأسبوع ده للجدول الأساسي؟ التعديلات الخاصة بيه هتتمسح.'))return;getWeek(ui.week,true).plan=null;toast('رجع للجدول الأساسي');break}
-    case 'promote':{if(!confirm('تخلي خطة الأسبوع ده هي الجدول الأساسي من الأسبوع ده ورايح؟'))return;freezePast(ui.week);state.template=clone(getPlan(ui.week));getWeek(ui.week,true).plan=null;toast('اتعمدت كجدول أساسي');break}
-    case 'addhabit':{const n=document.getElementById('nhName').value.trim();if(!n){toast('اكتب اسم العادة');return}
-      state.habits.push({id:uid(),name:n,desc:document.getElementById('nhDesc').value.trim(),from:ui.week});toast('العادة اتضافت');break}
+      const id=uid();p.slots.push({id,start:st,end:`${pad(Math.floor(m/60))}:${pad(m%60)}`});p.cells[id]=Array(7).fill(null);toast(T('اتضافت فترة جديدة، عدّل وقتها وخاناتها','New slot added — set its time and cells'));break}
+    case 'copyprev':{if(!confirm(T(`تستبدل خطة أسبوع ${ui.week} بخطة أسبوع ${ui.week-1}؟`,`Replace week ${ui.week}’s plan with week ${ui.week-1}’s?`)))return;getWeek(ui.week,true).plan=clone(getPlan(ui.week-1));toast(T('اتنسخت','Copied'));break}
+    case 'revert':{if(!confirm(T('ترجّع الأسبوع ده للجدول الأساسي؟ التعديلات الخاصة بيه هتتمسح.','Revert this week to the master schedule? Its custom changes will be erased.')))return;getWeek(ui.week,true).plan=null;toast(T('رجع للجدول الأساسي','Reverted to master schedule'));break}
+    case 'promote':{if(!confirm(T('تخلي خطة الأسبوع ده هي الجدول الأساسي من الأسبوع ده ورايح؟','Make this week’s plan the master schedule from this week onward?')))return;freezePast(ui.week);state.template=clone(getPlan(ui.week));getWeek(ui.week,true).plan=null;toast(T('اتعمدت كجدول أساسي','Set as master schedule'));break}
+    case 'addhabit':{const n=document.getElementById('nhName').value.trim();if(!n){toast(T('اكتب اسم العادة','Enter the habit name'));return}
+      state.habits.push({id:uid(),name:n,desc:document.getElementById('nhDesc').value.trim(),from:ui.week});toast(T('العادة اتضافت','Habit added'));break}
     case 'edithabit':{const x=state.habits.find(z=>z.id===b.dataset.id);
-      modal('تعديل العادة',`<div class="form"><label>الاسم<input type="text" id="hN" value="${esc(x.name)}"></label><label>الوصف<input type="text" id="hD" value="${esc(x.desc||'')}"></label></div>`,
-        [{label:'إلغاء'},{label:'حفظ',cls:'primary',fn:()=>{const v=document.getElementById('hN').value.trim();if(!v)return false;x.name=v;x.desc=document.getElementById('hD').value.trim();save();render()}}]);return}
-    case 'delhabit':{const x=state.habits.find(z=>z.id===b.dataset.id);if(!confirm(`توقف "${x.name}" من أسبوع ${ui.week} ورايح؟ المتابعة القديمة هتفضل في الداشبورد.`))return;
-      if((x.from||1)>=ui.week)state.habits=state.habits.filter(z=>z.id!==x.id);else x.to=ui.week-1;toast('العادة اتوقفت');break}
-    case 'addtodo':{const t=document.getElementById('tdText').value.trim();if(!t){toast('اكتب المهمة الأول');return}
+      modal(T('تعديل العادة','Edit habit'),`<div class="form"><label>${T('الاسم','Name')}<input type="text" id="hN" value="${esc(x.name)}"></label><label>${T('الوصف','Description')}<input type="text" id="hD" value="${esc(x.desc||'')}"></label></div>`,
+        [{label:T('إلغاء','Cancel')},{label:T('حفظ','Save'),cls:'primary',fn:()=>{const v=document.getElementById('hN').value.trim();if(!v)return false;x.name=v;x.desc=document.getElementById('hD').value.trim();save();render()}}]);return}
+    case 'delhabit':{const x=state.habits.find(z=>z.id===b.dataset.id);if(!confirm(T(`توقف "${x.name}" من أسبوع ${ui.week} ورايح؟ المتابعة القديمة هتفضل في الداشبورد.`,`Stop "${C(x.name)}" from week ${ui.week} onward? Past tracking stays in the dashboard.`)))return;
+      if((x.from||1)>=ui.week)state.habits=state.habits.filter(z=>z.id!==x.id);else x.to=ui.week-1;toast(T('العادة اتوقفت','Habit stopped'));break}
+    case 'addtodo':{const t=document.getElementById('tdText').value.trim();if(!t){toast(T('اكتب المهمة الأول','Enter the task first'));return}
       const dv=document.getElementById('tdDay').value,w=getWeek(ui.week,true);(w.todos=w.todos||[]).push({id:uid(),t,day:dv===''?null:+dv,done:false});save();render();document.getElementById('tdText').focus();return}
     case 'carrytodo':{const w=getWeek(ui.week,true),nx=getWeek(ui.week+1,true),left=(w.todos||[]).filter(t=>!t.done);
-      nx.todos=(nx.todos||[]).concat(left.map(t=>({...t,id:uid()})));w.todos=w.todos.filter(t=>t.done);toast(`اتنقلت ${left.length} مهام لأسبوع ${ui.week+1}`);break}
-    case 'addquote':{(state.quotes=state.quotes||[]).push('اكتب الوصية الجديدة هنا');ui.qOff=(state.quotes.length-1)-(ui.week-1);save();render();
-      const bq=document.querySelector('[data-qidx]');if(bq){bq.focus();const r=document.createRange();r.selectNodeContents(bq);const sel=getSelection();sel.removeAllRanges();sel.addRange(r)}else if(ui.tab==='settings'){toast('اتضافت وصية جديدة')}return}
-    case 'addcat':state.cats.push({id:uid(),name:'قسم جديد',color:'#B88A2C'});break;
-    case 'delcat':{if(!confirm('تحذف القسم ده؟ الخانات اللي عليه هتبقى "بدون تصنيف".'))return;state.cats=state.cats.filter(c=>c.id!==b.dataset.id);break}
+      nx.todos=(nx.todos||[]).concat(left.map(t=>({...t,id:uid()})));w.todos=w.todos.filter(t=>t.done);toast(T(`اتنقلت ${left.length} مهام لأسبوع ${ui.week+1}`,`Moved ${left.length} task(s) to week ${ui.week+1}`));break}
+    case 'addquote':{(state.quotes=state.quotes||[]).push(L()==='en'?'Write the new advice here':'اكتب الوصية الجديدة هنا');ui.qOff=(state.quotes.length-1)-(ui.week-1);save();render();
+      const bq=document.querySelector('[data-qidx]');if(bq){bq.focus();const r=document.createRange();r.selectNodeContents(bq);const sel=getSelection();sel.removeAllRanges();sel.addRange(r)}else if(ui.tab==='settings'){toast(T('اتضافت وصية جديدة','New advice added'))}return}
+    case 'addcat':state.cats.push({id:uid(),name:L()==='en'?'New category':'قسم جديد',color:'#B88A2C'});break;
+    case 'delcat':{if(!confirm(T('تحذف القسم ده؟ الخانات اللي عليه هتبقى "بدون تصنيف".','Delete this category? Its cells will become "Uncategorized".')))return;state.cats=state.cats.filter(c=>c.id!==b.dataset.id);break}
     case 'export':{const blob=new Blob([JSON.stringify(state,null,1)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`weekly-planner-backup-${iso(new Date())}.json`;document.body.appendChild(a);a.click();a.remove();return}
-    case 'resetall':{if(!confirm('هتمسح كل الجداول والمتابعة والعادات. متأكد؟'))return;state=defaults();ui.week=currentWeek();toast('اتمسح كل حاجة');break}
+    case 'resetall':{if(!confirm(T('هتمسح كل الجداول والمتابعة والعادات. متأكد؟','This erases all schedules, tracking and habits. Are you sure?')))return;const keepLang=state.lang;state=defaults();state.lang=keepLang;ui.week=currentWeek();toast(T('اتمسح كل حاجة','Everything erased'));break}
     case 'print-week':askOwner(()=>doPrint('week'));return;
     case 'print-report':askOwner(()=>doPrint('report'));return;
   }
@@ -1017,20 +1111,20 @@ document.addEventListener('click',e=>{
 document.addEventListener('change',e=>{
   const t=e.target;
   if(t.id==='weekSel'){ui.week=+t.value;ui.day=isThisWeek(ui.week)?todayIdx():0;render();return}
-  if(t.dataset.tslot){const p=editablePlan(),x=p.slots.find(z=>z.id===t.dataset.tslot);if(x&&t.value){x[t.dataset.tf]=t.value;save();render();toast('الوقت اتعدل')}return}
+  if(t.dataset.tslot){const p=editablePlan(),x=p.slots.find(z=>z.id===t.dataset.tslot);if(x&&t.value){x[t.dataset.tf]=t.value;save();render();toast(T('الوقت اتعدل','Time updated'))}return}
   if(t.dataset.todo){const w=getWeek(ui.week,true),x=(w.todos||[]).find(z=>z.id===t.dataset.todo);if(x){x.done=t.checked;save();render()}return}
   if(t.name==='scope'){ui.scope=t.value;return}
   if(t.dataset.habit){const w=getWeek(ui.week,true);if(t.checked)w.habits[t.dataset.habit]=true;else delete w.habits[t.dataset.habit];save();render();return}
-  if(t.dataset.quote!=null){const v=t.value.trim();if(v){state.quotes[+t.dataset.quote]=v;save();toast('الوصية اتحفظت')}return}
-  if(t.id==='weekNote'){getWeek(ui.week,true).note=t.value;save();toast('الملاحظات اتحفظت');return}
+  if(t.dataset.quote!=null){const v=t.value.trim();if(v){state.quotes[+t.dataset.quote]=v;save();toast(T('الوصية اتحفظت','Advice saved'))}return}
+  if(t.id==='weekNote'){getWeek(ui.week,true).note=t.value;save();toast(T('الملاحظات اتحفظت','Notes saved'));return}
   if(t.id==='rFrom'){ui.from=+t.value;if(ui.to<ui.from)ui.to=ui.from;render();return}
   if(t.id==='rTo'){ui.to=+t.value;if(ui.from>ui.to)ui.from=ui.to;render();return}
   if(t.id==='cmpA'){ui.cmpA=+t.value;render();return}
   if(t.id==='cmpB'){ui.cmpB=+t.value;render();return}
-  if(t.dataset.set){const k=t.dataset.set;let v=t.value;if(k==='weeksCount'){v=Math.min(Math.max(parseInt(v)||52,1),60);ui.week=Math.min(ui.week,v)}if(k==='start'&&!v)return;state[k]=v;save();render();toast('اتحفظ');return}
+  if(t.dataset.set){const k=t.dataset.set;let v=t.value;if(k==='weeksCount'){v=Math.min(Math.max(parseInt(v)||52,1),60);ui.week=Math.min(ui.week,v)}if(k==='start'&&!v)return;state[k]=v;save();render();toast(T('اتحفظ','Saved'));return}
   if(t.dataset.cat){const c=state.cats.find(x=>x.id===t.dataset.cat);c[t.dataset.f]=t.value;save();render();return}
   if(t.id==='importFile'&&t.files[0]){const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.template||!d.weeks)throw 0;
-      if(!confirm('النسخة دي هتستبدل كل البيانات الحالية. تكمل؟'))return;state={...defaults(),...d};save();ui.week=currentWeek();render();toast('النسخة اترجعت')}catch(err){toast('الملف ده مش نسخة احتياطية من الجدول')}};r.readAsText(t.files[0])}
+      if(!confirm(T('النسخة دي هتستبدل كل البيانات الحالية. تكمل؟','This backup will replace all current data. Continue?')))return;state={...defaults(),...d};save();ui.week=currentWeek();render();toast(T('النسخة اترجعت','Backup restored'))}catch(err){toast(T('الملف ده مش نسخة احتياطية من الجدول','This file is not a backup of this planner'))}};r.readAsText(t.files[0])}
 });
 
 document.addEventListener('keydown',e=>{
@@ -1040,43 +1134,65 @@ document.addEventListener('keydown',e=>{
 });
 document.addEventListener('focusout',e=>{
   if(e.target.dataset&&e.target.dataset.qidx!=null){const i=+e.target.dataset.qidx,v=e.target.textContent.replace(/\s+/g,' ').trim();
-    if(!v){e.target.textContent=state.quotes[i];return}if(state.quotes[i]!==v){state.quotes[i]=v;save();toast('الوصية اتحفظت')}return}
+    if(!v){e.target.textContent=state.quotes[i];return}if(state.quotes[i]!==v){state.quotes[i]=v;save();toast(T('الوصية اتحفظت','Advice saved'))}return}
   const id=e.target.id;if(id!=='hTitle'&&id!=='hSub')return;
   const v=e.target.textContent.trim(),k=id==='hTitle'?'title':'subtitle';
   if(k==='title'&&!v){e.target.textContent=state.title;return}
-  if(state[k]!==v){state[k]=v;save();toast('اتحفظ')}
+  if(state[k]!==v){state[k]=v;save();toast(T('اتحفظ','Saved'))}
 });
 
 
 /* ============ print ============ */
 function askOwner(go){
   if(state.owner){go();return}
-  modal('مين اللي هيتكتب اسمه في التقرير؟',`<div class="form"><label>الاسم<input type="text" id="ownN" placeholder="اكتب الاسم"></label>
-    <label class="ck"><input type="checkbox" id="ownS">احفظ الاسم ده للتقارير الجاية</label>
-    <p class="hint">لو سبته فاضي، التقرير هيتطبع من غير اسم.</p></div>`,
-  [{label:'إلغاء'},{label:'اطبع',cls:'primary',fn:()=>{const v=document.getElementById('ownN').value.trim();
+  modal(T('مين اللي هيتكتب اسمه في التقرير؟','Whose name goes on the report?'),`<div class="form"><label>${T('الاسم','Name')}<input type="text" id="ownN" placeholder="${T('اكتب الاسم','Enter the name')}"></label>
+    <label class="ck"><input type="checkbox" id="ownS">${T('احفظ الاسم ده للتقارير الجاية','Save this name for future reports')}</label>
+    <p class="hint">${TP('لو سبته فاضي، التقرير هيتطبع من غير اسم.','If left empty, the report prints without a name.')}</p></div>`,
+  [{label:T('إلغاء','Cancel')},{label:T('اطبع','Print'),cls:'primary',fn:()=>{const v=document.getElementById('ownN').value.trim();
     if(v&&document.getElementById('ownS').checked){state.owner=v;save()}ui.printOwner=v;setTimeout(go,50)}}]);
+}
+/* shrink the weekly print so everything (header, advice, schedule, tasks, habits, notes) fits one A4 landscape page */
+function fitOnePage(P){
+  const PW=1054,PH=718*0.94; /* A4 landscape minus 9mm margins, in CSS px, with a safety margin */
+  const MINZ=0.68;           /* never shrink below this — if it still doesn't fit, the rest flows to page 2 */
+  let z=1;
+  for(let k=0;k<4;k++){
+    P.style.cssText=`display:block;position:absolute;top:0;left:-99999px;width:${PW/z}px;zoom:1`;
+    fitSlots(P);
+    const h=P.scrollHeight;z=Math.min(1,PH/h);
+    if(z<MINZ){z=0.85;break}  /* too much content: print at a comfortable size and let it continue on page 2 */
+  }
+  P.style.cssText=`display:block;position:absolute;top:0;left:-99999px;width:${PW/z}px;zoom:1`;fitSlots(P);
+  const fits=P.scrollHeight*z<=PH+1;
+  P.classList.toggle('one-page',fits);
+  P.style.cssText=`width:${PW/z}px;zoom:${z}`;
 }
 function doPrint(kind){
   const P=document.getElementById('printArea'),root=document.documentElement,prev=root.getAttribute('data-theme');
   root.setAttribute('data-theme','light');
   const who=state.owner||ui.printOwner||'';ui.printOwner='';
-  const foot=`<div class="pr-foot"><span>${who?'Prepared by: '+esc(who):''}</span><span>تاريخ الطباعة: ${fmtD(new Date())} ${new Date().getFullYear()}</span></div>`;
+  const foot=`<div class="pr-foot"><span>${who?'Prepared by: '+esc(who):''}</span><span>${T('تاريخ الطباعة:','Printed on:')} ${fmtD(new Date())} ${new Date().getFullYear()}</span></div>`;
   if(kind==='week'){
     const w=state.weeks[ui.week]||{};
     applyWeekTheme(ui.week);
-    P.innerHTML=`<div class="pr-head"><div><h1>${esc(state.title)}</h1><div class="s">${esc(state.subtitle)}</div></div><div style="text-align:end"><b style="font-size:1.2rem">أسبوع ${ui.week}</b><div class="s">${rangeLabel(ui.week)}</div></div></div>
+    P.innerHTML=`<div class="pr-head"><div><h1>${esc(C(state.title))}</h1><div class="s">${esc(C(state.subtitle))}</div></div><div style="text-align:end"><b style="font-size:1.2rem">${T('أسبوع','Week')} ${ui.week}</b><div class="s">${rangeLabel(ui.week)}</div></div></div>
       ${quoteCard(ui.week,false)}<div style="height:10px"></div>${legend()}<div class="board"><div class="scroller">${scheduleTable(ui.week,false)}</div></div>
-      ${(w.todos||[]).length?`<h2 class="pr-h2">حاجات لازم أعملها</h2><div class="card">${todosHtml(ui.week,false)}</div>`:''}
-      <h2 class="pr-h2">العادات</h2><div class="board">${habitsTable(ui.week,false)}</div>
-      ${w.note?`<h2 class="pr-h2">ملاحظات الأسبوع</h2><div class="card">${esc(w.note).replace(/\n/g,'<br>')}</div>`:''}${foot}`;
+      <div class="pr-bottom">
+        <div><h2 class="pr-h2">${T('العادات','Habits')}</h2><div class="board">${habitsTable(ui.week,false)}</div></div>
+        ${(w.todos||[]).length||w.note?`<div>
+          ${(w.todos||[]).length?`<h2 class="pr-h2">${T('حاجات لازم أعملها','Must-do tasks')}</h2><div class="card pr-todos">${todosHtml(ui.week,false)}</div>`:''}
+          ${w.note?`<h2 class="pr-h2">${T('ملاحظات الأسبوع','Week notes')}</h2><div class="card">${esc(w.note).replace(/\n/g,'<br>')}</div>`:''}
+        </div>`:''}
+      </div>${foot}`;
   }else{
     const A=aggregate(ui.from,ui.to);
-    P.innerHTML=`<div class="pr-head"><div><h1>تقرير المتابعة</h1><div class="s">${esc(state.title)}</div></div><div style="text-align:end"><b>من أسبوع ${ui.from} إلى أسبوع ${ui.to}</b><div class="s">${fmtD(weekStart(ui.from))} – ${rangeLabel(ui.to).split('– ')[1]}</div></div></div>
-      ${dashBody(A,currentWeek(),false)}${allTimeLog()}<h2 class="pr-h2">مقارنة أسبوع ${ui.cmpA} مع أسبوع ${ui.cmpB}</h2><div class="card">${compareTable(ui.cmpA,ui.cmpB)}</div>${foot}`;
+    P.innerHTML=`<div class="pr-head"><div><h1>${T('تقرير المتابعة','Progress Report')}</h1><div class="s">${esc(C(state.title))}</div></div><div style="text-align:end"><b>${T(`من أسبوع ${ui.from} إلى أسبوع ${ui.to}`,`Week ${ui.from} to week ${ui.to}`)}</b><div class="s">${fmtD(weekStart(ui.from))} – ${rangeLabel(ui.to).split('– ')[1]}</div></div></div>
+      ${dashBody(A,currentWeek(),false)}${allTimeLog()}<h2 class="pr-h2">${T(`مقارنة أسبوع ${ui.cmpA} مع أسبوع ${ui.cmpB}`,`Week ${ui.cmpA} vs week ${ui.cmpB}`)}</h2><div class="card">${compareTable(ui.cmpA,ui.cmpB)}</div>${foot}`;
   }
-  document.body.classList.add('printing');fitSlots(P);
-  const done=()=>{document.body.classList.remove('printing');P.innerHTML='';if(prev)root.setAttribute('data-theme',prev);else root.removeAttribute('data-theme');render();window.removeEventListener('afterprint',done)};
+  document.body.classList.add('printing');
+  P.classList.toggle('pr-week',kind==='week');P.classList.remove('one-page');
+  if(kind==='week')fitOnePage(P);else fitSlots(P);
+  const done=()=>{document.body.classList.remove('printing');P.innerHTML='';P.classList.remove('one-page','pr-week');P.removeAttribute('style');if(prev)root.setAttribute('data-theme',prev);else root.removeAttribute('data-theme');render();window.removeEventListener('afterprint',done)};
   window.addEventListener('afterprint',done);
   setTimeout(()=>window.print(),60);
 }

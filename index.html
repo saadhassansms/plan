@@ -374,7 +374,6 @@ dialog::backdrop{background:rgba(14,17,32,.5);backdrop-filter:blur(2px)}
 .pr-foot{margin-top:14px;padding-top:8px;border-top:1px solid var(--line);display:flex;justify-content:space-between;font-size:.8rem;color:var(--ink-soft)}
 .pr-h2{font-family:"Noto Kufi Arabic","Readex Pro",sans-serif;font-size:1rem;margin:16px 0 8px}
 @media print{
-  @page{size:A4 landscape;margin:9mm}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   body{background:#fff;font-size:11px}
   body.printing .appbar,body.printing .wrap,body.printing dialog,body.printing .toast{display:none!important}
@@ -435,7 +434,48 @@ dialog::backdrop{background:rgba(14,17,32,.5);backdrop-filter:blur(2px)}
 [dir=ltr] .quote blockquote{font-family:"Amiri",serif}
 .daychip.today::before{content:var(--today-lbl,"النهارده")}
 
+
+/* ---------- cell editor: repeat days & loop tracks ---------- */
+dialog{max-height:min(92vh,960px);overflow:auto}
+dialog.wide{width:min(620px,94vw)}
+.dlg-act{position:sticky;bottom:0;background:var(--sheet);margin:18px -24px -24px;padding:12px 24px 20px;border-top:1px solid var(--line-2)}
+.fld{display:flex;flex-direction:column;gap:7px;font-size:.84rem;color:var(--ink-soft)}
+.fld-h{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.form .radio-seg label,.form .daypick label{flex-direction:row;align-items:center;gap:7px;color:var(--ink);font-size:.84rem}
+.daypick{display:flex;flex-wrap:wrap;gap:6px}
+.daypick label{position:relative;border:1px solid var(--line);border-radius:10px;padding:5px 11px;cursor:pointer;user-select:none;background:var(--sheet)}
+.daypick input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+.daypick label:has(input:checked){background:var(--acc);border-color:var(--acc);color:#fff}
+.daypick label:has(input:focus-visible){outline:2px solid var(--acc2);outline-offset:2px}
+.daypick label.cur::after{content:"";position:absolute;top:-3px;inset-inline-end:-3px;width:8px;height:8px;border-radius:50%;background:var(--acc2);border:2px solid var(--sheet)}
+.linkbtn{background:none;border:none;padding:0;color:var(--acc-t);font-size:.8rem;font-weight:500}
+.seqbox{border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:12px;background:color-mix(in srgb,var(--empty) 40%,var(--sheet))}
+.srow{display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:6px;align-items:center;margin-bottom:6px}
+.snum{width:24px;height:24px;border-radius:50%;background:color-mix(in srgb,var(--acc) 12%,var(--sheet));color:var(--acc-t);font-size:.74rem;font-weight:600;display:grid;place-items:center;font-variant-numeric:tabular-nums}
+.srow input{width:100%}
+.sact{display:flex;gap:2px}
+.sact .xbtn:disabled{opacity:.3;cursor:default}
+.seqprev{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.seqprev>div{background:var(--sheet);border:1px solid var(--line-2);border-radius:10px;padding:8px 10px}
+.seqprev h4{margin:0 0 4px;font-size:.76rem;font-weight:600;color:var(--muted)}
+.seqprev p{margin:0;display:grid;grid-template-columns:76px 1fr;gap:8px;font-size:.78rem;line-height:1.5;color:var(--ink)}
+.seqprev p span:first-child{color:var(--ink-soft)}
+.seqprev p span:last-child{unicode-bidi:plaintext}
+.seqprev p b{color:var(--acc-t);font-weight:600;margin-inline-end:4px}
+.seqmark{display:none;position:absolute;top:9px;left:8px;font-style:normal;font-size:10px;font-weight:600;color:color-mix(in srgb,var(--c) 70%,var(--ink));background:color-mix(in srgb,var(--c) 14%,var(--sheet));border-radius:8px;padding:0 6px;line-height:18px}
+.edit-on .slot .seqmark{display:block}
+[dir=ltr] .seqmark{left:auto;right:8px}
+/* ---------- printed task list ---------- */
+.ptodo{display:flex;align-items:center;gap:9px;padding:6px 2px;border-bottom:1px solid var(--line-2);min-height:30px;break-inside:avoid}
+.ptodo .pbox{flex:none;width:13px;height:13px;border:1.4px solid var(--ink-soft);border-radius:4px;display:grid;place-items:center;font-size:9px;line-height:1;color:#fff}
+.ptodo.done .pbox{background:var(--acc);border-color:var(--acc)}
+.ptodo .tt-t{flex:1;unicode-bidi:plaintext;text-align:start}
+.ptodo.done .tt-t{text-decoration:line-through;color:var(--muted)}
+.ptodo.blank .tt-t{border-bottom:1px dotted var(--line);height:1.1em}
+#printArea .pr-todos .ptodo:nth-last-child(-n+2){border-bottom:none}
+#printArea .pr-habits{margin-top:4px}
 </style>
+<style id="pgSize">@media print{@page{size:A4 landscape;margin:9mm}}</style>
 </head>
 <body>
 <header class="appbar"><div class="appbar-in">
@@ -493,22 +533,24 @@ function defaults(){
     ],
     template:{
       slots:[
-        {id:'s1',start:'05:30',end:'07:00'},
-        {id:'s2',start:'18:00',end:'19:00'},
-        {id:'s3',start:'19:15',end:'20:45'},
-        {id:'s4',start:'21:00',end:'22:00'},
-        {id:'s5',start:'22:00',end:'22:45'}
+        {id:'s1',start:'04:00',end:'06:00'},
+        {id:'s2',start:'06:00',end:'09:00'},
+        {id:'s3',start:'11:00',end:'12:00'},
+        {id:'s4',start:'21:00',end:'23:00'}
       ],
       cells:{
-        s1:all(C('حفظ القرآن','حفظ + أذكار + نفع','q')),
-        s2:[C('Excel','دوال، Pivot، Power Query','t'),C('AI','أدوات الذكاء الاصطناعي في الشغل','t',1),C('IQ','تمارين منطق وتحليل','t',1),
-            C('Power BI','نماذج بيانات و DAX','t'),C('AI','تطبيق عملي ومشروع صغير','t',1),C('ERP Odoo','محاسبة وتقارير Odoo','t'),C('IQ','اختبار ومراجعة','t',1)],
-        s3:all(C('CMA','مذاكرة + أسئلة MCQ','a')),
-        s4:all(C('Accounting 101','أساسيات + حل تمارين','a')),
-        s5:[C('IFRS','معيار جديد','a'),C('Entrepreneurship','قراءة + أفكار','a'),C('IFRS','حالات عملية','a'),
-            C('مراجعة','تلخيص الأسبوع','f'),C('IFRS','مراجعة المعايير','a'),C('Entrepreneurship','تطبيق على فكرة','a'),C('مراجعة وتخطيط','تجهيز الأسبوع الجاي','f')]
+        s1:all(C('Religion','N. Pray + Quran + Azkar + Sharia','q',1)),
+        s2:all({t:'CMA',s:'',c:'a',star:true,seq:'sq_cma'}),
+        s3:[C('Excel','','t'),C('IQ + AI','','t',1),C('Entrepreneurship','','t',1),C('ERP','','t'),C('Entrepreneurship','','t',1),C('IQ + AI','','t',1),C('Power BI','','t')],
+        s4:[C('Accounting 101','Basics + exercises','a'),{t:'IFRS',s:'',c:'a',star:false,seq:'sq_ifrs'},{t:'IFRS',s:'',c:'a',star:false,seq:'sq_ifrs'},{t:'IFRS',s:'',c:'a',star:false,seq:'sq_ifrs'},
+            {t:'IFRS',s:'',c:'a',star:false,seq:'sq_ifrs'},{t:'IFRS',s:'',c:'a',star:false,seq:'sq_ifrs'},C('Accounting 101','Basics + exercises','a')]
       }
     },
+    seqs:{
+      sq_cma:{steps:['Watch Video & Absorb','Deep Study + Summarize','Solve Questions Deeply','Watch Video + Reading + Deep Study to Weak Spots','Re-attempt Questions & End The Session','Revision to the End Topics','Revision to the End Topics'],days:[0,1,2,3,4,5,6],aW:1,aStep:0,cont:false},
+      sq_ifrs:{steps:['Watch Video & Absorb','Deep Study + Summarize','Solve Questions Deeply','Watch Video + Reading + Deep Study to Weak Spots','Re-attempt Questions & Quick Revision'],days:[1,2,3,4,5],aW:1,aStep:0,cont:false}
+    },
+    print:{o:'landscape',fit:'one',quote:true,todos:true,habits:false,notes:true},
     habits:[
       {id:'h1',name:'القراءة',desc:'ولو 15 صفحة في اليوم',from:1},
       {id:'h2',name:'مفيش سوشيال ميديا',desc:'بدون تصفح عشوائي',from:1},
@@ -523,6 +565,18 @@ try{state=JSON.parse(localStorage.getItem(KEY))}catch(e){state=null}
 if(!state||!state.template){state=defaults()}else{const raw=state;state={...defaults(),...raw};
   if(raw.owner==='Mohamed Ghaith'){state.owner='';try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
   if(raw.startV!==2){state.start='2026-10-10';state.startV=2;try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}}
+/* one-time switch of the master schedule to the requested layout (Religion / CMA track / skills / IFRS track) */
+function migrateLayout(st){
+  if(!st||(st.layoutV||0)>=3)return false;
+  const D=defaults(),oldTpl=JSON.stringify(st.template||{});
+  for(const k in (st.weeks||{})){const w=st.weeks[k];if(!w)continue;const tracked=Object.keys(w.done||{}).length>0;
+    if(tracked&&!w.plan)w.plan=JSON.parse(oldTpl);          /* weeks you already ticked keep their history */
+    else if(!tracked&&w.plan)w.plan=null;}                    /* untouched weeks follow the new master */
+  st.template=D.template;st.seqs={...(st.seqs||{}),...D.seqs};
+  st.cats=st.cats||[];D.cats.forEach(c=>{if(!st.cats.some(x=>x.id===c.id))st.cats.push(c)});
+  st.layoutV=3;return true;
+}
+if(migrateLayout(state)){state._t=Date.now();try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
 function save(){state._t=Date.now();if(typeof schedulePush==='function')schedulePush();try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){toast(T('تعذّر الحفظ في المتصفح، اعمل نسخة احتياطية من الإعدادات','Could not save in this browser. Download a backup from Settings.'))}}
 
 /* ============ language: ar | bi | en ============ */
@@ -590,6 +644,12 @@ const habitsFor=n=>state.habits.filter(h=>(h.from||1)<=n&&(!h.to||n<=h.to));
 const pctClass=p=>p>=80?'p-good':p>=50?'p-mid':'p-bad';
 let toastT;function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2200)}
 function applyTheme(){const r=document.documentElement;if(state.theme==='auto')r.removeAttribute('data-theme');else r.setAttribute('data-theme',state.theme)}
+
+/* loop tracks: a cell can point at a sequence of steps that rotates over the chosen days */
+const seqOf=id=>(state.seqs||{})[id];
+function seqIdx(q,n,i){const k=q.days.indexOf(i),N=q.steps.length;if(k<0||!N)return -1;
+  const x=(q.aStep||0)+k+(q.cont?(n-(q.aW||1))*q.days.length:0);return ((x%N)+N)%N}
+function rc(c,n,i){if(!c||!c.seq)return c;const q=seqOf(c.seq);if(!q)return c;const k=seqIdx(q,n,i);if(k<0)return c;return {...c,s:q.steps[k],_sq:[k+1,q.steps.length]}}
 
 /* keep past weeks frozen before master edits so the dashboard stays accurate */
 function freezePast(upTo){const snap=JSON.stringify(state.template);
@@ -692,7 +752,7 @@ const ICON={
 function fitSlots(root){
   (root||document).querySelectorAll('.slot b, .slot em').forEach(el=>{
     el.style.fontSize='';el.style.whiteSpace='';
-    const base=parseFloat(getComputedStyle(el).fontSize),min=el.tagName==='B'?10.5:9.5;let fs=base;
+    const base=parseFloat(getComputedStyle(el).fontSize),pr=!!el.closest('#printArea'),min=el.tagName==='B'?(pr?8.5:10.5):(pr?8:9.5);let fs=base;
     if(el.clientWidth===0)return;
     while(el.scrollWidth>el.clientWidth+1&&fs>min){fs-=.5;el.style.fontSize=fs+'px'}
     if(el.scrollWidth>el.clientWidth+1)el.style.whiteSpace='normal';
@@ -773,8 +833,8 @@ function editPanel(){
 }
 
 function slotHtml(c,sid,i,done,interactive){
-  const cat=catOf(c.c),tag=interactive?'button':'div';
-  return `<${tag} class="slot ${done?'done':''}" style="--c:${cat.color}" ${interactive?`data-cell="${sid}|${i}" aria-pressed="${done}" title="${ui.edit?T('اضغط للتعديل','Tap to edit'):T('اضغط لما تخلّصها','Tap when done')}"`:''}>${slotText(c)}<i class="tick" aria-hidden="true">✓</i></${tag}>`;
+  const cat=catOf(c.c),tag=interactive?'button':'div',sq=interactive&&c._sq?`<i class="seqmark" aria-hidden="true">↻ ${c._sq[0]}/${c._sq[1]}</i>`:'';
+  return `<${tag} class="slot ${done?'done':''}" style="--c:${cat.color}" ${interactive?`data-cell="${sid}|${i}" aria-pressed="${done}" title="${ui.edit?T('اضغط للتعديل','Tap to edit'):T('اضغط لما تخلّصها','Tap when done')}"`:''}>${slotText(c)}<i class="tick" aria-hidden="true">✓</i>${sq}</${tag}>`;
 }
 function slotText(c){
   const l=L(),et=trOf(c.t),es=c.s?trOf(c.s):'',star=c.star?'<span class="star">★</span>':'';
@@ -798,7 +858,7 @@ function scheduleTable(n,interactive){
     for(let i=0;i<7;i++){
       const c=cells[i],cls=isCur&&i===ti?'is-today':'';
       if(!c||!c.t){h+=`<td class="${cls}">${ed?`<button class="addcell" data-cell="${s.id}|${i}">+ ${T('إضافة','Add')}</button>`:''}</td>`;continue}
-      h+=`<td class="${cls}">${slotHtml(c,s.id,i,!!done[s.id+'_'+i],interactive)}</td>`;
+      h+=`<td class="${cls}">${slotHtml(rc(c,n,i),s.id,i,!!done[s.id+'_'+i],interactive)}</td>`;
     }
     h+='</tr>';
   });
@@ -815,7 +875,7 @@ function dayView(n){
   let rows='';
   slots.forEach(s=>{const c=(plan.cells[s.id]||[])[i];
     if(!c||!c.t){if(ed)rows+=`<div class="tl-row"><div class="tl-time"><b>${fmt12(s.start)}</b><span>${L()==='en'?'to':'إلى'} ${fmt12(s.end)}</span></div><button class="addcell" data-cell="${s.id}|${i}">+ ${T('إضافة','Add')}</button></div>`;return}
-    rows+=`<div class="tl-row"><div class="tl-time"><b>${fmt12(s.start)}</b><span>${L()==='en'?'to':'إلى'} ${fmt12(s.end)}</span></div>${slotHtml(c,s.id,i,!!done[s.id+'_'+i],true)}</div>`});
+    rows+=`<div class="tl-row"><div class="tl-time"><b>${fmt12(s.start)}</b><span>${L()==='en'?'to':'إلى'} ${fmt12(s.end)}</span></div>${slotHtml(rc(c,n,i),s.id,i,!!done[s.id+'_'+i],true)}</div>`});
   h+=`<div class="timeline">${rows||`<div class="empty"><b>${T(`يوم ${DAYS_AR[i]} فاضي`,`${DAYS_EN[i]} is free`)}</b>${TP('مفيش حاجة متخططة. ارتاح أو ضيف حاجة من وضع التعديل.','Nothing planned. Rest, or add something from edit mode.')}</div>`}</div>`;
   if(ed)h+=`<div style="margin-top:10px"><button class="addrowbtn" data-act="addrow">+ ${T('إضافة فترة جديدة','Add a new slot')}</button></div>`;
   return h;
@@ -1031,30 +1091,97 @@ function viewSettings(){
 
 /* ============ modal ============ */
 const dlg=document.getElementById('dlg');
-function modal(title,body,actions){
-  document.getElementById('dlgT').textContent=title;document.getElementById('dlgB').innerHTML=body;
+function modal(title,body,actions,wide){
+  const B=document.getElementById('dlgB');B.oninput=B.onclick=B.onchange=null;dlg.classList.toggle('wide',!!wide);
+  document.getElementById('dlgT').textContent=title;B.innerHTML=body;
   const a=document.getElementById('dlgA');a.innerHTML='';
   actions.forEach(x=>{const b=document.createElement('button');b.className='btn '+(x.cls||'');b.textContent=x.label;b.type='button';
     b.onclick=()=>{if(x.fn&&x.fn()===false)return;dlg.close()};a.appendChild(b)});
   dlg.showModal();const f=dlg.querySelector('input,select');if(f)f.focus();
 }
 function openCell(slotId,day){
-  const plan=getPlan(ui.week),c=(plan.cells[slotId]||[])[day]||{t:'',s:'',c:(state.cats[0]||{}).id,star:false};
+  const plan=getPlan(ui.week),row=plan.cells[slotId]||[],raw=row[day];
+  const c=raw||{t:'',s:'',c:(state.cats[0]||{}).id,star:false},q=c.seq?seqOf(c.seq):null,cv=rc(c,ui.week,day)||c;
+  const isSeq=!!q;
+  const days0=isSeq?q.days.filter(i=>row[i]&&row[i].seq===c.seq):[day];if(!days0.includes(day))days0.push(day);
+  const steps0=isSeq?q.steps.slice():[cv.s||'',''];
+  const first=isSeq?Math.min(...q.days):0,start0=isSeq?Math.max(seqIdx(q,ui.week,first),0):0;
+  const cont0=isSeq?!!q.cont:true;
   const scopeTxt=ui.scope==='week'?T('التعديل هيتطبق على الأسبوع ده بس.','This change applies to this week only.'):T('التعديل هيتطبق على الجدول الأساسي من الأسبوع ده ورايح.','This change applies to the master schedule from this week onward.');
   modal(`${DAYS[day]} — ${T('تعديل الخانة','Edit cell')}`,`<div class="form">
     <label>${T('المادة / النشاط','Subject / activity')}<input type="text" id="fT" value="${esc(c.t)}"></label>
-    <label>${T('التفاصيل','Details')}<input type="text" id="fS" value="${esc(c.s||'')}"></label>
     <label>${T('القسم','Category')}<select id="fC">${state.cats.map(x=>`<option value="${x.id}" ${x.id===c.c?'selected':''}>${esc(C(x.name))}</option>`).join('')}</select></label>
     <label class="ck"><input type="checkbox" id="fStar" ${c.star?'checked':''}>${T('أولوية','Priority')} ★</label>
-    <label class="ck"><input type="checkbox" id="fRow">${T('طبّق على كل أيام الفترة دي','Apply to every day in this slot')}</label>
+    <div class="fld"><div class="fld-h"><span>${T('الأيام اللي تتكرر فيها','Days it repeats on')}</span><button type="button" class="linkbtn" id="dAll">${T('كل الأيام','All days')}</button></div>
+      <div class="daypick">${DAYS.map((d,i)=>`<label class="${i===day?'cur':''}"><input type="checkbox" data-dpick value="${i}" ${days0.includes(i)?'checked':''}>${d}</label>`).join('')}</div>
+      <p class="hint" id="dHint"></p></div>
+    <div class="fld"><span>${T('التفاصيل','Details')}</span>
+      <div class="radio-seg"><label><input type="radio" name="dmode" value="same" ${isSeq?'':'checked'}>${T('نفس التفاصيل كل مرة','Same details every time')}</label>
+      <label><input type="radio" name="dmode" value="seq" ${isSeq?'checked':''}>${T('خطوات بتلف بالترتيب (تراك)','Steps in a loop (track)')}</label></div></div>
+    <div id="sameBox" ${isSeq?'hidden':''}><input type="text" id="fS" value="${esc(cv.s||'')}" aria-label="${T('التفاصيل','Details')}" style="width:100%"></div>
+    <div id="seqBox" class="seqbox" ${isSeq?'':'hidden'}>
+      <div class="fld"><span>${T('الخطوات بالترتيب، كل يوم من الأيام المختارة بياخد الخطوة اللي بعدها، ولما الخطوات تخلص بترجع للأولى','Steps in order — each chosen day takes the next step, and after the last step it loops back to the first')}</span>
+        <div id="seqSteps"></div><button type="button" class="btn sm" id="sAdd" style="align-self:flex-start">${ICON.plus} ${T('إضافة خطوة','Add step')}</button></div>
+      <label>${T('أول يوم متختار في الأسبوع ده يبدأ من','First chosen day this week starts at')}<select id="seqStart"></select></label>
+      <div class="radio-seg"><label><input type="radio" name="scont" value="1" ${cont0?'checked':''}>${T('يكمّل الأسبوع الجاي من مكان ما وقف','Continue next week where it stopped')}</label>
+        <label><input type="radio" name="scont" value="0" ${cont0?'':'checked'}>${T('يبدأ من الأول كل أسبوع','Start over every week')}</label></div>
+      <div class="seqprev" id="seqPrev"></div>
+    </div>
     <p class="hint" style="margin:0">${scopeTxt}</p></div>`,
   [{label:T('إلغاء','Cancel')},
-   {label:T('مسح الخانة','Clear cell'),cls:'danger',fn:()=>{const p=editablePlan(),row=document.getElementById('fRow').checked;p.cells[slotId]=p.cells[slotId]||Array(7).fill(null);
-      if(row)p.cells[slotId]=Array(7).fill(null);else p.cells[slotId][day]=null;save();render()}},
-   {label:T('حفظ','Save'),cls:'primary',fn:()=>{const v={t:document.getElementById('fT').value.trim(),s:document.getElementById('fS').value.trim(),c:document.getElementById('fC').value,star:document.getElementById('fStar').checked};
-      if(!v.t){toast(T('اكتب اسم المادة الأول','Enter the subject name first'));return false}
-      const p=editablePlan(),row=document.getElementById('fRow').checked;p.cells[slotId]=p.cells[slotId]||Array(7).fill(null);
-      if(row)p.cells[slotId]=Array.from({length:7},()=>({...v}));else p.cells[slotId][day]=v;save();render();toast(T('اتحفظ','Saved'))}}]);
+   {label:T('مسح الخانة','Clear cell'),cls:'danger',fn:()=>{const ds=selDays();const p=editablePlan();const r=p.cells[slotId]=p.cells[slotId]||Array(7).fill(null);
+      (ds.length?ds:[day]).forEach(i=>r[i]=null);save();render()}},
+   {label:T('حفظ','Save'),cls:'primary',fn:()=>{
+      const t=document.getElementById('fT').value.trim(),cat=document.getElementById('fC').value,star=document.getElementById('fStar').checked;
+      if(!t){toast(T('اكتب اسم المادة الأول','Enter the subject name first'));return false}
+      let ds=selDays();if(!ds.length){toast(T('اختار يوم واحد على الأقل','Pick at least one day'));return false}
+      const mode=B.querySelector('[name=dmode]:checked').value;
+      const p=editablePlan(),r=p.cells[slotId]=p.cells[slotId]||Array(7).fill(null);
+      if(c.seq)for(let i=0;i<7;i++)if(r[i]&&r[i].seq===c.seq&&!ds.includes(i))r[i]=null;  /* days unticked from an existing track */
+      if(mode==='seq'){
+        const st=readSteps().map(x=>x.trim()).filter(Boolean);if(!st.length){toast(T('اكتب خطوة واحدة على الأقل','Enter at least one step'));return false}
+        const id='sq_'+uid();state.seqs=state.seqs||{};
+        state.seqs[id]={steps:st,days:ds,aW:ui.week,aStep:Math.min(+document.getElementById('seqStart').value||0,st.length-1),cont:B.querySelector('[name=scont]:checked').value==='1'};
+        ds.forEach(i=>r[i]={t,s:'',c:cat,star,seq:id});
+      }else{const sv=document.getElementById('fS').value.trim();ds.forEach(i=>r[i]={t,s:sv,c:cat,star})}
+      save();render();toast(ds.length>1?T(`اتحفظ في ${ds.length} أيام`,`Saved on ${ds.length} days`):T('اتحفظ','Saved'))}}],true);
+  const B=document.getElementById('dlgB');
+  const selDays=()=>[...B.querySelectorAll('[data-dpick]:checked')].map(x=>+x.value).sort((a,b)=>a-b);
+  const readSteps=()=>[...B.querySelectorAll('[data-step]')].map(x=>x.value);
+  let curStart=start0;
+  function drawSteps(st){
+    B.querySelector('#seqSteps').innerHTML=st.map((v,k)=>`<div class="srow"><span class="snum">${k+1}</span><input type="text" data-step="${k}" value="${esc(v)}" placeholder="${T('مثلاً: Watch Video & Absorb','e.g. Watch Video & Absorb')}" aria-label="${T('خطوة','Step')} ${k+1}">
+      <span class="sact"><button type="button" class="xbtn" data-smove="${k}|-1" ${k===0?'disabled':''} aria-label="${T('لفوق','Move up')}">↑</button><button type="button" class="xbtn" data-smove="${k}|1" ${k===st.length-1?'disabled':''} aria-label="${T('لتحت','Move down')}">↓</button><button type="button" class="xbtn" data-sdel="${k}" ${st.length<2?'disabled':''} aria-label="${T('حذف الخطوة','Delete step')}">✕</button></span></div>`).join('');
+    drawStart();
+  }
+  function drawStart(){const st=readSteps(),sel=B.querySelector('#seqStart');curStart=Math.min(curStart,Math.max(st.length-1,0));
+    sel.innerHTML=st.map((v,k)=>`<option value="${k}" ${k===curStart?'selected':''}>${T('خطوة','Step')} ${k+1}${v.trim()?': '+esc(v.trim()):''}</option>`).join('');drawPrev()}
+  function drawPrev(){
+    const ds=selDays(),dh=B.querySelector('#dHint'),mode=B.querySelector('[name=dmode]:checked').value;
+    dh.textContent=ds.length>1?T(`هيتحفظ في ${ds.length} أيام في نفس الفترة.`,`Will be saved on ${ds.length} days in this time slot.`)+(c.seq?' '+T('اليوم اللي تشيل علامته هيتشال منه التراك.','Unticking a day removes the track from it.'):''):T('علّم أي أيام تانية عاوز نفس الحاجة تتكرر فيها.','Tick any other days you want this repeated on.');
+    if(mode!=='seq')return;
+    const raw=readSteps(),st=raw.map(x=>x.trim()),valid=st.filter(Boolean);
+    const box=B.querySelector('#seqPrev');if(!valid.length||!ds.length){box.innerHTML='';return}
+    const cont=B.querySelector('[name=scont]:checked').value==='1';
+    const map=st.map((v,k)=>[k,v]).filter(x=>x[1]),qq={steps:map.map(x=>x[1]),days:ds,aW:ui.week,aStep:Math.max(map.findIndex(x=>x[0]>=curStart),0),cont};
+    const wk=(n,lbl)=>`<div><h4>${lbl}</h4>${ds.map(i=>{const k=seqIdx(qq,n,i);return `<p><span>${DAYS[i]}</span><span><b>${k+1}</b>${esc(qq.steps[k])}</span></p>`}).join('')}</div>`;
+    box.innerHTML=wk(ui.week,T(`أسبوع ${ui.week} (ده)`,`Week ${ui.week} (this one)`))+(ui.week<state.weeksCount?wk(ui.week+1,T(`أسبوع ${ui.week+1}`,`Week ${ui.week+1}`)):'');
+  }
+  drawSteps(steps0);drawPrev();
+  B.oninput=e=>{if(e.target.dataset.step!=null)drawStart()};
+  B.onchange=e=>{const t=e.target;
+    if(t.name==='dmode'){B.querySelector('#sameBox').hidden=t.value==='seq';B.querySelector('#seqBox').hidden=t.value!=='seq';
+      if(t.value==='seq'){const st=readSteps();if(!st.some(x=>x.trim())){const s0=document.getElementById('fS').value.trim();drawSteps([s0,''])}}
+      else{const fs=document.getElementById('fS');if(!fs.value.trim())fs.value=(readSteps().find(x=>x.trim())||'').trim()}}
+    if(t.id==='seqStart')curStart=+t.value;
+    drawPrev()};
+  B.onclick=e=>{
+    const mv=e.target.closest('[data-smove]');if(mv){const [k,d]=mv.dataset.smove.split('|').map(Number),st=readSteps(),j=k+d;if(j<0||j>=st.length)return;[st[k],st[j]]=[st[j],st[k]];drawSteps(st);return}
+    const dl=e.target.closest('[data-sdel]');if(dl){const st=readSteps();st.splice(+dl.dataset.sdel,1);drawSteps(st.length?st:['']);return}
+    if(e.target.closest('#sAdd')){const st=readSteps();st.push('');drawSteps(st);const ins=B.querySelectorAll('[data-step]');ins[ins.length-1].focus();return}
+    if(e.target.closest('#dAll')){const all=[...B.querySelectorAll('[data-dpick]')],on=all.every(x=>x.checked);all.forEach(x=>x.checked=!on||+x.value===day);drawPrev()}
+  };
+  const f=document.getElementById('fT');if(f)f.focus();
 }
 function openSlot(id){
   const s=getPlan(ui.week).slots.find(x=>x.id===id);if(!s)return;
@@ -1117,8 +1244,8 @@ document.addEventListener('click',e=>{
     case 'synccon':connectSync(document.getElementById('ghTok').value);return;
     case 'syncnow':pull();return;
     case 'syncoff':disconnectSync();return;
-    case 'print-week':askOwner(()=>doPrint('week'));return;
-    case 'print-report':askOwner(()=>doPrint('report'));return;
+    case 'print-week':printDialog('week');return;
+    case 'print-report':printDialog('report');return;
   }
   save();render();
 });
@@ -1158,28 +1285,45 @@ document.addEventListener('focusout',e=>{
 
 
 /* ============ print ============ */
-function askOwner(go){
-  if(state.owner){go();return}
-  modal(T('مين اللي هيتكتب اسمه في التقرير؟','Whose name goes on the report?'),`<div class="form"><label>${T('الاسم','Name')}<input type="text" id="ownN" placeholder="${T('اكتب الاسم','Enter the name')}"></label>
-    <label class="ck"><input type="checkbox" id="ownS">${T('احفظ الاسم ده للتقارير الجاية','Save this name for future reports')}</label>
-    <p class="hint">${TP('لو سبته فاضي، التقرير هيتطبع من غير اسم.','If left empty, the report prints without a name.')}</p></div>`,
-  [{label:T('إلغاء','Cancel')},{label:T('اطبع','Print'),cls:'primary',fn:()=>{const v=document.getElementById('ownN').value.trim();
-    if(v&&document.getElementById('ownS').checked){state.owner=v;save()}ui.printOwner=v;setTimeout(go,50)}}]);
+function printOpts(){const d={o:'landscape',fit:'one',table:true,quote:true,todos:true,habits:false,notes:true};state.print={...d,...(state.print||{})};return state.print}
+function printDialog(kind){
+  const o=printOpts(),wk=kind==='week';
+  const rad=(name,val,cur,lbl)=>`<label><input type="radio" name="${name}" value="${val}" ${cur===val?'checked':''}>${lbl}</label>`;
+  const ck=(id,on,lbl)=>`<label><input type="checkbox" id="${id}" ${on?'checked':''}>${lbl}</label>`;
+  modal(T('إعدادات الطباعة','Print settings'),`<div class="form">
+    <label>${T('مين اللي هيتكتب اسمه في التقرير؟','Whose name goes on the report?')}<input type="text" id="ownN" value="${esc(state.owner)}" placeholder="${T('اكتب الاسم، أو سيبه فاضي','Enter the name, or leave empty')}"></label>
+    <label class="ck"><input type="checkbox" id="ownS" ${state.owner?'checked':''}>${T('احفظ الاسم ده للتقارير الجاية','Save this name for future reports')}</label>
+    <div class="fld"><span>${T('الورق','Paper')}</span><div class="radio-seg"><label><input type="radio" checked disabled>A4 (210 × 297 mm)</label></div></div>
+    <div class="fld"><span>${T('اتجاه الصفحة','Orientation')}</span><div class="radio-seg">${rad('pO','landscape',o.o,T('عرضي','Landscape'))}${rad('pO','portrait',o.o,T('طولي','Portrait'))}</div></div>
+    ${wk?`<div class="fld"><span>${T('عدد الصفحات','Pages')}</span><div class="radio-seg">${rad('pF','one',o.fit,T('صفحة واحدة (بيصغّر تلقائي)','One page (auto-fit)'))}${rad('pF','multi',o.fit,T('أكتر من صفحة (حجم مريح)','Multiple pages (comfortable size)'))}</div></div>
+    <div class="fld"><span>${T('يظهر في الطباعة','Include in the print')}</span><div class="radio-seg">${ck('pTb',o.table,T('الجدول','Schedule'))}${ck('pQ',o.quote,T('الوصية','Advice'))}${ck('pTd',o.todos,T('حاجات لازم أعملها','Must-do tasks'))}${ck('pN',o.notes,T('ملاحظات الأسبوع','Week notes'))}${ck('pH',o.habits,T('العادات','Habits'))}</div></div>`:''}
+    <p class="hint" style="margin:0">${TP('في نافذة الطباعة خلي المقاس A4 والهوامش Default، وفعّل Background graphics عشان الألوان تظهر.','In the print window keep the size A4 and margins Default, and turn on Background graphics so colors print.')}</p></div>`,
+  [{label:T('إلغاء','Cancel')},{label:T('اطبع','Print'),cls:'primary',fn:()=>{
+    const v=document.getElementById('ownN').value.trim(),keep=document.getElementById('ownS').checked;
+    if(keep&&v)state.owner=v;else if(!keep&&state.owner)state.owner='';ui.printOwner=v;
+    const B=document.getElementById('dlgB');o.o=B.querySelector('[name=pO]:checked').value;
+    if(wk){const g=id=>B.querySelector(id).checked,w=state.weeks[ui.week]||{};
+      const any=g('#pTb')||(g('#pQ')&&(state.quotes||[]).length)||(g('#pTd')&&(w.todos||[]).length)||(g('#pN')&&w.note)||(g('#pH')&&habitsFor(ui.week).length);
+      if(!any){toast(T('اختار حاجة واحدة على الأقل فيها محتوى عشان تتطبع','Pick at least one section that has content to print'));return false}
+      o.table=g('#pTb');o.fit=B.querySelector('[name=pF]:checked').value;o.quote=B.querySelector('#pQ').checked;o.todos=B.querySelector('#pTd').checked;o.notes=B.querySelector('#pN').checked;o.habits=B.querySelector('#pH').checked}
+    save();setTimeout(()=>doPrint(kind),50)}}],true);
 }
-/* shrink the weekly print so everything (header, advice, schedule, tasks, habits, notes) fits one A4 landscape page */
-function fitOnePage(P){
-  const PW=1054,PH=718*0.94; /* A4 landscape minus 9mm margins, in CSS px, with a safety margin */
-  const MINZ=0.68;           /* never shrink below this — if it still doesn't fit, the rest flows to page 2 */
-  let z=1;
-  for(let k=0;k<4;k++){
-    P.style.cssText=`display:block;position:absolute;top:0;left:-99999px;width:${PW/z}px;zoom:1`;
-    fitSlots(P);
-    const h=P.scrollHeight;z=Math.min(1,PH/h);
-    if(z<MINZ){z=0.85;break}  /* too much content: print at a comfortable size and let it continue on page 2 */
-  }
-  P.style.cssText=`display:block;position:absolute;top:0;left:-99999px;width:${PW/z}px;zoom:1`;fitSlots(P);
-  const fits=P.scrollHeight*z<=PH+1;
-  P.classList.toggle('one-page',fits);
+function printTodos(n){
+  const list=[...(((state.weeks[n]||{}).todos)||[])].sort((a,b)=>(a.done-b.done)||((a.day??9)-(b.day??9)));
+  const h=list.map(t=>`<div class="ptodo ${t.done?'done':''}"><span class="pbox">${t.done?'✓':''}</span><span class="tt-t">${esc(t.t)}</span>${t.day!=null&&t.day!==''?`<span class="dtag">${DAYS[t.day]}</span>`:''}</div>`).join('');
+  return h;
+}
+/* size the print to A4 in the chosen orientation; one-page mode shrinks until everything fits */
+function fitPage(P,o,one){
+  const land=o.o!=='portrait',PW=land?1054:726,PH=(land?726:1054)*0.95,BW=land?1054:900,MINZ=0.5,zw=PW/BW;
+  const set=z=>{P.style.cssText=`display:block;position:absolute;top:0;left:-99999px;width:${PW/z}px;zoom:1`;fitSlots(P)};
+  let z=zw;
+  if(one){
+    for(let k=0;k<6;k++){set(z);const nz=Math.min(zw,PH/P.scrollHeight);if(Math.abs(nz-z)<.004){z=nz;break}z=nz}
+    set(z);if(P.scrollHeight*z>PH){z=z*PH/(P.scrollHeight*z)*.99;set(z)}
+    if(z<MINZ){z=zw;one=false;set(z)}
+  }else set(z);
+  P.classList.toggle('one-page',one&&P.scrollHeight*z<=PH+1);
   P.style.cssText=`width:${PW/z}px;zoom:${z}`;
 }
 function doPrint(kind){
@@ -1187,18 +1331,19 @@ function doPrint(kind){
   root.setAttribute('data-theme','light');
   const who=state.owner||ui.printOwner||'';ui.printOwner='';
   const foot=`<div class="pr-foot"><span>${who?'Prepared by: '+esc(who):''}</span><span>${T('تاريخ الطباعة:','Printed on:')} ${fmtD(new Date())} ${new Date().getFullYear()}</span></div>`;
+  const o=printOpts();
+  document.getElementById('pgSize').textContent=`@media print{@page{size:A4 ${o.o==='portrait'?'portrait':'landscape'};margin:9mm}}`;
   if(kind==='week'){
-    const w=state.weeks[ui.week]||{};
+    const w=state.weeks[ui.week]||{},showN=o.notes&&w.note,showT=o.todos&&(w.todos||[]).length>0;
     applyWeekTheme(ui.week);
     P.innerHTML=`<div class="pr-head"><div><h1>${esc(C(state.title))}</h1><div class="s">${esc(C(state.subtitle))}</div></div><div style="text-align:end"><b style="font-size:1.2rem">${T('أسبوع','Week')} ${ui.week}</b><div class="s">${rangeLabel(ui.week)}</div></div></div>
-      ${quoteCard(ui.week,false)}<div style="height:10px"></div>${legend()}<div class="board"><div class="scroller">${scheduleTable(ui.week,false)}</div></div>
-      <div class="pr-bottom">
-        <div><h2 class="pr-h2">${T('العادات','Habits')}</h2><div class="board">${habitsTable(ui.week,false)}</div></div>
-        ${(w.todos||[]).length||w.note?`<div>
-          ${(w.todos||[]).length?`<h2 class="pr-h2">${T('حاجات لازم أعملها','Must-do tasks')}</h2><div class="card pr-todos">${todosHtml(ui.week,false)}</div>`:''}
-          ${w.note?`<h2 class="pr-h2">${T('ملاحظات الأسبوع','Week notes')}</h2><div class="card">${esc(w.note).replace(/\n/g,'<br>')}</div>`:''}
-        </div>`:''}
-      </div>${foot}`;
+      ${o.quote?quoteCard(ui.week,false):''}${o.table?`<div style="height:10px"></div>${legend()}<div class="board"><div class="scroller">${scheduleTable(ui.week,false)}</div></div>`:''}
+      ${showT||showN?`<div class="pr-bottom">
+        ${showT?`<div><h2 class="pr-h2">${T('حاجات لازم أعملها','Must-do tasks')}</h2><div class="card pr-todos">${printTodos(ui.week)}</div></div>`:''}
+        ${showN?`<div><h2 class="pr-h2">${T('ملاحظات الأسبوع','Week notes')}</h2><div class="card">${esc(w.note).replace(/\n/g,'<br>')}</div></div>`:''}
+      </div>`:''}
+      ${o.habits?`<div class="pr-habits"><h2 class="pr-h2">${T('العادات','Habits')}</h2><div class="board">${habitsTable(ui.week,false)}</div></div>`:''}
+      ${foot}`;
   }else{
     const A=aggregate(ui.from,ui.to);
     P.innerHTML=`<div class="pr-head"><div><h1>${T('تقرير المتابعة','Progress Report')}</h1><div class="s">${esc(C(state.title))}</div></div><div style="text-align:end"><b>${T(`من أسبوع ${ui.from} إلى أسبوع ${ui.to}`,`Week ${ui.from} to week ${ui.to}`)}</b><div class="s">${fmtD(weekStart(ui.from))} – ${rangeLabel(ui.to).split('– ')[1]}</div></div></div>
@@ -1206,7 +1351,7 @@ function doPrint(kind){
   }
   document.body.classList.add('printing');
   P.classList.toggle('pr-week',kind==='week');P.classList.remove('one-page');
-  if(kind==='week')fitOnePage(P);else fitSlots(P);
+  if(kind==='week')fitPage(P,o,o.fit!=='multi');else fitPage(P,o,false);
   const done=()=>{document.body.classList.remove('printing');P.innerHTML='';P.classList.remove('one-page','pr-week');P.removeAttribute('style');if(prev)root.setAttribute('data-theme',prev);else root.removeAttribute('data-theme');render();window.removeEventListener('afterprint',done)};
   window.addEventListener('afterprint',done);
   setTimeout(()=>window.print(),60);
@@ -1249,7 +1394,7 @@ async function readRemote(){
   return JSON.parse(txt);
 }
 function adopt(remote){
-  state={...defaults(),...remote};
+  state={...defaults(),...remote};if(migrateLayout(state)){state._t=Date.now();setTimeout(()=>schedulePush(),0)}
   try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}
   ui.week=Math.min(Math.max(ui.week,1),state.weeksCount);
   const a=document.activeElement;if(a&&(a.tagName==='INPUT'||a.tagName==='TEXTAREA'||a.isContentEditable))return; // don't wipe what you're typing

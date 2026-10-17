@@ -9,22 +9,29 @@
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Kufi+Arabic:wght@600;700&family=Readex+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --paper:#F3F4F8; --sheet:#FFFFFF; --ink:#161C34; --ink-soft:#4B5270; --line:#E3E6EE; --line-2:#EEF0F5; --muted:#858BA3;
-  --good:#16794F; --mid:#A8741A; --bad:#B23A3A; --empty:#EEF0F5;
   --acc:#1C2E6B; --acc2:#E8C468; --acc-t:var(--acc);
+  --paper:color-mix(in srgb,var(--acc) 15%,#FFFFFF); --sheet:color-mix(in srgb,var(--acc) 4%,#FFFFFF);
+  --ink:#000000; --ink-soft:#1C1C1C; --muted:#454545;
+  --line:color-mix(in srgb,var(--acc) 26%,#FFFFFF); --line-2:color-mix(in srgb,var(--acc) 14%,#FFFFFF); --empty:color-mix(in srgb,var(--acc) 12%,#FFFFFF);
+  --good:#126B44; --mid:#8F6110; --bad:#A42F2F;
+  --slot-mix:22%; --slot-done:46%;
   --shadow:0 1px 2px rgba(22,28,52,.05),0 4px 16px rgba(22,28,52,.04);
   --r:16px;
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
 }
 @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
-  --paper:#0E1120; --sheet:#161A2D; --ink:#E9EBF5; --ink-soft:#B3B8D3; --line:#272C46; --line-2:#1F2439; --muted:#8B91B2;
-  --good:#5CCB98; --mid:#E5B65A; --bad:#F08A84; --empty:#20253B; --acc-t:color-mix(in srgb,var(--acc) 40%,#fff);
+  --paper:color-mix(in srgb,var(--acc) 26%,#06070B); --sheet:color-mix(in srgb,var(--acc) 16%,#101219); --ink:#FFFFFF; --ink-soft:#E6E8F0;
+  --line:color-mix(in srgb,var(--acc) 40%,#2A2D3A); --line-2:color-mix(in srgb,var(--acc) 28%,#1C1F2B); --muted:#C9CCD8;
+  --good:#5CCB98; --mid:#E5B65A; --bad:#F08A84; --empty:color-mix(in srgb,var(--acc) 24%,#171A24); --acc-t:color-mix(in srgb,var(--acc) 35%,#fff);
+  --slot-mix:34%; --slot-done:60%;
   --shadow:none;
 }}
 :root[data-theme="dark"]{
-  --paper:#0E1120; --sheet:#161A2D; --ink:#E9EBF5; --ink-soft:#B3B8D3; --line:#272C46; --line-2:#1F2439; --muted:#8B91B2;
-  --good:#5CCB98; --mid:#E5B65A; --bad:#F08A84; --empty:#20253B; --acc-t:color-mix(in srgb,var(--acc) 40%,#fff);
+  --paper:color-mix(in srgb,var(--acc) 26%,#06070B); --sheet:color-mix(in srgb,var(--acc) 16%,#101219); --ink:#FFFFFF; --ink-soft:#E6E8F0;
+  --line:color-mix(in srgb,var(--acc) 40%,#2A2D3A); --line-2:color-mix(in srgb,var(--acc) 28%,#1C1F2B); --muted:#C9CCD8;
+  --good:#5CCB98; --mid:#E5B65A; --bad:#F08A84; --empty:color-mix(in srgb,var(--acc) 24%,#171A24); --acc-t:color-mix(in srgb,var(--acc) 35%,#fff);
+  --slot-mix:34%; --slot-done:60%;
   --shadow:none;
 }
 html{scroll-padding-top:calc(76px + env(safe-area-inset-top,0px))}
@@ -162,12 +169,12 @@ select:focus,input:focus,textarea:focus{border-color:var(--acc-t);outline:none;b
 table.tt{border-collapse:separate;border-spacing:0;width:100%;min-width:1040px;table-layout:fixed}
 .tt th,.tt td{padding:6px;vertical-align:top;border-bottom:1px solid var(--line-2)}
 .tt td+td,.tt th+td,.tt th+th{border-inline-start:1px solid var(--line-2)}
-.tt thead th{padding:14px 6px 12px;text-align:center;font-weight:600;font-size:.92rem;background:var(--sheet);border-bottom:1px solid var(--line)}
+.tt thead th{padding:14px 6px 12px;text-align:center;font-weight:700;font-size:.92rem;background:color-mix(in srgb,var(--acc) 13%,var(--sheet));color:var(--ink);border-bottom:1px solid var(--line)}
 .tt thead th small{display:block;font-weight:400;color:var(--muted);font-size:.74rem}
 .tt thead th.is-today{background:var(--acc);color:#fff;border-radius:12px 12px 0 0;position:relative}
 .tt thead th.is-today small{color:rgba(255,255,255,.8)}
 .today-chip{display:inline-block;margin-top:5px;background:var(--acc2);color:var(--acc);font-size:.7rem;font-weight:700;border-radius:20px;padding:1px 10px}
-.tt .time{width:112px;text-align:start;padding:12px 14px;background:color-mix(in srgb,var(--empty) 55%,var(--sheet))}
+.tt .time{width:112px;text-align:start;padding:12px 14px;background:color-mix(in srgb,var(--acc) 9%,var(--sheet))}
 .tt .time b{display:block;font-weight:600;font-size:.92rem;font-variant-numeric:tabular-nums}
 .tt .time .to{display:block;font-size:.78rem;color:var(--muted)}
 .tt .time .du{display:inline-block;margin-top:6px;font-size:.7rem;color:var(--ink-soft);background:var(--sheet);border:1px solid var(--line);border-radius:12px;padding:0 8px}
@@ -182,17 +189,17 @@ table.tt{border-collapse:separate;border-spacing:0;width:100%;min-width:1040px;t
 
 /* slot (shape depends on week theme) */
 .slot{--c:#888;position:relative;display:block;width:100%;min-height:76px;text-align:right;border:none;padding:10px 10px 10px 10px;color:var(--ink);
-  background:color-mix(in srgb,var(--c) 9%,var(--sheet));border-radius:12px;border-inline-start:4px solid var(--c);transition:background .15s,transform .1s}
-.slot b{display:block;font-weight:600;font-size:14px;line-height:1.4;color:color-mix(in srgb,var(--c) 75%,var(--ink));padding-left:22px}
+  background:color-mix(in srgb,var(--c) var(--slot-mix),var(--sheet));border-radius:12px;border-inline-start:5px solid var(--c);transition:background .15s,transform .1s}
+.slot b{display:block;font-weight:700;font-size:14px;line-height:1.4;color:var(--ink);padding-left:22px}
 .slot b,.slot em{white-space:nowrap;overflow:hidden;text-align:right}
 .slot em{unicode-bidi:plaintext}
-.slot em{font-style:normal;display:block;font-size:12px;color:var(--ink-soft);margin-top:4px;line-height:1.45}
-.slot .tick{position:absolute;top:10px;left:8px;width:18px;height:18px;border-radius:50%;border:1.5px solid color-mix(in srgb,var(--c) 45%,transparent);display:grid;place-items:center;font-style:normal;font-size:.62rem;color:transparent;transition:background .15s}
-.slot:hover{background:color-mix(in srgb,var(--c) 15%,var(--sheet))}
+.slot em{font-style:normal;display:block;font-size:12px;font-weight:500;color:var(--ink-soft);margin-top:4px;line-height:1.45}
+.slot .tick{position:absolute;top:10px;left:8px;width:18px;height:18px;border-radius:50%;border:1.5px solid var(--c);background:var(--sheet);display:grid;place-items:center;font-style:normal;font-size:.62rem;color:transparent;transition:background .15s}
+.slot:hover{background:color-mix(in srgb,var(--c) calc(var(--slot-mix) + 8%),var(--sheet))}
 .slot:active{transform:scale(.985)}
-.slot.done{background:color-mix(in srgb,var(--c) 22%,var(--sheet))}
+.slot.done{background:color-mix(in srgb,var(--c) var(--slot-done),var(--sheet))}
 .slot.done .tick{background:var(--c);border-color:var(--c);color:#fff}
-.slot.done b{text-decoration:line-through;text-decoration-thickness:1px;text-decoration-color:color-mix(in srgb,var(--c) 50%,transparent)}
+.slot.done b{text-decoration:line-through;text-decoration-thickness:1.5px;text-decoration-color:var(--ink)}
 [data-shape="sharp"] .slot{border-radius:4px;border-inline-start:none;box-shadow:inset 0 3px 0 var(--c)}
 [data-shape="pill"] .slot{border-radius:20px;border-inline-start:none;box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--c) 40%,transparent)}
 [data-shape="notch"] .slot{border-radius:0;border-inline-start:none;clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,0 100%);box-shadow:inset -3px 0 0 var(--c)}
@@ -258,22 +265,6 @@ h3{font-size:.95rem;font-weight:600;margin:0 0 14px}
 .chk:checked{background:var(--acc);border-color:var(--acc)}
 .chk:checked::after{content:"";width:6px;height:11px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg) translate(-1px,-1px)}
 
-/* habits */
-table.ht{border-collapse:separate;border-spacing:0;width:100%;min-width:700px}
-.ht th,.ht td{border-bottom:1px solid var(--line-2);padding:12px 8px;text-align:center}
-.ht tbody tr:last-child td{border-bottom:none}
-.ht th:first-child,.ht td:first-child{text-align:start;padding-inline-start:20px}
-.ht thead th{font-weight:600;font-size:.85rem;border-bottom:1px solid var(--line)}
-.ht thead th small{display:block;font-weight:400;color:var(--muted);font-size:.72rem}
-.ht thead th.is-today{background:var(--acc);color:#fff;border-radius:10px 10px 0 0}
-.ht thead th.is-today small{color:rgba(255,255,255,.8)}
-.ht td.is-today{background:color-mix(in srgb,var(--acc) 7%,var(--sheet));box-shadow:inset 2px 0 0 var(--acc),inset -2px 0 0 var(--acc)}
-.ht td b,.ht td small{font-weight:600;unicode-bidi:plaintext;text-align:right}
-.ht td small{font-weight:400}
-.ht td small{display:block;color:var(--muted);font-size:.76rem}
-.ht .chk{border-radius:50%;width:28px;height:28px}
-.addhabit{display:flex;gap:8px;flex-wrap:wrap;padding:16px 20px;border-top:1px solid var(--line);background:color-mix(in srgb,var(--empty) 50%,var(--sheet))}
-.addhabit input{flex:1;min-width:160px}
 textarea{width:100%;min-height:110px;resize:vertical;line-height:1.7}
 
 /* pills */
@@ -353,20 +344,18 @@ dialog::backdrop{background:rgba(14,17,32,.5);backdrop-filter:blur(2px)}
 #printArea{display:none;font-size:11px}
 #printArea .board,#printArea .card,#printArea .kpi{box-shadow:none}
 #printArea .scroller{overflow:visible}
-#printArea table.tt,#printArea table.ht{min-width:0}
+#printArea table.tt{min-width:0}
 #printArea .slot{min-height:44px;padding:5px 7px}
 #printArea .quote{padding:10px 18px;margin-top:8px}#printArea .quote blockquote{font-size:1.1rem;line-height:1.6}#printArea .q-mark{font-size:5rem}
 #printArea.pr-week .pr-h2{margin:10px 0 6px}
 #printArea.pr-week .card{padding:10px 14px}
 #printArea.pr-week .tt thead th{padding:8px 4px 6px}
 #printArea.pr-week .tt .time{padding:6px 10px}
-#printArea.pr-week .ht th,#printArea.pr-week .ht td{padding:6px 6px}
 #printArea.pr-week .legend{margin:6px 0}
 #printArea .pr-bottom{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:14px;align-items:start}
 #printArea .pr-bottom>div:only-child{grid-column:1/-1}
 #printArea .pr-todos{display:grid;grid-template-columns:1fr 1fr;column-gap:14px}
 #printArea .pr-todos .todo{padding:5px 2px}
-#printArea.pr-week .ht td small{font-size:.75em}
 .pr-head{position:relative;overflow:hidden;background:var(--acc);color:#fff;border-radius:14px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;isolation:isolate}
 .pr-head::before{content:"";position:absolute;inset:0;background-image:var(--pat);opacity:.16;z-index:-1}
 .pr-head h1{font-family:"Noto Kufi Arabic","Readex Pro",sans-serif;font-size:1.5rem;margin:0}
@@ -380,7 +369,7 @@ dialog::backdrop{background:rgba(14,17,32,.5);backdrop-filter:blur(2px)}
   body.printing #printArea{display:block}
   .board,.card,.kpi{box-shadow:none}
   .scroller{overflow:visible}
-  table.tt,table.ht{min-width:0}
+  table.tt{min-width:0}
   .slot{min-height:52px;padding:6px 7px}
   .card,.kpi,.tt tr,.hbar,.board,.quote{break-inside:avoid}
   #printArea.one-page{break-inside:avoid;page-break-inside:avoid}
@@ -407,7 +396,7 @@ dialog::backdrop{background:rgba(14,17,32,.5);backdrop-filter:blur(2px)}
   .daychip b{font-size:.74rem}.daychip span{display:none}
   .tl-row{grid-template-columns:74px 1fr;gap:10px}
 }
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 
 /* ---------- cloud sync ---------- */
 .syncpill{display:inline-flex;align-items:center;gap:6px;font-size:.76rem;color:var(--muted);padding:4px 10px;border:1px solid var(--line);border-radius:999px;background:var(--sheet);white-space:nowrap}
@@ -421,11 +410,11 @@ dialog::backdrop{background:rgba(14,17,32,.5);backdrop-filter:blur(2px)}
 /* ---------- language modes ---------- */
 .bi{display:block;direction:ltr;unicode-bidi:isolate;font-size:.9em;opacity:.8}
 .empty .bi{text-align:center}
-.slot .bi{display:block;direction:ltr;text-align:left;font-size:11.5px;font-weight:500;color:var(--ink-soft);opacity:.9;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-style:normal}
+.slot .bi{display:block;direction:ltr;text-align:left;font-size:11.5px;font-weight:500;color:var(--ink-soft);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-style:normal}
 .q-en{direction:ltr;text-align:left;margin:8px 0 0;font-family:"Amiri",serif;font-size:1.05rem;line-height:1.6;color:var(--ink-soft)}
 .langseg button{padding:6px 11px;white-space:nowrap}
 .rangebar .langseg{margin-inline-start:auto}
-[dir=ltr] .slot,[dir=ltr] .slot b,[dir=ltr] .slot em,[dir=ltr] .todo .tt-t,[dir=ltr] .ht td b,[dir=ltr] .ht td small{text-align:left}
+[dir=ltr] .slot,[dir=ltr] .slot b,[dir=ltr] .slot em,[dir=ltr] .todo .tt-t{text-align:left}
 [dir=ltr] .slot b{padding-left:0;padding-right:22px}
 [dir=ltr] .slot .tick{left:auto;right:8px}
 [dir=ltr] .q-mark{left:auto;right:22px}
@@ -462,9 +451,149 @@ dialog.wide{width:min(620px,94vw)}
 .seqprev p span:first-child{color:var(--ink-soft)}
 .seqprev p span:last-child{unicode-bidi:plaintext}
 .seqprev p b{color:var(--acc-t);font-weight:600;margin-inline-end:4px}
-.seqmark{display:none;position:absolute;top:9px;left:8px;font-style:normal;font-size:10px;font-weight:600;color:color-mix(in srgb,var(--c) 70%,var(--ink));background:color-mix(in srgb,var(--c) 14%,var(--sheet));border-radius:8px;padding:0 6px;line-height:18px}
-.edit-on .slot .seqmark{display:block}
+.seqmark{display:none;top:auto!important;bottom:7px;position:absolute;top:9px;left:8px;font-style:normal;font-size:10px;font-weight:700;color:var(--ink);background:var(--sheet);border-radius:8px;padding:0 6px;line-height:18px}
+.slot .seqmark{display:block}
+.slot:has(.seqmark){padding-bottom:28px}
 [dir=ltr] .seqmark{left:auto;right:8px}
+
+/* ---------- motivation: level, streak, quests, weekly boss ---------- */
+.play{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr) minmax(0,1.15fr) minmax(0,1.1fr);margin-top:16px;background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+.play>div{padding:16px 18px;min-width:0}
+.play>div+div{border-inline-start:1px solid var(--line)}
+.pl-h{font-size:.8rem;color:var(--muted);margin:0 0 10px;font-weight:600;display:flex;justify-content:space-between;gap:8px}
+.pl-h a,.pl-h button{color:var(--acc-t);font-weight:600;background:none;border:none;padding:0;font-size:.78rem}
+.lvl{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.lvl-b{width:54px;height:54px;border-radius:15px;background:var(--acc);color:#fff;display:grid;place-items:center;font-family:"Noto Kufi Arabic","Readex Pro",sans-serif;font-weight:700;font-size:1.45rem;flex:none;position:relative;overflow:hidden;isolation:isolate}
+.lvl-b::before{content:"";position:absolute;inset:0;background-image:var(--pat);opacity:.25;z-index:-1}
+.lvl-b::after{content:"";position:absolute;width:16px;height:16px;border-radius:5px;background:var(--acc2);bottom:-5px;inset-inline-end:-5px}
+.lvl strong{display:block;font-family:"Noto Kufi Arabic","Readex Pro",sans-serif;font-size:1rem;line-height:1.4}
+.lvl small{font-size:.78rem;color:var(--muted)}
+.bar{height:9px;border-radius:6px;background:var(--empty);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--acc);border-radius:6px;transition:width .5s ease}
+.bar.gold i{background:var(--acc2)}
+.bar.hp{height:12px}.bar.hp i{background:var(--bad)}
+.barlbl{display:flex;justify-content:space-between;font-size:.74rem;color:var(--muted);margin-top:5px;font-variant-numeric:tabular-nums}
+.fire{display:flex;align-items:baseline;gap:8px}
+.fire b{font-family:"Noto Kufi Arabic","Readex Pro",sans-serif;font-size:1.7rem;line-height:1;font-variant-numeric:tabular-nums}
+.fire span{font-size:.82rem;color:var(--ink-soft)}
+.chain{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;margin:10px 0 0}
+.chain i{height:28px;border-radius:8px;background:var(--empty);display:grid;place-items:center;font-style:normal;font-size:.68rem;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.chain i.hit{background:var(--acc2);color:#000;font-weight:700}
+.chain i.miss{background:color-mix(in srgb,var(--bad) 20%,var(--sheet));color:var(--bad);font-weight:700}
+.chain i.rest{background:none;box-shadow:inset 0 0 0 1px var(--line)}
+.chain i.pending{box-shadow:inset 0 0 0 2px var(--acc-t);color:var(--ink);font-weight:700}
+.nudge{font-size:.82rem;color:var(--ink);margin:10px 0 0;font-weight:500;line-height:1.55}
+.quest{display:flex;align-items:center;gap:9px;font-size:.85rem;padding:5px 0}
+.quest .qk{width:22px;height:22px;border-radius:7px;border:1.5px solid var(--line);flex:none;display:grid;place-items:center;font-size:.72rem;font-style:normal;background:var(--sheet)}
+.quest.ok .qk{background:var(--good);border-color:var(--good);color:#fff}
+.quest.ok span{text-decoration:line-through;color:var(--muted)}
+.quest b{margin-inline-start:auto;font-size:.74rem;color:var(--ink);background:color-mix(in srgb,var(--acc2) 45%,var(--sheet));border-radius:8px;padding:1px 8px;white-space:nowrap}
+.boss{display:flex;gap:12px;align-items:center;margin-bottom:10px}
+.boss-ic{font-size:2.3rem;line-height:1;flex:none}
+.boss strong{display:block;font-family:"Noto Kufi Arabic","Readex Pro",sans-serif;font-size:.98rem;line-height:1.4}
+.boss small{font-size:.76rem;color:var(--muted)}
+.boss.def .boss-ic{filter:grayscale(1);opacity:.55;transform:rotate(-12deg)}
+.boss.def strong{text-decoration:line-through}
+.wonchip{display:inline-block;background:var(--good);color:#fff;border-radius:8px;padding:1px 9px;font-size:.74rem;font-weight:600}
+@media (max-width:1000px){.play{grid-template-columns:1fr 1fr}.play>div:nth-child(3){border-inline-start:none}.play>div:nth-child(n+3){border-top:1px solid var(--line)}}
+@media (max-width:560px){.play{grid-template-columns:1fr}.play>div+div{border-inline-start:none;border-top:1px solid var(--line)}}
+
+/* motivation page */
+.pz-head{position:relative;overflow:hidden;isolation:isolate;border-radius:22px;background:var(--acc);color:#fff;padding:24px 26px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px 24px;align-items:center}
+.pz-head::before{content:"";position:absolute;inset:0;background-image:var(--pat);opacity:.15;z-index:-1}
+.pz-lv{width:96px;height:96px;border-radius:26px;background:var(--acc2);color:#000;display:grid;place-items:center;font-family:"Noto Kufi Arabic","Readex Pro",sans-serif;font-weight:700;font-size:2.6rem;line-height:1}
+.pz-lv small{display:block;font-size:.72rem;font-weight:600;font-family:"Readex Pro",sans-serif;margin-top:-18px}
+.pz-head h2{margin:0;font-family:"Noto Kufi Arabic","Readex Pro",sans-serif;font-size:1.35rem}
+.pz-head .bar{background:rgba(255,255,255,.2);margin-top:10px}.pz-head .bar i{background:var(--acc2)}
+.pz-head .barlbl{color:rgba(255,255,255,.85)}
+.pz-stats{grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+.pz-stats div{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);border-radius:14px;padding:10px 14px}
+.pz-stats b{display:block;font-family:"Noto Kufi Arabic","Readex Pro",sans-serif;font-size:1.4rem;line-height:1.3;font-variant-numeric:tabular-nums}
+.pz-stats span{font-size:.78rem;opacity:.9}
+.cal28{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.cal28 .h{font-size:.72rem;color:var(--muted);text-align:center;font-weight:600}
+.cal28 i{height:40px;border-radius:9px;background:var(--empty);display:grid;place-items:center;font-style:normal;font-size:.74rem;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.cal28 i.hit{background:var(--acc2);color:#000;font-weight:700}
+.cal28 i.miss{background:color-mix(in srgb,var(--bad) 20%,var(--sheet));color:var(--bad);font-weight:700}
+.cal28 i.rest{background:none;box-shadow:inset 0 0 0 1px var(--line)}
+.cal28 i.pending{box-shadow:inset 0 0 0 2px var(--acc-t);color:var(--ink);font-weight:700}
+.cal28 i.out{visibility:hidden}
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.badge{border:1px solid var(--line);border-radius:14px;padding:14px 10px;text-align:center;background:var(--sheet)}
+.badge .ic{font-size:1.9rem;line-height:1.2}
+.badge b{display:block;font-size:.86rem;margin-top:4px}
+.badge small{display:block;font-size:.74rem;color:var(--muted);line-height:1.45}
+.badge.on{border-color:var(--acc2);background:color-mix(in srgb,var(--acc2) 22%,var(--sheet))}
+.badge.lock .ic{filter:grayscale(1);opacity:.35}
+.badge.lock b{color:var(--muted)}
+.shop{display:grid;gap:0}
+.shop-it{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line-2)}
+.shop-it:last-child{border-bottom:none}
+.shop-it b{font-weight:600}
+.shop-it .cost{font-size:.8rem;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.shop-it .bar{grid-column:1/-1;height:6px}
+.shop-add{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.shop-add input[type=text]{flex:1;min-width:180px}.shop-add input[type=number]{width:110px}
+.rules{margin:0;padding-inline-start:20px;line-height:1.95;font-size:.88rem}
+.fxp{position:fixed;z-index:60;pointer-events:none;font-weight:700;background:var(--acc2);color:#000;border-radius:10px;padding:2px 10px;font-size:.9rem;transform:translate(-50%,-110%);animation:fxp 1.15s ease-out forwards;white-space:nowrap}
+@keyframes fxp{from{opacity:1;transform:translate(-50%,-110%)}to{opacity:0;transform:translate(-50%,-300%)}}
+.dlg-in{position:relative}
+.cele-row{display:flex;gap:14px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line-2)}
+.cele-row:last-child{border-bottom:none}
+.cele-row .ic{font-size:2.4rem;line-height:1;flex:none}
+.cele-row b{display:block;font-size:1rem}.cele-row span{font-size:.84rem;color:var(--ink-soft)}
+.confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:20px}
+.confetti i{position:absolute;top:-14px;width:8px;height:13px;border-radius:2px;animation:fall 1.9s ease-in forwards}
+@keyframes fall{to{transform:translateY(460px) rotate(560deg);opacity:0}}
+.wkset{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.wkset label{display:flex;align-items:center;gap:8px;font-size:.86rem;color:var(--ink)}
+.wkset input[type=number]{width:84px}
+
+/* ---------- weekly battle arena ---------- */
+.pl-boss{padding:0!important;display:flex;flex-direction:column}
+.pl-boss .pl-h{padding:16px 18px 0;margin-bottom:8px}
+.arena{position:relative;flex:1;background:radial-gradient(120% 90% at 20% 0%,color-mix(in srgb,var(--acc) 70%,#000) 0%,#0B0A10 70%);color:#fff;padding:14px 16px 14px;overflow:hidden;isolation:isolate}
+.pl-boss .arena{margin:0}
+.arena::before{content:"";position:absolute;inset:0;background-image:var(--pat);opacity:.07;z-index:-1}
+.arena.t1{background:radial-gradient(120% 90% at 20% 0%,#7A1E1E 0%,#0B0A10 70%)}
+.arena.t2{background:radial-gradient(120% 90% at 20% 0%,#5B2A86 0%,#0B0A10 70%);box-shadow:inset 0 0 0 2px var(--acc2)}
+.ar-top{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:6px}
+.ar-tier{font-size:.72rem;font-weight:700;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:1px 10px}
+.t1 .ar-tier{background:#B23A3A;border-color:#B23A3A}.t2 .ar-tier{background:var(--acc2);color:#000;border-color:var(--acc2)}
+.ar-ws{font-size:.72rem;font-weight:600;color:var(--acc2)}
+.ar-mid{display:flex;gap:12px;align-items:center}
+.mon{width:84px;height:86px;flex:none;filter:drop-shadow(0 6px 14px rgba(0,0,0,.5))}
+.arena:not(.def):not(.esc) .mon{animation:breathe 2.6s ease-in-out infinite}
+@keyframes breathe{50%{transform:translateY(-3px) scale(1.03)}}
+.mon.def{opacity:.75}
+.ar-info{flex:1;min-width:0}
+.ar-info strong{display:block;font-family:"Noto Kufi Arabic","Readex Pro",sans-serif;font-size:1rem;line-height:1.35;margin-bottom:6px}
+.def .ar-info strong{text-decoration:line-through;opacity:.7}
+.hpbar{height:14px;border-radius:7px;background:rgba(255,255,255,.12);overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
+.hpbar i{display:block;height:100%;background:linear-gradient(90deg,#FF5A4E,#C81E1E);border-radius:7px;transition:width .6s ease;
+  background-image:linear-gradient(90deg,#FF5A4E,#C81E1E),repeating-linear-gradient(90deg,transparent 0 18px,rgba(0,0,0,.35) 18px 20px);background-blend-mode:multiply}
+.ar-row{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.74rem;margin-top:6px;color:rgba(255,255,255,.88);font-variant-numeric:tabular-nums}
+.hearts i{font-style:normal;font-size:1.05rem;color:rgba(255,255,255,.22);margin-inline-end:2px}
+.hearts i.on{color:#FF4D6D;text-shadow:0 0 8px rgba(255,77,109,.6)}
+.ar-bounty{background:var(--acc2);color:#000;font-weight:700;border-radius:8px;padding:1px 8px}
+.ar-msg{margin:10px 0 0;font-size:.8rem;line-height:1.6;color:rgba(255,255,255,.92)}
+.ar-msg b{color:var(--acc2)}
+.arena.def .ar-msg{color:#7DF0B4;font-weight:600}.arena.esc .ar-msg{color:#FF9A9A;font-weight:600}
+.arena.big{padding:20px 22px;border-radius:var(--r)}
+.arena.big .mon{width:130px;height:134px}
+.arena.big .ar-info strong{font-size:1.25rem}
+.arena.big .hpbar{height:18px}
+.ar-log{margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.15);display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:.76rem;color:rgba(255,255,255,.8)}
+.ar-log>div{display:flex;gap:5px;flex-wrap:wrap}
+.lg{display:grid;place-items:center;min-width:40px;border-radius:9px;padding:3px 6px;background:rgba(255,255,255,.08);font-weight:700;line-height:1.2}
+.lg small{font-size:.62rem;font-weight:500;opacity:.85}
+.lg.win{background:#1F9D63}.lg.lose{background:#9C2C2C}
+.cele-row.lead .ic{font-size:3rem}
+.cele-row.lead b{font-size:1.12rem}
+/* long step text: at most 2 lines, every card in a row the same height; full text on hover */
+.slot em{white-space:normal!important;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden;text-overflow:ellipsis}
+.tt tbody td{height:1px}
+.tt tbody td>.slot{height:100%}
 /* ---------- printed task list ---------- */
 .ptodo{display:flex;align-items:center;gap:9px;padding:6px 2px;border-bottom:1px solid var(--line-2);min-height:30px;break-inside:avoid}
 .ptodo .pbox{flex:none;width:13px;height:13px;border:1.4px solid var(--ink-soft);border-radius:4px;display:grid;place-items:center;font-size:9px;line-height:1;color:#fff}
@@ -473,7 +602,6 @@ dialog.wide{width:min(620px,94vw)}
 .ptodo.done .tt-t{text-decoration:line-through;color:var(--muted)}
 .ptodo.blank .tt-t{border-bottom:1px dotted var(--line);height:1.1em}
 #printArea .pr-todos .ptodo:nth-last-child(-n+2){border-bottom:none}
-#printArea .pr-habits{margin-top:4px}
 </style>
 <style id="pgSize">@media print{@page{size:A4 landscape;margin:9mm}}</style>
 </head>
@@ -484,7 +612,7 @@ dialog.wide{width:min(620px,94vw)}
   <span class="syncpill no-print" id="syncPill" hidden><i></i><span></span></span>
   <nav class="tabs" role="tablist" aria-label="الأقسام">
     <button role="tab" data-tab="schedule">الجدول</button>
-    <button role="tab" data-tab="habits">العادات</button>
+    <button role="tab" data-tab="play">التحفيز والجوائز</button>
     <button role="tab" data-tab="dash">الداشبورد والتقارير</button>
     <button role="tab" data-tab="settings">الإعدادات</button>
   </nav>
@@ -497,10 +625,12 @@ dialog.wide{width:min(620px,94vw)}
 
 /* ============ data ============ */
 const KEY='weekly-planner-52-v1';
-const DAYS_AR=['السبت','الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة'];
-const DAYS_EN=['Saturday','Sunday','Monday','Tuesday','Wednesday','Thursday','Friday'];
-const DAYS_EN_S=['Sat','Sun','Mon','Tue','Wed','Thu','Fri'];
-let DAYS=DAYS_AR.slice();
+/* weekday names, Sunday-first; the visible order is rotated so the week starts on whatever day you chose */
+const DOW_AR=['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+const DOW_EN=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const DOW_EN_S=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+let DAYS_AR=[],DAYS_EN=[],DAYS_EN_S=[],DAYS=[];
+function setDays(dow){const r=a=>a.map((_,i)=>a[(i+dow)%7]);DAYS_AR=r(DOW_AR);DAYS_EN=r(DOW_EN);DAYS_EN_S=r(DOW_EN_S)}
 const DAY_MS=864e5;
 const uid=()=>Math.random().toString(36).slice(2,9);
 const clone=o=>JSON.parse(JSON.stringify(o));
@@ -508,7 +638,7 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const pad=n=>String(n).padStart(2,'0');
 const iso=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 const parseISO=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
-function saturdayOf(d){const x=new Date(d.getFullYear(),d.getMonth(),d.getDate());x.setDate(x.getDate()-((x.getDay()+1)%7));return x}
+const sod=d=>new Date(d.getFullYear(),d.getMonth(),d.getDate());
 
 const DEFAULT_QUOTES=[
   'حريٌّ بك أن تتذكّر أن السعي لطلب العلم هو توفيقٌ من الله، ورزقٌ ساقه إليك.',
@@ -523,7 +653,7 @@ function defaults(){
   const all=x=>Array.from({length:7},()=>({...x}));
   return {
     title:'الجدول الأسبوعي', subtitle:'قرآن ومهارات ومحاسبة، كل يوم بخطوة ثابتة',
-    owner:'', fixedTheme:'', start:'2026-10-10', startV:2,
+    owner:'', fixedTheme:'', start:'2026-10-18', startV:3,
     quotesTitle:'وصايا غالية', quotes:DEFAULT_QUOTES.slice(), weeksCount:52, theme:'auto',
     cats:[
       {id:'q',name:'القرآن والذكر',color:'#1E6B50'},
@@ -547,16 +677,16 @@ function defaults(){
       }
     },
     seqs:{
-      sq_cma:{steps:['Watch Video & Absorb','Deep Study + Summarize','Solve Questions Deeply','Watch Video + Reading + Deep Study to Weak Spots','Re-attempt Questions & End The Session','Revision to the End Topics','Revision to the End Topics'],days:[0,1,2,3,4,5,6],aW:1,aStep:0,cont:false},
-      sq_ifrs:{steps:['Watch Video & Absorb','Deep Study + Summarize','Solve Questions Deeply','Watch Video + Reading + Deep Study to Weak Spots','Re-attempt Questions & Quick Revision'],days:[1,2,3,4,5],aW:1,aStep:0,cont:false}
+      sq_cma:{name:'CMA',steps:['Watch Video & Absorb','Deep Study + Summarize','Solve Questions Deeply','Watch Video + Reading + Deep Study to Weak Spots','Re-attempt Questions & End The Session','Revision to the End Topics','Revision to the End Topics'],mode:'progress',aD:'2026-10-10',aStep:0},
+      sq_ifrs:{name:'IFRS',steps:['Watch Video & Absorb','Deep Study + Summarize','Solve Questions Deeply','Watch Video + Reading + Deep Study to Weak Spots','Re-attempt Questions & Quick Revision'],mode:'progress',aD:'2026-10-10',aStep:0}
     },
-    print:{o:'landscape',fit:'one',quote:true,todos:true,habits:false,notes:true},
-    habits:[
-      {id:'h1',name:'القراءة',desc:'ولو 15 صفحة في اليوم',from:1},
-      {id:'h2',name:'مفيش سوشيال ميديا',desc:'بدون تصفح عشوائي',from:1},
-      {id:'h3',name:'تدوين اليوميات',desc:'دقائق في آخر اليوم',from:1},
-      {id:'h4',name:'غض البصر',desc:'طول اليوم',from:1}
-    ],
+    print:{o:'landscape',fit:'one',quote:true,todos:true,notes:true},
+    game:{thr:60},
+    rewards:{items:[
+      {id:'r1',name:'حلقة من مسلسل بحبه',cost:150},
+      {id:'r2',name:'أكلة بحبها',cost:350},
+      {id:'r3',name:'خروجة مع الصحاب',cost:700},
+      {id:'r4',name:'حاجة نفسي أشتريها',cost:1500}],log:[]},
     weeks:{}
   };
 }
@@ -564,7 +694,7 @@ let state;
 try{state=JSON.parse(localStorage.getItem(KEY))}catch(e){state=null}
 if(!state||!state.template){state=defaults()}else{const raw=state;state={...defaults(),...raw};
   if(raw.owner==='Mohamed Ghaith'){state.owner='';try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
-  if(raw.startV!==2){state.start='2026-10-10';state.startV=2;try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}}
+  if(!raw.startV||raw.startV<2){state.startV=2}}
 /* one-time switch of the master schedule to the requested layout (Religion / CMA track / skills / IFRS track) */
 function migrateLayout(st){
   if(!st||(st.layoutV||0)>=3)return false;
@@ -576,8 +706,30 @@ function migrateLayout(st){
   st.cats=st.cats||[];D.cats.forEach(c=>{if(!st.cats.some(x=>x.id===c.id))st.cats.push(c)});
   st.layoutV=3;return true;
 }
-if(migrateLayout(state)){state._t=Date.now();try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
-function save(){state._t=Date.now();if(typeof schedulePush==='function')schedulePush();try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){toast(T('تعذّر الحفظ في المتصفح، اعمل نسخة احتياطية من الإعدادات','Could not save in this browser. Download a backup from Settings.'))}}
+/* v4: habits removed, loop tracks anchored to a date (survives changing the week start), motivation data */
+function migrateV4(st){
+  if(!st)return false;let ch=false;
+  if(st.habits){delete st.habits;ch=true}
+  for(const k in st.weeks||{}){const w=st.weeks[k];if(w&&w.habits){delete w.habits;ch=true}}
+  if(st.print&&'habits' in st.print){delete st.print.habits;ch=true}
+  for(const id in st.seqs||{}){const q=st.seqs[id];if(q&&!q.mode){
+    q.mode=q.cont?'calendar':'weekly';const d=parseISO(st.start);d.setDate(d.getDate()+((q.aW||1)-1)*7);q.aD=iso(d);
+    delete q.cont;delete q.aW;delete q.days;ch=true}}
+  if(!st.game){st.game={thr:60};ch=true}
+  /* accept every rewards format: {items,log}, a plain list of rewards, or a separate "redeemed" list */
+  if(Array.isArray(st.rewards)){st.rewards={items:st.rewards,log:[]};ch=true}
+  if(!st.rewards||typeof st.rewards!=='object'){st.rewards={items:defaults().rewards.items,log:[]};ch=true}
+  if(!Array.isArray(st.rewards.items)){st.rewards.items=defaults().rewards.items;ch=true}
+  if(!Array.isArray(st.rewards.log)){st.rewards.log=[];ch=true}
+  if(Array.isArray(st.redeemed)){st.redeemed.forEach(r=>{if(r&&!st.rewards.log.some(x=>x.id===r.id))st.rewards.log.push({id:r.id||uid(),name:r.name,cost:+r.cost||0,at:r.at})});delete st.redeemed;ch=true}
+  st.rewards.items=st.rewards.items.filter(x=>x&&x.name).map(x=>({id:x.id||uid(),name:x.name,cost:+x.cost||0}));
+  st.rewards.log=st.rewards.log.filter(Boolean).map(x=>{let at=x.at;if(typeof at==='number'||!/^\d{4}-\d{2}-\d{2}$/.test(String(at||'')))at=iso(at?new Date(at):new Date());return {...x,cost:+x.cost||0,at}});
+  return ch;
+}
+/* one-time: week 1 = Sunday 18 Oct 2026; every tick and task stays on its real date */
+function migrateStart(){if((state.startV||0)>=3)return false;rebase('2026-10-18');state.startV=3;return true}
+if(migrateLayout(state)|migrateV4(state)|migrateStart()){state._t=Date.now();try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+function save(){state._t=Date.now();SEQC=null;game.c=null;if(typeof schedulePush==='function')schedulePush();try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){toast(T('تعذّر الحفظ في المتصفح، اعمل نسخة احتياطية من الإعدادات','Could not save in this browser. Download a backup from Settings.'))}}
 
 /* ============ language: ar | bi | en ============ */
 const L=()=>(state&&state.lang==='en')?'en':'ar';
@@ -599,8 +751,7 @@ const TR={
   'مذاكرة + أسئلة MCQ':'Study + MCQ practice','أساسيات + حل تمارين':'Basics + exercises','معيار جديد':'A new standard','قراءة + أفكار':'Reading + ideas',
   'حالات عملية':'Case studies','تلخيص الأسبوع':'Summarize the week','مراجعة المعايير':'Standards review','تطبيق على فكرة':'Apply to an idea',
   'مراجعة وتخطيط':'Review & Planning','تجهيز الأسبوع الجاي':'Prepare next week',
-  'القراءة':'Reading','ولو 15 صفحة في اليوم':'At least 15 pages a day','مفيش سوشيال ميديا':'No social media','بدون تصفح عشوائي':'No mindless scrolling',
-  'تدوين اليوميات':'Journaling','دقائق في آخر اليوم':'A few minutes at the end of the day','غض البصر':'Lowering the gaze','طول اليوم':'All day long',
+  'حلقة من مسلسل بحبه':'An episode of my favorite show','أكلة بحبها':'A meal I love','خروجة مع الصحاب':'A night out with friends','حاجة نفسي أشتريها':'Something I want to buy',
   'كحلي وذهبي':'Navy & Gold','زمردي ورملي':'Emerald & Sand','عنابي ومشمشي':'Bordeaux & Apricot','بترولي وبرتقالي':'Petrol & Orange',
   'بنفسجي ملكي':'Royal Purple','فحمي ونحاسي':'Charcoal & Copper','زيتوني وكريمي':'Olive & Cream','كوبالت ومرجاني':'Cobalt & Coral',
   'توتي وتركواز':'Berry & Turquoise','صنوبري وذهبي':'Pine & Gold','طوبي ورملي':'Terracotta & Sand','نيلي وتركواز':'Indigo & Turquoise','جرافيت وليموني':'Graphite & Lime',
@@ -609,11 +760,11 @@ const TR={
 const trOf=s=>TR[String(s??'').trim()];
 /* translate user/default content: unknown text passes through unchanged */
 function C(s){const e=trOf(s),l=L();if(!e||l==='ar')return s;return l==='en'?e:`${s} · ${e}`}
-function syncLang(){const l=L(),r=document.documentElement;
+function syncLang(){const l=L(),r=document.documentElement;setDays(startDow());
   DAYS=l==='en'?DAYS_EN.slice():l==='bi'?DAYS_AR.map((d,i)=>`${d} · ${DAYS_EN_S[i]}`):DAYS_AR.slice();
   r.lang=l==='en'?'en':'ar';r.dir=l==='en'?'ltr':'rtl';
   r.style.setProperty('--today-lbl',JSON.stringify(T('النهارده','Today')));
-  const tabs={schedule:T('الجدول','Schedule'),habits:T('العادات','Habits'),dash:T('الداشبورد والتقارير','Dashboard & Reports'),settings:T('الإعدادات','Settings')};
+  const tabs={schedule:T('الجدول','Schedule'),play:T('التحفيز والجوائز','Motivation & Rewards'),dash:T('الداشبورد والتقارير','Dashboard & Reports'),settings:T('الإعدادات','Settings')};
   document.querySelectorAll('.tabs button').forEach(b=>b.textContent=tabs[b.dataset.tab]);
   document.querySelector('.tabs').setAttribute('aria-label',T('الأقسام','Sections'));
   document.title='Weekly Plan';
@@ -629,7 +780,9 @@ function weekStart(n){const d=parseISO(state.start);d.setDate(d.getDate()+(n-1)*
 const fmtD=d=>d.toLocaleDateString(L()==='en'?'en-GB':'ar-EG-u-nu-latn',{day:'numeric',month:'short'});
 function rangeLabel(n){const a=weekStart(n),b=new Date(a);b.setDate(b.getDate()+6);return `${fmtD(a)} – ${fmtD(b)}`}
 function dayDate(n,i){const d=weekStart(n);d.setDate(d.getDate()+i);return fmtD(d)}
-function todayIdx(){return (new Date().getDay()+1)%7}
+const startDow=()=>parseISO(state.start).getDay();
+function todayIdx(){return ((new Date().getDay()-startDow())%7+7)%7}
+const dayNo=d=>Math.round((sod(d)-parseISO(state.start))/DAY_MS);  /* days since week 1 day 1 */
 const toMin=t=>{const [h,m]=t.split(':').map(Number);return h*60+m};
 function dur(s){let d=toMin(s.end)-toMin(s.start);if(d<=0)d+=1440;return d}
 function fmt12(t){const [h,m]=t.split(':').map(Number),en=L()==='en';return `${h%12||12}:${pad(m)} ${h<12?(en?'AM':'ص'):(en?'PM':'م')}`}
@@ -638,54 +791,113 @@ function durLabelEn(m){if(m%60===0)return m===60?'1 hr':`${m/60} hrs`;if(m===90)
 function durLabel(m){return T(durLabelAr(m),durLabelEn(m))}
 const hrs=m=>{const v=Math.round(m/6)/10;return String(v)};
 const catOf=id=>state.cats.find(c=>c.id===id)||{id:'',name:T('بدون تصنيف','Uncategorized'),color:'#8A90A8'};
-const getWeek=(n,create)=>{if(!state.weeks[n]&&create)state.weeks[n]={plan:null,done:{},habits:{},note:''};return state.weeks[n]};
+const getWeek=(n,create)=>{if(!state.weeks[n]&&create)state.weeks[n]={plan:null,done:{},note:''};const w=state.weeks[n];if(w&&create&&!w.done)w.done={};return w};
 const getPlan=n=>(state.weeks[n]&&state.weeks[n].plan)||state.template;
-const habitsFor=n=>state.habits.filter(h=>(h.from||1)<=n&&(!h.to||n<=h.to));
 const pctClass=p=>p>=80?'p-good':p>=50?'p-mid':'p-bad';
 let toastT;function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2200)}
 function applyTheme(){const r=document.documentElement;if(state.theme==='auto')r.removeAttribute('data-theme');else r.setAttribute('data-theme',state.theme)}
 
-/* loop tracks: a cell can point at a sequence of steps that rotates over the chosen days */
+/* loop tracks: a cell can point at a track (a list of steps). Every place the track appears — any day,
+   any time slot, any week — is one stop on the same cycle, in date-then-time order.
+   mode progress: each stop shows the step that's due; a stop you didn't tick keeps the step waiting for the next stop
+   mode calendar: each stop takes the next step whether or not you ticked it, and keeps going week after week
+   mode weekly:   the cycle restarts at the chosen step every week                                                   */
 const seqOf=id=>(state.seqs||{})[id];
-function seqIdx(q,n,i){const k=q.days.indexOf(i),N=q.steps.length;if(k<0||!N)return -1;
-  const x=(q.aStep||0)+k+(q.cont?(n-(q.aW||1))*q.days.length:0);return ((x%N)+N)%N}
-function rc(c,n,i){if(!c||!c.seq)return c;const q=seqOf(c.seq);if(!q)return c;const k=seqIdx(q,n,i);if(k<0)return c;return {...c,s:q.steps[k],_sq:[k+1,q.steps.length]}}
+var SEQC=null;
+function seqMap(id){
+  SEQC=SEQC||{};if(SEQC[id])return SEQC[id];
+  const q=seqOf(id),m=new Map();SEQC[id]=m;if(!q||!q.steps||!q.steps.length)return m;
+  const N=q.steps.length,occ=[];
+  for(let n=1;n<=state.weeksCount;n++){const p=getPlan(n),sl=[...p.slots].sort((a,b)=>toMin(a.start)-toMin(b.start));
+    for(let i=0;i<7;i++)sl.forEach(x=>{const c=(p.cells[x.id]||[])[i];if(c&&c.seq===id)occ.push({n,i,sid:x.id,D:(n-1)*7+i})})}
+  const aD=q.aD?Math.round((parseISO(q.aD)-parseISO(state.start))/DAY_MS):0;
+  let f=occ.findIndex(o=>o.D>=aD);if(f<0)f=occ.length;
+  const a=q.aStep||0,wr={};let dc=0;
+  occ.forEach((o,p)=>{let x;
+    if(q.mode==='weekly'){wr[o.n]=wr[o.n]||0;x=a+wr[o.n];wr[o.n]++}
+    else if(q.mode==='calendar'||p<f)x=a+(p-f);
+    else{x=a+dc;if((((state.weeks[o.n]||{}).done)||{})[o.sid+'_'+o.i])dc++}
+    m.set(o.n+'|'+o.i+'|'+o.sid,((x%N)+N)%N)});
+  return m;
+}
+function seqStep(id,n,i,sid){const k=seqMap(id).get(n+'|'+i+'|'+sid);return k==null?-1:k}
+function seqFirstThisWeek(id,n){for(const [k,v] of seqMap(id)){if(+k.split('|')[0]===n)return v}return -1}
+function rc(c,n,i,sid){if(!c||!c.seq)return c;const q=seqOf(c.seq);if(!q||!q.steps||!q.steps.length)return c;const k=seqStep(c.seq,n,i,sid);if(k<0)return c;return {...c,s:q.steps[k],_sq:[k+1,q.steps.length]}}
 
 /* keep past weeks frozen before master edits so the dashboard stays accurate */
 function freezePast(upTo){const snap=JSON.stringify(state.template);
-  for(let n=1;n<=state.weeksCount;n++){if(n===upTo)continue;const w=state.weeks[n];
-    const tracked=w&&Object.keys(w.done||{}).length>0;
-    if(n<upTo||tracked){const x=getWeek(n,true);if(!x.plan)x.plan=JSON.parse(snap)}}}
+  for(let n=1;n<upTo;n++){const x=getWeek(n,true);if(!x.plan)x.plan=JSON.parse(snap)}}
 function doneInSlot(n,id){const w=state.weeks[n];return w?Object.keys(w.done||{}).filter(k=>k.startsWith(id+'_')).length:0}
-function editablePlan(){
-  if(ui.scope==='week'){const w=getWeek(ui.week,true);if(!w.plan)w.plan=clone(state.template);return w.plan}
-  freezePast(ui.week);const w=state.weeks[ui.week];if(w&&w.plan)return w.plan;return state.template;
+/* the plans an edit lands on: this week only, or the master schedule plus every custom week from this week onward */
+function targetPlans(){
+  if(ui.scope==='week'){const w=getWeek(ui.week,true);if(!w.plan)w.plan=clone(state.template);return [w.plan]}
+  freezePast(ui.week);const out=[state.template];
+  for(const k in state.weeks){const w=state.weeks[k];if(+k>=ui.week&&w&&w.plan&&w.plan!==state.template)out.push(w.plan)}
+  return out;
+}
+function ensureSlot(p,id){if(p.slots.some(x=>x.id===id))return true;const src=getPlan(ui.week).slots.find(x=>x.id===id);if(!src)return false;
+  p.slots.push({...src});p.cells[id]=p.cells[id]||Array(7).fill(null);return true}
+
+/* move the week grid to a new day-1 date while every tick, task and note stays on its real calendar date */
+/* dates of the chosen weekday around today, for "week 1 starts on" */
+function startOpts(dow,curISO){
+  const t=sod(new Date()),base=new Date(t);base.setDate(t.getDate()-((t.getDay()-dow+7)%7));
+  const cur=parseISO(curISO);let best=null,bd=1e9;const ds=[];
+  for(let k=-12;k<=6;k++){const d=new Date(base);d.setDate(base.getDate()+k*7);ds.push(d);const df=Math.abs(d-cur);if(df<bd){bd=df;best=iso(d)}}
+  return ds.map(d=>{const v=iso(d),tag=v===iso(t)?T(' (النهارده)',' (today)'):(k=>k===0?T(' (الأسبوع ده)',' (this week)'):k===7?T(' (الأسبوع الجاي)',' (next week)'):'')(Math.round((d-base)/DAY_MS));
+    return `<option value="${v}" ${v===best?'selected':''}>${L()==='en'?DOW_EN[d.getDay()]:DOW_AR[d.getDay()]} ${fmtD(d)} ${d.getFullYear()}${tag}</option>`}).join('');
+}
+function wkPrevText(ns){
+  const st=parseISO(ns),dn=Math.floor((sod(new Date())-st)/DAY_MS),end=new Date(st);end.setDate(st.getDate()+6);
+  const first=T(`أسبوع 1: من ${DOW_AR[st.getDay()]} ${fmtD(st)} لـ ${DOW_AR[end.getDay()]} ${fmtD(end)}.`,`Week 1: ${DOW_EN[st.getDay()]} ${fmtD(st)} to ${DOW_EN[end.getDay()]} ${fmtD(end)}.`);
+  if(dn<0)return first+' '+T(-dn===1?'بيبدأ بكرة.':`بيبدأ بعد ${-dn} أيام.`,-dn===1?'Starts tomorrow.':`Starts in ${-dn} days.`);
+  return first+' '+T(`الأسبوع اللي إحنا فيه هيبقى أسبوع ${Math.floor(dn/7)+1}.`,`The current week becomes week ${Math.floor(dn/7)+1}.`);
+}
+function applyStart(ns){
+  if(!ns)return;if(ns===state.start){toast(T('ده نفس الإعداد الحالي','That’s already the current setting'));return}
+  modal(T('تغيير بداية الأسبوع','Change the week start'),`<p style="margin:0 0 8px;line-height:1.8">${wkPrevText(ns)}</p><p class="hint" style="margin:0">${T('كل حاجة علّمت عليها هتفضل على نفس تاريخها.','Everything you ticked stays on its date.')}</p>`,
+    [{label:T('إلغاء','Cancel'),fn:()=>{render()}},{label:T('طبّق','Apply'),cls:'primary',fn:()=>{rebase(ns);ui.week=currentWeek();ui.day=isThisWeek(ui.week)?todayIdx():0;ui.from=1;ui.to=ui.week;ui.cmpA=Math.max(ui.week-1,1);ui.cmpB=ui.week;save();render();toast(T(`تمام: الأسبوع بيبدأ يوم ${DOW_AR[parseISO(ns).getDay()]}`,`Done: weeks now start on ${DOW_EN[parseISO(ns).getDay()]}`))}}]);
+}
+function rebase(ns){
+  const os=state.start;if(!ns||ns===os)return false;
+  const off=Math.round((parseISO(os)-parseISO(ns))/DAY_MS),md=x=>((x%7)+7)%7,loc=D=>({n:Math.floor(D/7)+1,i:md(D)});
+  const rot=cells=>{const o={};for(const k in cells||{}){const r=cells[k]||[],a=Array(7).fill(null);for(let i=0;i<7;i++)a[md(i+off)]=r[i]??null;o[k]=a}return o};
+  state.template.cells=rot(state.template.cells);
+  const NW={},g=n=>NW[n]||(NW[n]={plan:null,done:{},note:'',todos:[]});
+  Object.keys(state.weeks).map(Number).sort((a,b)=>a-b).forEach(n=>{const w=state.weeks[n];if(!w)return;
+    const t=g(loc((n-1)*7+3+off).n);
+    if(w.plan&&!t.plan)t.plan={...clone(w.plan),cells:rot(w.plan.cells)};
+    if(w.theme&&!t.theme)t.theme=w.theme;
+    if(w.note)t.note=t.note?t.note+'\n\n'+w.note:w.note;
+    for(const k in w.done||{}){const j=k.lastIndexOf('_'),L=loc((n-1)*7+(+k.slice(j+1))+off);g(L.n).done[k.slice(0,j)+'_'+L.i]=true}
+    (w.todos||[]).forEach(td=>{if(td.day!=null&&td.day!==''){const L=loc((n-1)*7+(+td.day)+off);g(L.n).todos.push({...td,day:L.i})}else t.todos.push({...td})});
+  });
+  for(const k in NW){const w=NW[k];if(!w.todos.length)delete w.todos}
+  state.weeks=NW;state.start=ns;SEQC=null;game.c=null;return true;
 }
 
 /* ============ stats ============ */
 function weekStats(n){
-  const plan=getPlan(n),w=state.weeks[n]||{done:{},habits:{}};
-  const r={n,pMin:0,dMin:0,pCnt:0,dCnt:0,cat:{},subj:{},day:Array.from({length:7},()=>({p:0,d:0})),hP:0,hD:0,hab:{}};
+  const plan=getPlan(n),w=state.weeks[n]||{done:{}};
+  const r={n,pMin:0,dMin:0,pCnt:0,dCnt:0,cat:{},subj:{},day:Array.from({length:7},()=>({p:0,d:0}))};
   plan.slots.forEach(s=>{const m=dur(s);(plan.cells[s.id]||[]).forEach((c,i)=>{
     if(!c||!c.t)return;const d=!!(w.done||{})[s.id+'_'+i];
     r.pMin+=m;r.pCnt++;if(d){r.dMin+=m;r.dCnt++}
     const cc=r.cat[c.c]||(r.cat[c.c]={p:0,d:0});cc.p+=m;if(d)cc.d+=m;
     const k=c.t.trim();const ss=r.subj[k]||(r.subj[k]={cat:c.c,p:0,d:0,pc:0,dc:0});ss.p+=m;ss.pc++;if(d){ss.d+=m;ss.dc++}
     r.day[i].p+=m;if(d)r.day[i].d+=m;})});
-  habitsFor(n).forEach(h=>{let c=0;for(let i=0;i<7;i++)if((w.habits||{})[h.id+'_'+i])c++;r.hab[h.id]=c;r.hD+=c;r.hP+=7});
   const td=w.todos||[];r.tP=td.length;r.tD=td.filter(t=>t.done).length;
-  r.pct=r.pMin?Math.round(r.dMin/r.pMin*100):0;r.hPct=r.hP?Math.round(r.hD/r.hP*100):0;
+  r.pct=r.pMin?Math.round(r.dMin/r.pMin*100):0;
   return r;
 }
 function aggregate(from,to){
-  const A={pMin:0,dMin:0,pCnt:0,dCnt:0,cat:{},subj:{},day:Array.from({length:7},()=>({p:0,d:0})),hP:0,hD:0,tP:0,tD:0,hab:{},weeks:[]};
+  const A={pMin:0,dMin:0,pCnt:0,dCnt:0,cat:{},subj:{},day:Array.from({length:7},()=>({p:0,d:0})),tP:0,tD:0,weeks:[]};
   for(let n=from;n<=to;n++){const r=weekStats(n);A.weeks.push(r);
-    ['pMin','dMin','pCnt','dCnt','hP','hD','tP','tD'].forEach(k=>A[k]+=r[k]);
+    ['pMin','dMin','pCnt','dCnt','tP','tD'].forEach(k=>A[k]+=r[k]);
     for(const k in r.cat){const a=A.cat[k]||(A.cat[k]={p:0,d:0});a.p+=r.cat[k].p;a.d+=r.cat[k].d}
     for(const k in r.subj){const s=r.subj[k],a=A.subj[k]||(A.subj[k]={cat:s.cat,p:0,d:0,pc:0,dc:0});a.p+=s.p;a.d+=s.d;a.pc+=s.pc;a.dc+=s.dc}
-    r.day.forEach((d,i)=>{A.day[i].p+=d.p;A.day[i].d+=d.d});
-    habitsFor(n).forEach(h=>{const a=A.hab[h.id]||(A.hab[h.id]={p:0,d:0});a.p+=7;a.d+=r.hab[h.id]||0});}
-  A.pct=A.pMin?Math.round(A.dMin/A.pMin*100):0;A.hPct=A.hP?Math.round(A.hD/A.hP*100):0;
+    r.day.forEach((d,i)=>{A.day[i].p+=d.p;A.day[i].d+=d.d});}
+  A.pct=A.pMin?Math.round(A.dMin/A.pMin*100):0;
   return A;
 }
 
@@ -734,9 +946,139 @@ function applyWeekTheme(n){
   return t;
 }
 
+/* ============ motivation: XP, levels, streak, quests, weekly boss, badges, coins ============ */
+const LV_AR=['مبتدئ','متحمّس','ملتزم','مجتهد','مثابر','محترف','خبير','متمكّن','قائد','أسطورة'];
+const LV_EN=['Beginner','Eager','Committed','Diligent','Persistent','Pro','Expert','Master','Leader','Legend'];
+const lvXP=L=>60*L*(L-1);                         /* total XP needed to reach level L */
+function lvOf(xp){let L=1;while(lvXP(L+1)<=xp)L++;return L}
+const lvName=L=>L<=10?T(LV_AR[L-1],LV_EN[L-1]):`${T(LV_AR[9],LV_EN[9])} ${L-9}`;
+const BOSSES=[
+  ['🦥','وحش التسويف','The Procrastination Beast'],['👹','غول التشتت','The Distraction Ghoul'],['🐉','تنين الكسل','The Laziness Dragon'],
+  ['👻','شبح الموبايل','The Phone Phantom'],['🤴','ملك الأعذار','The King of Excuses'],['🕷️','عنكبوت السهر','The Late-Night Spider'],
+  ['🐙','أخطبوط المشاغل','The Busy Octopus'],['🐻','دب النوم','The Sleepy Bear'],['🐍','ثعبان الملل','The Boredom Snake'],
+  ['🤖','روبوت الروتين','The Routine Robot'],['🧙','ساحر التأجيل','The Wizard of Later'],['🦈','قرش الوقت الضايع','The Time-Waste Shark'],['🧟','زومبي السوشيال','The Social Zombie']];
+const bossOf=n=>{const b=BOSSES[(n-1)%BOSSES.length];return {ic:b[0],name:T(b[1],b[2])}};
+const BADGES=[
+  {id:'s1',ic:'🌱',a:'أول خطوة',e:'First step',da:'أول جلسة تخلّصها',de:'Finish your first session',ok:G=>G.dCnt>=1},
+  {id:'pd',ic:'⭐',a:'يوم كامل',e:'Perfect day',da:'تخلّص كل جلسات يوم',de:'Finish every session in a day',ok:G=>G.perfect>=1},
+  {id:'st3',ic:'🔥',a:'3 أيام ورا بعض',e:'3-day streak',da:'سلسلة 3 أيام',de:'A 3-day streak',ok:G=>G.best>=3},
+  {id:'st7',ic:'🔥',a:'أسبوع من غير قطع',e:'7-day streak',da:'سلسلة 7 أيام',de:'A 7-day streak',ok:G=>G.best>=7},
+  {id:'st21',ic:'💎',a:'21 يوم',e:'21-day streak',da:'سلسلة 21 يوم: كده بقت عادة',de:'21 days: now it’s a habit',ok:G=>G.best>=21},
+  {id:'st50',ic:'👑',a:'50 يوم',e:'50-day streak',da:'سلسلة 50 يوم',de:'A 50-day streak',ok:G=>G.best>=50},
+  {id:'b1',ic:'⚔️',a:'أول وحش',e:'First boss',da:'تهزم وحش أسبوع',de:'Defeat a weekly boss',ok:G=>G.bosses>=1},
+  {id:'b5',ic:'🛡️',a:'صياد الوحوش',e:'Boss hunter',da:'تهزم 5 وحوش',de:'Defeat 5 bosses',ok:G=>G.bosses>=5},
+  {id:'b13',ic:'🗡️',a:'مفيش وحش فاضل',e:'None left',da:'تهزم الـ13 وحش',de:'Defeat 13 bosses',ok:G=>G.bosses>=13},
+  {id:'pw',ic:'🏆',a:'أسبوع 100%',e:'Perfect week',da:'تخلّص الأسبوع كله',de:'Finish an entire week',ok:G=>G.perfectW>=1},
+  {id:'h25',ic:'⏳',a:'25 ساعة',e:'25 hours',da:'25 ساعة شغل حقيقي',de:'25 hours of real work',ok:G=>G.dMin>=1500},
+  {id:'h100',ic:'📚',a:'100 ساعة',e:'100 hours',da:'100 ساعة شغل حقيقي',de:'100 hours of real work',ok:G=>G.dMin>=6000},
+  {id:'h300',ic:'🎓',a:'300 ساعة',e:'300 hours',da:'300 ساعة شغل حقيقي',de:'300 hours of real work',ok:G=>G.dMin>=18000},
+  {id:'t20',ic:'✅',a:'20 مهمة',e:'20 tasks',da:'تخلّص 20 مهمة من اللازم',de:'Finish 20 must-do tasks',ok:G=>G.todos>=20},
+  {id:'l5',ic:'🚀',a:'مستوى 5',e:'Level 5',da:'توصل لمستوى 5',de:'Reach level 5',ok:G=>G.level>=5},
+  {id:'l10',ic:'🌟',a:'مستوى 10',e:'Level 10',da:'توصل لمستوى 10',de:'Reach level 10',ok:G=>G.level>=10}];
+function hashN(str){let h=2166136261;for(let k=0;k<str.length;k++){h^=str.charCodeAt(k);h=Math.imul(h,16777619)}return h>>>0}
+const XP={first:10,stars:25,all:50,boss:200,todo:15};
+/* everything is derived from your ticks, so unticking takes points back and every device agrees */
+function game(){
+  if(game.c)return game.c;
+  const N=state.weeksCount,tD=dayNo(new Date()),thr=(state.game&&+state.game.thr)||60;
+  const G={xp:0,box:0,dMin:0,dCnt:0,perfect:0,bosses:0,perfectW:0,todos:0,days:[],weeks:[],today:null,tD,thr};
+  for(let n=1;n<=N;n++){
+    const p=getPlan(n),w=state.weeks[n]||{},dn=w.done||{};let wp=0,wd=0;
+    const day=Array.from({length:7},()=>({p:0,d:0,pm:0,dm:0,sp:0,sd:0}));
+    p.slots.forEach(x=>{const m=dur(x);(p.cells[x.id]||[]).forEach((c,i)=>{if(!c||!c.t)return;const y=day[i],ok=!!dn[x.id+'_'+i];
+      y.p++;y.pm+=m;if(c.star)y.sp++;
+      if(ok){y.d++;y.dm+=m;if(c.star)y.sd++;if((n-1)*7+i<=tD){G.xp+=Math.round(m/10*(c.star?1.5:1));G.dMin+=m;G.dCnt++}}})});
+    day.forEach((y,i)=>{const D=(n-1)*7+i;wp+=y.pm;wd+=y.dm;
+      const q={first:y.d>0,stars:y.sp>0&&y.sd===y.sp,all:y.p>0&&y.d===y.p};
+      const st=!y.p?'rest':(y.d/y.p*100>=thr?'hit':(D<tD?'miss':D===tD?'pending':'future'));
+      let box=0;
+      if(D<=tD&&y.p){if(q.first)G.xp+=XP.first;if(q.stars)G.xp+=XP.stars;if(q.all){G.xp+=XP.all;G.perfect++;box=10+hashN(state.start+'#'+D)%31;G.box+=box}}
+      G.days[D]={...y,st,q,box,n,i,D};});
+    const started=(n-1)*7<=tD,pct=wp?Math.round(wd/wp*100):0;
+    if(started&&wp>0&&pct===100)G.perfectW++;
+    G.weeks[n]={hp:wp,dmg:wd,pct,started};
+    G.todos+=(w.todos||[]).filter(t=>t.done).length;
+  }
+  G.xp+=G.todos*XP.todo;
+  /* days before you ticked anything for the first time don't count as broken streak days */
+  const f0=G.days.findIndex(y=>y&&y.d>0);G.days.forEach(y=>{if(y&&y.st==='miss'&&(f0<0||y.D<f0))y.st='rest'});
+  /* weekly battle: 3 hearts; every day you let slip costs one; at 0 the boss escapes with the bounty */
+  let ws=0;
+  for(let n=1;n<=N;n++){const W=G.weeks[n];let miss=0,left=0;
+    for(let i=0;i<7;i++){const y=G.days[(n-1)*7+i];if(y.st==='miss')miss++;if(y.D>=tD)left++}
+    W.esc=false;W.def=W.started&&W.hp>0&&W.pct>=80;
+    W.ws=ws;W.tier=ws>=4?2:ws>=2?1:0;W.bounty=Math.min(XP.boss+50*ws,500);W.left=Math.min(left,7);
+    if(W.def){G.xp+=W.bounty;G.bosses++;ws++}else if(W.started&&W.hp>0&&(n-1)*7+6<tD)ws=0}
+  G.winStreak=ws;
+  G.today=G.days[tD]||null;
+  const last=Math.min(tD,N*7-1);let cur=0;
+  for(let D=last;D>=0;D--){const y=G.days[D];if(y.st==='hit')cur++;else if(y.st==='miss')break}
+  let best=0,run=0;for(let D=0;D<=last;D++){const y=G.days[D];if(y.st==='hit'){run++;if(run>best)best=run}else if(y.st==='miss')run=0}
+  G.streak=cur;G.best=best;G.level=lvOf(G.xp);
+  G.spent=((state.rewards||{}).log||[]).reduce((a,r)=>a+(+r.cost||0),0);G.coins=G.xp+G.box-G.spent;
+  G.badges=BADGES.filter(b=>b.ok(G)).map(b=>b.id);
+  return game.c=G;
+}
+function lvBar(G){const a=lvXP(G.level),b=lvXP(G.level+1);return {pct:Math.round((G.xp-a)/(b-a)*100),left:b-G.xp}}
+function nudge(G){const y=G.today;
+  if(!y)return G.tD<0?T('الجدول لسه مبدأش. أول جلسة هتبدأ بيها السلسلة.','The plan hasn’t started yet. Your first session starts the streak.'):T('الفترة دي خارج الجدول.','Today is outside the plan.');
+  if(!y.p)return T('النهارده راحة، والسلسلة مش هتتقطع.','Rest day today — your streak is safe.');
+  if(y.q.all)return T(`يوم كامل! فتحت صندوق المفاجأة وكسبت ${y.box} عملة.`,`Perfect day! You opened the mystery box: +${y.box} coins.`);
+  const need=Math.max(Math.ceil(G.thr/100*y.p)-y.d,0),left=y.p-y.d;
+  if(need>0)return T(`فاضلك ${need} ${need===1?'جلسة':'جلسات'} عشان السلسلة (${G.streak} يوم) متتقطعش.`,`${need} more session${need===1?'':'s'} to keep your ${G.streak}-day streak alive.`);
+  return T(`السلسلة اتأمنت النهارده 🔥 فاضلك ${left} ${left===1?'جلسة':'جلسات'} وتفتح صندوق المفاجأة.`,`Streak secured today 🔥 ${left} more to open the mystery box.`);
+}
+function chainHtml(G,from,to,cls){let h='';for(let D=from;D<=to;D++){const y=G.days[D];
+  const d=new Date(parseISO(state.start));d.setDate(d.getDate()+D);
+  h+=`<i class="${y?y.st:'out'}" title="${fmtD(d)}">${d.getDate()}</i>`}return `<div class="${cls}">${h}</div>`}
+function questsHtml(G){const y=G.today;
+  const rows=[[y&&y.q.first,T('ابدأ: خلّص أول جلسة','Start: finish your first session'),'+'+XP.first],
+    [y&&y.q.stars,T('خلّص كل الأولويات ★','Finish every ★ priority'),'+'+XP.stars],
+    [y&&y.q.all,T('يوم كامل + صندوق مفاجأة','Perfect day + mystery box'),'+'+XP.all+' 🎁']];
+  if(y&&!y.sp)rows.splice(1,1);
+  return rows.map(r=>`<div class="quest ${r[0]?'ok':''}"><i class="qk">${r[0]?'✓':''}</i><span>${r[1]}</span><b>${r[2]}</b></div>`).join('');
+}
+const TIERS=[['عادي','Normal'],['شرس','Fierce'],['أسطوري','Legendary']];
+function bossHtml(G,n,big){
+  const b=bossOf(n),W=G.weeks[n]||{hp:0,dmg:0,pct:0,def:false,esc:false,hearts:3,bounty:XP.boss,tier:0,ws:0,left:7,started:false};
+  const st=W.def?'def':W.esc?'esc':'',hpLeft=W.def?0:Math.max(100-Math.round(W.pct/80*100),0),tier=TIERS[W.tier];
+  let msg;
+  if(!W.hp)msg=T('مفيش جدول الأسبوع ده، الوحش نايم.','No plan this week — the boss is asleep.');
+  else if(W.def)msg=T(`اتهزم! كسبت ${W.bounty} XP`,`Defeated! You won ${W.bounty} XP`);
+  else if(W.esc)msg=T('خلّصت قلوبك فهرب بالجايزة. الأسبوع الجاي تاخد حقك.','Out of hearts — it escaped with the bounty. Get revenge next week.');
+  else if(!W.started)msg=T(`المعركة بتبدأ أول يوم في الأسبوع. الجايزة ${W.bounty} XP`,`The fight starts on day one. Bounty: ${W.bounty} XP`);
+  else msg=T(`كل جلسة ضربة. وصّله 80% قبل ما الأسبوع يخلص.`,`Every session is a hit. Bring it to 80% before the week ends.`);
+  return `<div class="arena ${st} ${big?'big':''} t${W.tier}">
+    <div class="ar-top"><span class="ar-tier">${T(`وحش ${tier[0]}`,`${tier[1]} boss`)}</span>${W.ws?`<span class="ar-ws">${T(`🔥 ${W.ws} انتصارات ورا بعض`,`🔥 ${W.ws} wins in a row`)}</span>`:''}</div>
+    <div class="ar-mid">
+      <div class="ar-info"><strong>${esc(b.name)}</strong>
+        <div class="hpbar"><i style="width:${hpLeft}%"></i></div>
+        <div class="ar-row"><span>${W.def?T('صحته 0%','Health 0%'):T(`صحته ${hpLeft}%`,`Health ${hpLeft}%`)}</span><span>${T(`ضرباتك ${W.pct}%`,`Your hits ${W.pct}%`)}</span></div>
+        <div class="ar-row"><span class="ar-bounty">${T(`الجايزة ${W.bounty} XP`,`Bounty ${W.bounty} XP`)}</span></div></div></div>
+    <p class="ar-msg">${msg}${W.started&&!W.def&&!W.esc&&W.hp&&isThisWeek(n)?` <b>${T(`باقي ${W.left} ${W.left===1?'يوم':'أيام'}`,`${W.left} day${W.left===1?'':'s'} left`)}</b>`:''}</p>
+    ${big?battleLog(G,n):''}</div>`;
+}
+function battleLog(G,cur){let h='';const from=Math.max(1,cur-7);
+  for(let n=from;n<=cur;n++){const W=G.weeks[n];if(!W)continue;const r=W.def?'win':(W.started&&W.hp&&(n-1)*7+6<G.tD)?'lose':'';
+    h+=`<span class="lg ${r}" title="${T('أسبوع','Week')} ${n}">${n}<small>${r==='win'?T('فوز','Won'):r==='lose'?T('خسارة','Lost'):'—'}</small></span>`}
+  return h?`<div class="ar-log"><span>${T('آخر المعارك','Recent battles')}</span><div>${h}</div></div>`:''}
+function playStrip(){
+  const G=game(),lb=lvBar(G),tD=G.tD,n=ui.week;
+  return `<section class="play" aria-label="${T('التحفيز','Motivation')}">
+    <div><p class="pl-h"><span>${T('مستواك','Your level')}</span><button data-tab="play">${T('الجوائز','Rewards')}</button></p>
+      <div class="lvl"><span class="lvl-b">${G.level}</span><div><strong>${lvName(G.level)}</strong><small>${G.xp} XP · ${G.coins} ${T('عملة','coins')}</small></div></div>
+      <div class="bar"><i style="width:${lb.pct}%"></i></div><div class="barlbl"><span>${T('للمستوى الجاي','To next level')}</span><span>${lb.left} XP</span></div></div>
+    <div><p class="pl-h"><span>${T('السلسلة','Streak')}</span><span>${T(`أحسن: ${G.best}`,`Best: ${G.best}`)}</span></p>
+      <div class="fire"><b>${G.streak}</b><span>${T('يوم ورا بعض 🔥','days in a row 🔥')}</span></div>
+      ${tD>=0?chainHtml(G,tD-6,tD,'chain'):''}<p class="nudge">${nudge(G)}</p></div>
+    <div><p class="pl-h"><span>${T('مهام النهارده','Today’s quests')}</span></p>${G.today&&G.today.p?questsHtml(G):`<p class="hint">${T('مفيش جلسات النهارده.','No sessions today.')}</p>`}</div>
+    <div class="pl-boss"><p class="pl-h"><span>${T(`معركة أسبوع ${n}`,`Week ${n} battle`)}</span><button data-tab="play">${T('التفاصيل','Details')}</button></p>${bossHtml(G,n)}</div>
+  </section>`;
+}
+
 /* ============ UI state ============ */
 const cw=currentWeek();
-const ui={tab:'schedule',week:cw,edit:false,scope:'week',from:1,to:cw,cmpA:Math.max(cw-1,1),cmpB:cw,
+const ui={tab:'schedule',week:cw,edit:false,scope:'master',from:1,to:cw,cmpA:Math.max(cw-1,1),cmpB:cw,
   view:window.innerWidth<760?'day':'week',day:isThisWeek(cw)?todayIdx():0,qOff:0};
 
 const ICON={
@@ -754,6 +1096,7 @@ function fitSlots(root){
     el.style.fontSize='';el.style.whiteSpace='';
     const base=parseFloat(getComputedStyle(el).fontSize),pr=!!el.closest('#printArea'),min=el.tagName==='B'?(pr?8.5:10.5):(pr?8:9.5);let fs=base;
     if(el.clientWidth===0)return;
+    if(el.tagName==='EM'){while(el.scrollHeight>el.clientHeight+1&&fs>min){fs-=.5;el.style.fontSize=fs+'px'}return}  /* details: up to 2 lines, shrink a little before clipping */
     while(el.scrollWidth>el.clientWidth+1&&fs>min){fs-=.5;el.style.fontSize=fs+'px'}
     if(el.scrollWidth>el.clientWidth+1)el.style.whiteSpace='normal';
   });
@@ -767,16 +1110,17 @@ function fitQuote(){
 let fitT;window.addEventListener('resize',()=>{clearTimeout(fitT);fitT=setTimeout(()=>{fitQuote();fitSlots(document.getElementById('main'))},120)});
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{fitQuote();fitSlots(document.getElementById('main'))});
 function render(){
+  SEQC=null;game.c=null;
   applyTheme();syncLang();if(typeof setSync==='function')setSync(syncS,syncErr);
-  applyWeekTheme(ui.tab==='schedule'||ui.tab==='habits'?ui.week:currentWeek());
-  const he=ui.edit&&(ui.tab==='schedule'||ui.tab==='habits');
+  applyWeekTheme(ui.tab==='schedule'?ui.week:currentWeek());
+  const he=ui.edit&&ui.tab==='schedule';
   document.getElementById('hTitle').textContent=he?state.title:C(state.title);
   document.getElementById('hSub').textContent=he?state.subtitle:C(state.subtitle);
   ['hTitle','hSub'].forEach(id=>{const el=document.getElementById(id);if(he)el.setAttribute('contenteditable','true');else el.removeAttribute('contenteditable')});
   document.getElementById('headBox').classList.toggle('edit-head',he);
   document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===ui.tab));
   const m=document.getElementById('main');
-  m.innerHTML=ui.tab==='schedule'?viewSchedule():ui.tab==='habits'?viewHabits():ui.tab==='dash'?viewDash():viewSettings();
+  m.innerHTML=ui.tab==='schedule'?viewSchedule():ui.tab==='play'?viewPlay():ui.tab==='dash'?viewDash():viewSettings();
   m.classList.toggle('edit-on',ui.edit);
   fitQuote();fitSlots(m);
   if(!render.scrolled){const tc=document.getElementById('todayCol');if(tc){render.scrolled=true;const sc=tc.closest('.scroller');if(sc&&sc.scrollWidth>sc.clientWidth)tc.scrollIntoView({inline:'center',block:'nearest'})}}
@@ -792,7 +1136,7 @@ function hero(){
     <div class="wk"><div class="wk-num">${n}<small>${T(`من ${N} أسبوع`,`of ${N} weeks`)}</small></div></div>
     <div class="wk-meta">
       <div class="wk-range">${rangeLabel(n)}</div>
-      <div class="wk-theme"><i></i>${esc(C(t.name))}${isThisWeek(n)?' &nbsp;•&nbsp; '+T('الأسبوع الحالي','Current week'):''}${daysToStart()>0&&n===1?` &nbsp;•&nbsp; ${T(`بيبدأ بعد ${daysToStart()} ${daysToStart()<=10?'أيام':'يوم'}`,`Starts in ${daysToStart()} day${daysToStart()===1?'':'s'}`)}`:''}</div>
+      <div class="wk-theme"><i></i>${esc(C(t.name))}${isThisWeek(n)?' &nbsp;•&nbsp; '+T('الأسبوع الحالي','Current week'):''}${daysToStart()>0&&n===1?` &nbsp;•&nbsp; ${T(daysToStart()===1?'بيبدأ بكرة':daysToStart()===2?'بيبدأ بعد يومين':`بيبدأ بعد ${daysToStart()} ${daysToStart()<=10?'أيام':'يوم'}`,`Starts in ${daysToStart()} day${daysToStart()===1?'':'s'}`)}`:''}</div>
       <div class="wk-ctl">
         <button class="hbtn" data-act="prev" ${n<=1?'disabled':''} aria-label="${T('الأسبوع السابق','Previous week')}">${ICON.prev}</button>
         <select class="hsel" id="weekSel" aria-label="${T('اختار الأسبوع','Choose week')}">${o}</select>
@@ -800,7 +1144,7 @@ function hero(){
         ${n!==cur?`<button class="hpill" data-act="today">${T('ارجع للأسبوع الحالي','Back to current week')}</button>`:''}
       </div>
     </div>
-    <div class="rings">${ring(st.pct,T('الجدول','Schedule'))}${ring(st.hPct,T('العادات','Habits'))}${ring(tp,T('المهام','Tasks'))}</div>
+    <div class="rings">${ring(st.pct,T('الجدول','Schedule'))}${ring(tp,T('المهام','Tasks'))}${isThisWeek(n)?ring((()=>{const d=st.day[todayIdx()];return d.p?Math.round(d.d/d.p*100):0})(),T('النهارده','Today')):''}</div>
   </section>`;
 }
 function toolbar(withView){
@@ -821,6 +1165,12 @@ function editPanel(){
     <div class="ep-row"><span class="ep-label">${T('التعديل يتطبق على','Changes apply to')}</span>
       <div class="radio-seg"><label><input type="radio" name="scope" value="week" ${ui.scope==='week'?'checked':''}>${T('الأسبوع ده بس','This week only')}</label>
       <label><input type="radio" name="scope" value="master" ${ui.scope==='master'?'checked':''}>${T('الجدول الأساسي (من الأسبوع ده ورايح)','Master schedule (this week onward)')}</label></div></div>
+    <div class="ep-row"><span class="ep-label">${T('بداية الأسبوع ورقمه','Week start & number')}</span>
+      <div class="wkset"><label>${T('الأسبوع يبدأ يوم','Week starts on')}<select id="wkDow">${DOW_AR.map((_,d)=>`<option value="${d}" ${d===startDow()?'selected':''}>${L()==='en'?DOW_EN[d]:DOW_AR[d]}</option>`).join('')}</select></label>
+      <label>${T('أسبوع 1 يبدأ من','Week 1 starts on')}<select id="wkStartD">${startOpts(startDow(),state.start)}</select></label>
+      <button class="btn sm primary" data-act="rebase">${T('طبّق','Apply')}</button></div>
+      <p class="nudge" id="wkPrev" style="flex-basis:100%;margin:0">${wkPrevText(state.start)}</p>
+      <p class="hint" style="flex-basis:100%">${TP('عشان تبدأ العد من الأول اختار تاريخ النهارده أو الأسبوع ده. كل جلسة علّمت عليها وكل مهمة بتفضل على يومها وتاريخها الحقيقي.','To restart the count, pick this week’s date. Every ticked session and task stays on its real day and date.')}</p></div>
     <div class="ep-row"><span class="ep-label">${T('شكل الأسبوع','Week style')}</span>
       <div class="swatches"><button class="sw-auto" data-theme-pick="" aria-pressed="${!cur}">${T('تلقائي','Auto')}</button>
       ${THEMES.map(t=>`<button class="sw" style="--a:${t.a};--b:${t.b}" data-theme-pick="${t.id}" aria-pressed="${cur===t.id}" title="${esc(C(t.name))}" aria-label="${esc(C(t.name))}"></button>`).join('')}</div></div>
@@ -834,7 +1184,7 @@ function editPanel(){
 
 function slotHtml(c,sid,i,done,interactive){
   const cat=catOf(c.c),tag=interactive?'button':'div',sq=interactive&&c._sq?`<i class="seqmark" aria-hidden="true">↻ ${c._sq[0]}/${c._sq[1]}</i>`:'';
-  return `<${tag} class="slot ${done?'done':''}" style="--c:${cat.color}" ${interactive?`data-cell="${sid}|${i}" aria-pressed="${done}" title="${ui.edit?T('اضغط للتعديل','Tap to edit'):T('اضغط لما تخلّصها','Tap when done')}"`:''}>${slotText(c)}<i class="tick" aria-hidden="true">✓</i>${sq}</${tag}>`;
+  return `<${tag} class="slot ${done?'done':''}" style="--c:${cat.color}" ${interactive?`data-cell="${sid}|${i}" aria-pressed="${done}" title="${esc(c.t)}${c.s?' — '+esc(c.s):''}&#10;${ui.edit?T('اضغط للتعديل','Tap to edit'):T('اضغط لما تخلّصها','Tap when done')}"`:''}>${slotText(c)}<i class="tick" aria-hidden="true">✓</i>${sq}</${tag}>`;
 }
 function slotText(c){
   const l=L(),et=trOf(c.t),es=c.s?trOf(c.s):'',star=c.star?'<span class="star">★</span>':'';
@@ -858,7 +1208,7 @@ function scheduleTable(n,interactive){
     for(let i=0;i<7;i++){
       const c=cells[i],cls=isCur&&i===ti?'is-today':'';
       if(!c||!c.t){h+=`<td class="${cls}">${ed?`<button class="addcell" data-cell="${s.id}|${i}">+ ${T('إضافة','Add')}</button>`:''}</td>`;continue}
-      h+=`<td class="${cls}">${slotHtml(rc(c,n,i),s.id,i,!!done[s.id+'_'+i],interactive)}</td>`;
+      h+=`<td class="${cls}">${slotHtml(rc(c,n,i,s.id),s.id,i,!!done[s.id+'_'+i],interactive)}</td>`;
     }
     h+='</tr>';
   });
@@ -875,7 +1225,7 @@ function dayView(n){
   let rows='';
   slots.forEach(s=>{const c=(plan.cells[s.id]||[])[i];
     if(!c||!c.t){if(ed)rows+=`<div class="tl-row"><div class="tl-time"><b>${fmt12(s.start)}</b><span>${L()==='en'?'to':'إلى'} ${fmt12(s.end)}</span></div><button class="addcell" data-cell="${s.id}|${i}">+ ${T('إضافة','Add')}</button></div>`;return}
-    rows+=`<div class="tl-row"><div class="tl-time"><b>${fmt12(s.start)}</b><span>${L()==='en'?'to':'إلى'} ${fmt12(s.end)}</span></div>${slotHtml(rc(c,n,i),s.id,i,!!done[s.id+'_'+i],true)}</div>`});
+    rows+=`<div class="tl-row"><div class="tl-time"><b>${fmt12(s.start)}</b><span>${L()==='en'?'to':'إلى'} ${fmt12(s.end)}</span></div>${slotHtml(rc(c,n,i,s.id),s.id,i,!!done[s.id+'_'+i],true)}</div>`});
   h+=`<div class="timeline">${rows||`<div class="empty"><b>${T(`يوم ${DAYS_AR[i]} فاضي`,`${DAYS_EN[i]} is free`)}</b>${TP('مفيش حاجة متخططة. ارتاح أو ضيف حاجة من وضع التعديل.','Nothing planned. Rest, or add something from edit mode.')}</div>`}</div>`;
   if(ed)h+=`<div style="margin-top:10px"><button class="addrowbtn" data-act="addrow">+ ${T('إضافة فترة جديدة','Add a new slot')}</button></div>`;
   return h;
@@ -911,35 +1261,50 @@ function quoteCard(n,interactive){
 }
 function viewSchedule(){
   const w=state.weeks[ui.week]||{},list=w.todos||[];
-  let h=hero()+quoteCard(ui.week,true)+toolbar(true);
+  let h=hero()+quoteCard(ui.week,true)+(ui.edit?'':playStrip())+toolbar(true);
   if(ui.edit)h+=editPanel();
   h+=legend();
   h+=ui.view==='day'?dayView(ui.week):`<div class="board"><div class="scroller">${scheduleTable(ui.week,true)}</div></div>`;
   if(!ui.edit)h+=`<p class="hint" style="margin-top:10px">${TP('اضغط على أي خانة لما تخلّصها عشان تتسجل في المتابعة.','Tap any cell when you finish it so it counts in your tracking.')}</p>`;
-  h+=`<div class="sec"><h2>${T('حاجات لازم أعملها','Must-do tasks')}</h2><span>${T(`${list.filter(t=>t.done).length} من ${list.length} خلصت`,`${list.filter(t=>t.done).length} of ${list.length} done`)}</span></div><div class="card">${todosHtml(ui.week,true)}</div>`;
+  h+=`<div class="sec"><h2>${T('حاجات لازم أعملها','Must-do tasks')}</h2><span>${T(`${list.filter(t=>t.done).length} من ${list.length} خلصت · كل مهمة +15 XP`,`${list.filter(t=>t.done).length} of ${list.length} done · +15 XP each`)}</span></div><div class="card">${todosHtml(ui.week,true)}</div>`;
+  h+=`<div class="sec"><h2>${T('ملاحظات الأسبوع','Week notes')}</h2><span>${T('بتتحفظ أول ما تخرج من الخانة','Saved as soon as you leave the box')}</span></div><textarea id="weekNote" placeholder="${T('إيه اللي مشي كويس؟ إيه اللي محتاج يتظبط الأسبوع الجاي؟','What went well? What needs fixing next week?')}">${esc(w.note||'')}</textarea>`;
   return h;
 }
-function habitsTable(n,interactive){
-  const list=habitsFor(n),w=state.weeks[n]||{habits:{}},hb=w.habits||{},ed=interactive&&ui.edit,isCur=isThisWeek(n),ti=todayIdx();
-  let h=`<table class="ht"><thead><tr><th>${T('العادة','Habit')}</th>${DAYS.map((d,i)=>`<th class="${isCur&&i===ti?'is-today':''}">${d}<small>${dayDate(n,i)}</small></th>`).join('')}<th>${T('الأسبوع','Week')}</th>${ed?'<th></th>':''}</tr></thead><tbody>`;
-  if(!list.length)h+=`<tr><td colspan="10"><div class="empty"><b>${T('مفيش عادات في الأسبوع ده','No habits this week')}</b>${TP('ضيف عادة من وضع التعديل.','Add a habit from edit mode.')}</div></td></tr>`;
-  list.forEach(x=>{
-    let c=0;h+=`<tr><td><b>${esc(C(x.name))}</b>${x.desc?`<small>${esc(C(x.desc))}</small>`:''}</td>`;
-    for(let i=0;i<7;i++){const on=!!hb[x.id+'_'+i];if(on)c++;const cls=isCur&&i===ti?'is-today':'';
-      h+=interactive?`<td class="${cls}"><input type="checkbox" class="chk" data-habit="${x.id}_${i}" ${on?'checked':''} aria-label="${esc(C(x.name))} ${DAYS[i]}"></td>`:`<td>${on?'✓':'—'}</td>`}
-    h+=`<td><span class="pill ${pctClass(Math.round(c/7*100))}">${c}/7</span></td>`;
-    if(ed)h+=`<td style="white-space:nowrap"><button class="btn sm" data-act="edithabit" data-id="${x.id}">${T('تعديل','Edit')}</button> <button class="btn sm danger" data-act="delhabit" data-id="${x.id}">${T('إيقاف','Stop')}</button></td>`;
-    h+='</tr>';
-  });
-  return h+'</tbody></table>';
-}
-function viewHabits(){
-  const w=state.weeks[ui.week]||{};
-  let h=hero()+quoteCard(ui.week,true)+toolbar(false);
-  h+=`<div class="board"><div class="scroller">${habitsTable(ui.week,true)}</div>`;
-  if(ui.edit)h+=`<div class="addhabit"><input type="text" id="nhName" placeholder="${T('اسم العادة الجديدة','New habit name')}"><input type="text" id="nhDesc" placeholder="${T('وصف قصير (اختياري)','Short description (optional)')}"><button class="btn primary" data-act="addhabit">${ICON.plus} ${T('إضافة عادة','Add habit')}</button></div>
-    <p class="hint" style="padding:0 20px 16px">${TP('العادة الجديدة بتبدأ من الأسبوع ده، و"إيقاف" بيوقفها من الأسبوع ده ورايح من غير ما يمسح متابعتك القديمة.','A new habit starts from this week; “Stop” ends it from this week onward without erasing your past tracking.')}</p>`;
-  h+=`</div><div class="sec"><h2>${T('ملاحظات الأسبوع','Week notes')}</h2><span>${T('بتتحفظ أول ما تخرج من الخانة','Saved as soon as you leave the box')}</span></div><textarea id="weekNote" placeholder="${T('إيه اللي مشي كويس؟ إيه اللي محتاج يتظبط الأسبوع الجاي؟','What went well? What needs fixing next week?')}">${esc(w.note||'')}</textarea>`;
+function viewPlay(){
+  const G=game(),lb=lvBar(G),cw=currentWeek(),R=state.rewards||{items:[],log:[]};
+  let h=`<section class="pz-head"><div class="pz-lv">${G.level}</div>
+    <div><h2>${lvName(G.level)}</h2><div class="bar"><i style="width:${lb.pct}%"></i></div>
+      <div class="barlbl"><span>${G.xp} XP</span><span>${T(`فاضل ${lb.left} XP للمستوى ${G.level+1}`,`${lb.left} XP to level ${G.level+1}`)}</span></div></div>
+    <div class="pz-stats">
+      <div><b>${G.coins}</b><span>${T('عملة تقدر تصرفها','coins to spend')}</span></div>
+      <div><b>${G.streak} 🔥</b><span>${T(`السلسلة (أحسن ${G.best})`,`Streak (best ${G.best})`)}</span></div>
+      <div><b>${G.perfect}</b><span>${T('يوم كامل','perfect days')}</span></div>
+      <div><b>${G.bosses}</b><span>${T(`وحش اتهزم · ${G.winStreak} ورا بعض`,`bosses beaten · ${G.winStreak} in a row`)}</span></div>
+      <div><b>${hrs(G.dMin)}</b><span>${T('ساعة شغل','hours worked')}</span></div>
+    </div></section>`;
+  h+=`<div class="grid2" style="margin-top:14px"><div class="card"><h3>${T('مهام النهارده','Today’s quests')}</h3>${G.today&&G.today.p?questsHtml(G):`<p class="hint">${T('مفيش جلسات النهارده.','No sessions today.')}</p>`}<p class="nudge">${nudge(G)}</p></div>
+    <div class="card" style="padding:0;overflow:hidden;border:none">${bossHtml(G,cw,true)}</div></div>`;
+  if(G.tD>=0){const end=Math.min(G.tD,state.weeksCount*7-1);let from=7*Math.floor(end/7)-21;while(from+7<=0)from+=7;let hd='';for(let i=0;i<7;i++){const d=new Date(parseISO(state.start));d.setDate(d.getDate()+from+i);hd+=`<span class="h">${L()==='en'?DOW_EN_S[d.getDay()]:DOW_AR[d.getDay()]}</span>`}
+    h+=`<div class="sec"><h2>${T('السلسلة: آخر 4 أسابيع','Streak: the last 4 weeks')}</h2><span>${T(`اليوم بيتحسب لما تخلّص ${G.thr}% من جلساته`,`A day counts when you finish ${G.thr}% of its sessions`)}</span></div>
+    <div class="card"><div class="cal28">${hd}</div><div style="height:6px"></div>${chainHtml(G,from,end,'cal28')}
+    <div class="keys" style="margin:12px 0 0"><span><i style="background:var(--acc2)"></i>${T('يوم محسوب','Counted')}</span><span><i style="background:color-mix(in srgb,var(--bad) 40%,var(--sheet))"></i>${T('السلسلة اتقطعت','Broke the streak')}</span><span><i style="background:none;box-shadow:inset 0 0 0 1px var(--line)"></i>${T('راحة','Rest')}</span></div></div>`}
+  h+=`<div class="sec"><h2>${T('متجر الجوائز','Reward shop')}</h2><span>${T('حط جوايز بتحبها واشتريها بالعملات اللي بتكسبها','Add rewards you love and buy them with the coins you earn')}</span></div><div class="card"><div class="shop">`;
+  if(!R.items.length)h+=`<p class="hint">${T('ضيف أول جايزة تحت.','Add your first reward below.')}</p>`;
+  R.items.forEach(it=>{const p=Math.min(Math.round(G.coins/Math.max(it.cost,1)*100),100),can=G.coins>=it.cost;
+    h+=`<div class="shop-it"><div><b>${esc(C(it.name))}</b><div class="cost">${it.cost} ${T('عملة','coins')}${can?'':` · ${T(`فاضلك ${it.cost-G.coins}`,`${it.cost-G.coins} to go`)}`}</div></div>
+      <div style="display:flex;gap:6px;align-items:center"><button class="btn sm ${can?'primary':''}" data-redeem="${it.id}" ${can?'':'disabled'}>${T('اشتريها','Redeem')}</button><button class="xbtn" data-delreward="${it.id}" aria-label="${T('حذف الجايزة','Delete reward')}">✕</button></div>
+      <div class="bar gold"><i style="width:${p}%"></i></div></div>`});
+  h+=`</div><div class="shop-add"><input type="text" id="rwName" placeholder="${T('جايزة جديدة… مثلاً: يوم أجازة كامل','New reward… e.g. a full day off')}"><input type="number" id="rwCost" min="10" step="10" placeholder="${T('السعر','Cost')}"><button class="btn primary" data-act="addreward">${ICON.plus} ${T('إضافة','Add')}</button></div></div>`;
+  if(R.log.length){h+=`<div class="sec"><h2>${T('جوايز أخدتها','Rewards you claimed')}</h2></div><div class="card" style="overflow-x:auto"><table class="dt"><thead><tr><th>${T('الجايزة','Reward')}</th><th>${T('السعر','Cost')}</th><th>${T('التاريخ','Date')}</th><th></th></tr></thead><tbody>`;
+    [...R.log].reverse().slice(0,15).forEach(r=>h+=`<tr><td>${esc(C(r.name))}</td><td>${r.cost}</td><td>${fmtD(parseISO(r.at))}</td><td><button class="btn sm ghost" data-undoreward="${r.id}">${T('رجّع العملات','Refund')}</button></td></tr>`);
+    h+=`</tbody></table></div>`}
+  h+=`<div class="sec"><h2>${T('الإنجازات','Badges')}</h2><span>${T(`${G.badges.length} من ${BADGES.length}`,`${G.badges.length} of ${BADGES.length}`)}</span></div><div class="badges">${BADGES.map(b=>{const on=G.badges.includes(b.id);return `<div class="badge ${on?'on':'lock'}"><div class="ic">${b.ic}</div><b>${T(b.a,b.e)}</b><small>${T(b.da,b.de)}</small></div>`}).join('')}</div>`;
+  h+=`<div class="sec"><h2>${T('إزاي بتكسب','How you earn')}</h2></div><div class="card"><ul class="rules">
+    <li>${T('كل جلسة بتخلّصها: XP بعدد دقايقها ÷ 10، والأولوية ★ مرة ونص.','Each finished session: its minutes ÷ 10 in XP; ★ priorities give 1.5×.')}</li>
+    <li>${T(`مهام اليوم: أول جلسة +${XP.first}، كل الأولويات +${XP.stars}، اليوم كامل +${XP.all} وصندوق مفاجأة فيه من 10 لـ 40 عملة.`,`Daily quests: first session +${XP.first}, all priorities +${XP.stars}, perfect day +${XP.all} plus a mystery box of 10–40 coins.`)}</li>
+    <li>${T(`كل مهمة من "حاجات لازم أعملها" +${XP.todo}.`,`Each must-do task +${XP.todo}.`)}</li>
+    <li>${T(`معركة الأسبوع: توصل 80% من الجدول قبل ما الأسبوع يخلص = تهزم الوحش وتاخد الجايزة (${XP.boss} XP، وبتزيد 50 مع كل انتصار ورا بعض لحد 500). لو الأسبوع خلص من غير ما تهزمه، عدّاد الانتصارات بيرجع صفر.`,`Weekly battle: reach 80% of the schedule before the week ends to defeat the boss and win the bounty (${XP.boss} XP, +50 for each win in a row, up to 500). If the week ends without a win, your win streak resets.`)}</li>
+    <li>${T('كل XP بتكسبه بيبقى عملة تصرفها في المتجر. اللي بتعلّم عليه في أيام لسه مجتش مش بيتحسب.','Every XP you earn is also a coin for the shop. Ticks on days that haven’t come yet don’t count.')}</li></ul></div>`;
   return h;
 }
 
@@ -973,7 +1338,6 @@ function dashBody(A,cur,interactive){
     <div class="kpi lead"><b>${A.pct}%</b><span>${T('نسبة إنجاز الجدول','Schedule completion')}</span></div>
     <div class="kpi"><b>${hrs(A.dMin)}</b><span>${T(`ساعة اتذاكرت من ${hrs(A.pMin)} مخططة`,`hours studied of ${hrs(A.pMin)} planned`)}</span></div>
     <div class="kpi"><b>${A.dCnt}</b><span>${T(`جلسة خلصت من ${A.pCnt}`,`sessions done of ${A.pCnt}`)}</span></div>
-    <div class="kpi"><b>${A.hPct}%</b><span>${T('الالتزام بالعادات','Habit consistency')}</span></div>
     <div class="kpi"><b>${A.tD}/${A.tP}</b><span>${T('مهام خلصت','Tasks done')}</span></div>
     <div class="kpi"><b>${good}</b><span>${T(`أسبوع فوق 80% من ${A.weeks.length}`,`weeks above 80% of ${A.weeks.length}`)}</span></div>
   </div>`;
@@ -984,8 +1348,8 @@ function dashBody(A,cur,interactive){
     h+=`<button ${interactive?`data-goweek="${n}"`:''} style="--a:${themeOf(n).a}" class="${fut?'fut':'l'+l} ${n>=ui.from&&n<=ui.to?'inr':''} ${n===cur?'cur':''}" title="${T('أسبوع','Week')} ${n} (${rangeLabel(n)}): ${r.pct}%">${n}</button>`}
   h+=`</div><p class="hint" style="margin:10px 0 0">${TP('كل مربع أسبوع بلونه، وكل ما يغمق كل ما الإنجاز يزيد. المربعات المحاطة بإطار هي الفترة اللي التقرير بيحسبها.'+(interactive?' اضغط على أي أسبوع تفتحه.':''),'Each square is a week in its own color; the darker it is, the higher the completion. Outlined squares are the period the report covers.'+(interactive?' Tap any week to open it.':''))}</p></div>`;
   // trend
-  h+=`<div class="sec"><h2>${T('الإنجاز أسبوع بأسبوع','Progress week by week')}</h2></div><div class="card"><div class="keys"><span><i style="background:var(--acc)"></i>${T('الجدول','Schedule')}</span><span><i style="background:#C9962B"></i>${T('العادات','Habits')}</span></div>
-    ${lineChart(A.weeks.map(w=>w.n),[{color:'var(--acc-t)',values:A.weeks.map(w=>w.pct)},{color:'#C9962B',values:A.weeks.map(w=>w.hPct)}])}</div>`;
+  h+=`<div class="sec"><h2>${T('الإنجاز أسبوع بأسبوع','Progress week by week')}</h2></div><div class="card">
+    ${lineChart(A.weeks.map(w=>w.n),[{color:'var(--acc-t)',values:A.weeks.map(w=>w.pct)}])}</div>`;
   // cats & days
   h+=`<div class="grid2" style="margin-top:14px"><div class="card"><h3>${T('الساعات حسب القسم','Hours by category')}</h3>`;
   const cats=Object.keys(A.cat);if(!cats.length)h+=`<p class="hint">${T('لسه مفيش بيانات.','No data yet.')}</p>`;
@@ -999,11 +1363,6 @@ function dashBody(A,cur,interactive){
   subs.forEach(([k,v])=>{const p=v.p?Math.round(v.d/v.p*100):0,c=catOf(v.cat);
     h+=`<tr><td><b style="font-weight:600">${esc(C(k))}</b></td><td><span class="dot" style="background:${c.color}"></span>${esc(C(c.name))}</td><td>${v.dc} / ${v.pc}</td><td>${hrs(v.d)}</td><td>${hrs(v.p)}</td><td><span class="pill ${pctClass(p)}">${p}%</span></td></tr>`});
   h+=`</tbody></table></div>`;
-  // habits
-  h+=`<div class="sec"><h2>${T('العادات','Habits')}</h2></div><div class="card">`;
-  const hk=Object.keys(A.hab);if(!hk.length)h+=`<p class="hint">${T('مفيش عادات في الفترة دي.','No habits in this period.')}</p>`;
-  hk.forEach(id=>{const x=state.habits.find(z=>z.id===id);if(!x)return;const v=A.hab[id];h+=hbar(esc(C(x.name)),v.p,v.d,'#C9962B',`${v.d} / ${v.p} ${T('يوم','days')}`)});
-  h+=`</div>`;
   // compare
   if(interactive){
     let o=(v)=>{let s='';for(let i=1;i<=N;i++)s+=`<option value="${i}" ${i===v?'selected':''}>${T('أسبوع','Week')} ${i}</option>`;return s};
@@ -1032,7 +1391,6 @@ function compareTable(a,b){
     <tr><td>${T('إنجاز الجدول','Schedule completion')}</td><td>${A.pct}%</td><td>${B.pct}%</td><td>${diff(A.pct,B.pct,'%')}</td></tr>
     <tr><td>${T('ساعات اتعملت','Hours done')}</td><td>${hrs(A.dMin)}</td><td>${hrs(B.dMin)}</td><td>${diff(A.dMin/60,B.dMin/60)}</td></tr>
     <tr><td>${T('جلسات خلصت','Sessions done')}</td><td>${A.dCnt}/${A.pCnt}</td><td>${B.dCnt}/${B.pCnt}</td><td>${diff(A.dCnt,B.dCnt)}</td></tr>
-    <tr><td>${T('العادات','Habits')}</td><td>${A.hPct}%</td><td>${B.hPct}%</td><td>${diff(A.hPct,B.hPct,'%')}</td></tr>
     <tr><td>${T('مهام خلصت','Tasks done')}</td><td>${A.tD}/${A.tP}</td><td>${B.tD}/${B.tP}</td><td>${diff(A.tD,B.tD)}</td></tr>`;
   const ks=new Set([...Object.keys(A.cat),...Object.keys(B.cat)]);
   ks.forEach(k=>{const x=A.cat[k]||{d:0},y=B.cat[k]||{d:0};h+=`<tr><td>${T('ساعات','Hours:')} ${esc(C(catOf(k).name))}</td><td>${hrs(x.d)}</td><td>${hrs(y.d)}</td><td>${diff(x.d/60,y.d/60)}</td></tr>`});
@@ -1041,7 +1399,7 @@ function compareTable(a,b){
 function insights(A){
   const out=[];
   if(!A.pMin)return[T('مفيش خطة في الفترة دي.','No plan in this period.')];
-  out.push(TP(`خلّصت <b>${A.pct}%</b> من الجدول في الفترة دي: ${hrs(A.dMin)} ساعة من ${hrs(A.pMin)} ساعة مخططة، و${A.hPct}% التزام بالعادات.`,`You completed <b>${A.pct}%</b> of the schedule in this period: ${hrs(A.dMin)} of ${hrs(A.pMin)} planned hours, with ${A.hPct}% habit consistency.`));
+  out.push(TP(`خلّصت <b>${A.pct}%</b> من الجدول في الفترة دي: ${hrs(A.dMin)} ساعة من ${hrs(A.pMin)} ساعة مخططة.`,`You completed <b>${A.pct}%</b> of the schedule in this period: ${hrs(A.dMin)} of ${hrs(A.pMin)} planned hours.`));
   if(A.tP)out.push(TP(`خلّصت ${A.tD} من ${A.tP} مهمة (${Math.round(A.tD/A.tP*100)}%).`,`You finished ${A.tD} of ${A.tP} tasks (${Math.round(A.tD/A.tP*100)}%).`));
   const ws=A.weeks.filter(w=>w.pMin&&w.n<=currentWeek());
   if(ws.length>1){const b=[...ws].sort((x,y)=>y.pct-x.pct);out.push(TP(`أحسن أسبوع كان أسبوع ${b[0].n} بنسبة ${b[0].pct}%، وأضعف أسبوع كان أسبوع ${b[b.length-1].n} بنسبة ${b[b.length-1].pct}%.`,`Best week was week ${b[0].n} at ${b[0].pct}%; weakest was week ${b[b.length-1].n} at ${b[b.length-1].pct}%.`))}
@@ -1049,8 +1407,6 @@ function insights(A){
   if(subs.length>1){const a0=esc(subs[0][0]),a1=esc(subs[subs.length-1][0]),e0=esc(trOf(subs[0][0])||subs[0][0]),e1=esc(trOf(subs[subs.length-1][0])||subs[subs.length-1][0]);out.push(TP(`أكتر مادة ملتزم بيها: <b>${a0}</b> (${subs[0][1]}%). أكتر مادة محتاجة اهتمام: <b>${a1}</b> (${subs[subs.length-1][1]}%).`,`Most consistent subject: <b>${e0}</b> (${subs[0][1]}%). Needs the most attention: <b>${e1}</b> (${subs[subs.length-1][1]}%).`))}
   const dd=A.day.map((d,i)=>[i,d.p?Math.round(d.d/d.p*100):0]).sort((a,b)=>b[1]-a[1]);
   if(A.dMin)out.push(TP(`أقوى يوم عندك ${DAYS_AR[dd[0][0]]} (${dd[0][1]}%)، وأضعف يوم ${DAYS_AR[dd[6][0]]} (${dd[6][1]}%).`,`Your strongest day is ${DAYS_EN[dd[0][0]]} (${dd[0][1]}%) and your weakest is ${DAYS_EN[dd[6][0]]} (${dd[6][1]}%).`));
-  const hb=Object.entries(A.hab).map(([id,v])=>[state.habits.find(z=>z.id===id),v.p?Math.round(v.d/v.p*100):0]).filter(x=>x[0]).sort((a,b)=>b[1]-a[1]);
-  if(hb.length>1){const n0=hb[0][0].name,n1=hb[hb.length-1][0].name,a0=esc(n0),a1=esc(n1),e0=esc(trOf(n0)||n0),e1=esc(trOf(n1)||n1);out.push(TP(`أكتر عادة ملتزم بيها: ${a0} (${hb[0][1]}%)، وأقلها: ${a1} (${hb[hb.length-1][1]}%).`,`Most consistent habit: ${e0} (${hb[0][1]}%); least: ${e1} (${hb[hb.length-1][1]}%).`))}
   if(ws.length>=8){const l=ws.slice(-4),p=ws.slice(-8,-4),av=a=>Math.round(a.reduce((s,w)=>s+w.pct,0)/a.length),x=av(l),y=av(p);
     out.push(x>=y?TP(`متوسط آخر 4 أسابيع ${x}% مقابل ${y}% في الـ4 اللي قبلهم، يعني في تحسن.`,`Last 4 weeks averaged ${x}% vs ${y}% in the 4 before — that’s an improvement.`):TP(`متوسط آخر 4 أسابيع ${x}% مقابل ${y}% في الـ4 اللي قبلهم، يعني في تراجع محتاج تقف عنده.`,`Last 4 weeks averaged ${x}% vs ${y}% in the 4 before — a drop worth looking into.`))}
   return out;
@@ -1063,9 +1419,13 @@ function viewSettings(){
     <label>${T('عنوان الجدول','Schedule title')}<input type="text" data-set="title" value="${esc(state.title)}"></label>
     <label>${T('الوصف تحت العنوان','Subtitle')}<input type="text" data-set="subtitle" value="${esc(state.subtitle)}"></label>
     <label>${T('الاسم في التقارير المطبوعة','Name on printed reports')}<input type="text" data-set="owner" value="${esc(state.owner)}" placeholder="${T('فاضي: هيسألك قبل كل طباعة','Empty: you’ll be asked before every print')}"></label>
-    <label>${T('بداية أول أسبوع (يوم السبت)','First week starts (a Saturday)')}<input type="date" data-set="start" value="${state.start}"></label>
+    <label>${T('أول يوم في أسبوع 1 (أي يوم في الأسبوع)','First day of week 1 (any weekday)')}<input type="date" data-set="start" value="${state.start}"></label>
     <label>${T('عدد الأسابيع','Number of weeks')}<input type="number" min="1" max="60" data-set="weeksCount" value="${state.weeksCount}"></label>
     <label>${T('المظهر','Appearance')}<select data-set="theme"><option value="auto" ${state.theme==='auto'?'selected':''}>${T('حسب الجهاز','System')}</option><option value="light" ${state.theme==='light'?'selected':''}>${T('فاتح','Light')}</option><option value="dark" ${state.theme==='dark'?'selected':''}>${T('غامق','Dark')}</option></select></label>
+  </div>
+  <div class="sec"><h2>${T('التحفيز','Motivation')}</h2></div><div class="card form">
+    <label>${T('رسالة التشجيع','Encouragement popup')}<select data-gamebool="cele"><option value="1" ${(state.game||{}).cele!==false?'selected':''}>${T('تظهر بعد كل جلسة أو مهمة','After every session or task')}</option><option value="0" ${(state.game||{}).cele===false?'selected':''}>${T('بس مع الإنجازات الكبيرة','Only for big milestones')}</option></select></label>
+    <label>${T('اليوم يتحسب في السلسلة لما أخلّص','A day counts toward the streak when I finish')}<select data-game="thr">${[50,60,75,100].map(v=>`<option value="${v}" ${(+((state.game||{}).thr||60))===v?'selected':''}>${v}% ${T('من جلساته','of its sessions')}</option>`).join('')}</select></label>
   </div>
   <div class="sec"><h2>${T('الوصايا','Advice')}</h2><span>${T('بتظهر في واجهة كل أسبوع، وصية مختلفة كل أسبوع','Shown at the top of each week — a different one every week')}</span></div><div class="card">
     <div class="form" style="margin-bottom:14px"><label>${T('عنوان الوصايا','Advice title')}<input type="text" data-set="quotesTitle" value="${esc(state.quotesTitle||'')}"></label></div>
@@ -1089,6 +1449,32 @@ function viewSettings(){
 }
 
 
+/* ============ celebrations ============ */
+function floatXP(x,y,txt){const s=document.createElement('div');s.className='fxp';s.textContent=txt;s.style.left=x+'px';s.style.top=y+'px';document.body.appendChild(s);setTimeout(()=>s.remove(),1300)}
+function celebrate(rows){
+  modal(T('برافو عليك!','Well done!'),`<div class="confetti" aria-hidden="true">${Array.from({length:30},(_,k)=>`<i style="left:${(k*37)%100}%;background:${['var(--acc)','var(--acc2)','#E4572E','#29B37C','#3D7DD8'][k%5]};animation-delay:${(k%10)*.07}s"></i>`).join('')}</div>
+    ${rows.map((r,k)=>`<div class="cele-row ${k===0?'lead':''}"><span class="ic" aria-hidden="true">${r.ic}</span><div><b>${r.t}</b><span>${r.s||''}</span></div></div>`).join('')}`,[{label:T('يلا نكمّل','Keep going'),cls:'primary'}]);
+}
+const PRAISE=[['💪','عاش يا بطل','That’s the spirit'],['🔥','كمّل كده، إنت ماشي صح','Keep going, you’re on track'],['⚡','ضربة قوية','Powerful hit'],['🎯','خطوة كمان لقدّام','One more step forward'],['🌟','ده اللي بيفرق','This is what makes the difference'],['🏅','إنت أقوى من الكسل','You’re stronger than laziness'],['🚀','شغل محترم','Solid work']];
+function cheer(b,ev,label){
+  const a=game(),dx=(a.xp+a.box)-(b.xp+b.box);
+  if(dx&&ev&&ev.clientX!=null)floatXP(ev.clientX,ev.clientY,dx>0?`+${dx} XP`:`${dx} XP`);
+  if(dx<=0)return;
+  const rows=[];
+  if(a.level>b.level)rows.push({ic:'🚀',t:T(`مستوى جديد: ${a.level}`,`New level: ${a.level}`),s:lvName(a.level)});
+  if(a.bosses>b.bosses){const n=a.weeks.findIndex((w,k)=>w&&w.def&&!(b.weeks[k]||{}).def),k=n>0?n:ui.week,bo=bossOf(k);rows.push({ic:'⚔️',t:T(`هزمت ${bo.name}!`,`You defeated ${bo.name}!`),s:`+${(a.weeks[k]||{}).bounty||XP.boss} XP`})}
+  if(a.perfect>b.perfect&&a.today&&a.today.q.all)rows.push({ic:'🎁',t:T('صندوق المفاجأة اتفتح','Mystery box opened'),s:T(`يوم كامل: +${XP.all} XP و+${a.today.box} عملة`,`Perfect day: +${XP.all} XP and +${a.today.box} coins`)});
+  a.badges.filter(x=>!b.badges.includes(x)).forEach(id=>{const bd=BADGES.find(z=>z.id===id);rows.push({ic:bd.ic,t:T(`إنجاز جديد: ${bd.a}`,`New badge: ${bd.e}`),s:T(bd.da,bd.de)})});
+  if(a.streak>b.streak&&a.today&&a.today.st==='hit')rows.push({ic:'🔥',t:T(`السلسلة اتأمنت: ${a.streak} يوم`,`Streak secured: ${a.streak} days`),s:T('النهارده اتحسب','Today counts')});
+  if(!rows.length&&(state.game||{}).cele===false)return;
+  const pr=PRAISE[(a.dCnt+a.todos)%PRAISE.length],y=a.today,W=a.weeks[ui.week];
+  const sub=[label?esc(label):'',`+${dx} XP`].filter(Boolean).join(' · ');
+  const base=[{ic:pr[0],t:T(pr[1],pr[2]),s:sub}];
+  if(y&&y.p&&!y.q.all)base.push({ic:'📅',t:T(`النهارده: ${y.d} من ${y.p}`,`Today: ${y.d} of ${y.p}`),s:T(`فاضلك ${y.p-y.d} وتفتح صندوق المفاجأة`,`${y.p-y.d} more to open the mystery box`)});
+  if(W&&W.hp&&!W.def&&!W.esc){const hl=Math.max(100-Math.round(W.pct/80*100),0);base.push({ic:'⚔️',t:T(`ضربت ${bossOf(ui.week).name}`,`You hit ${bossOf(ui.week).name}`),s:T(`صحته بقت ${hl}%`,`Its health is now ${hl}%`)})}
+  setTimeout(()=>celebrate(rows.length?rows.concat(base.slice(0,1)):base),350);
+}
+
 /* ============ modal ============ */
 const dlg=document.getElementById('dlg');
 function modal(title,body,actions,wide){
@@ -1101,13 +1487,20 @@ function modal(title,body,actions,wide){
 }
 function openCell(slotId,day){
   const plan=getPlan(ui.week),row=plan.cells[slotId]||[],raw=row[day];
-  const c=raw||{t:'',s:'',c:(state.cats[0]||{}).id,star:false},q=c.seq?seqOf(c.seq):null,cv=rc(c,ui.week,day)||c;
-  const isSeq=!!q;
-  const days0=isSeq?q.days.filter(i=>row[i]&&row[i].seq===c.seq):[day];if(!days0.includes(day))days0.push(day);
-  const steps0=isSeq?q.steps.slice():[cv.s||'',''];
-  const first=isSeq?Math.min(...q.days):0,start0=isSeq?Math.max(seqIdx(q,ui.week,first),0):0;
-  const cont0=isSeq?!!q.cont:true;
-  const scopeTxt=ui.scope==='week'?T('التعديل هيتطبق على الأسبوع ده بس.','This change applies to this week only.'):T('التعديل هيتطبق على الجدول الأساسي من الأسبوع ده ورايح.','This change applies to the master schedule from this week onward.');
+  const c=raw||{t:'',s:'',c:(state.cats[0]||{}).id,star:false},isSeq=!!(c.seq&&seqOf(c.seq));
+  const cv=rc(c,ui.week,day,slotId)||c;
+  const days0=isSeq?[0,1,2,3,4,5,6].filter(i=>row[i]&&row[i].seq===c.seq):[day];if(!days0.includes(day))days0.push(day);
+  /* tracks you can link to: anything used in this week's plan or the master schedule */
+  const used=new Set();[plan,state.template].forEach(p=>Object.values(p.cells||{}).forEach(r=>(r||[]).forEach(x=>{if(x&&x.seq&&seqOf(x.seq))used.add(x.seq)})));
+  const trName=id=>{const q=seqOf(id);let nm=q.name;if(!nm){for(const p of [plan,state.template])for(const r of Object.values(p.cells))for(const x of r||[])if(x&&x.seq===id&&!nm)nm=x.t}return `${nm||T('تراك','Track')} — ${q.steps.length} ${T('خطوات','steps')}`};
+  let trk=isSeq?c.seq:'new';
+  const curOf=id=>{const v=seqFirstThisWeek(id,ui.week);return v<0?((seqOf(id)||{}).aStep||0):v};
+  let curStart=isSeq?curOf(trk):0,startTouched=false;
+  const modeOf=id=>(seqOf(id)||{}).mode||'progress';
+  const MODES=[['progress',T('يكمّل من آخر خطوة خلّصتها','Continue from the last step you finished'),T('كل مرة بتظهر الخطوة اللي عليها الدور. لو مرة فاتتك من غير ما تعلّم عليها، نفس الخطوة بتستناك المرة اللي بعدها، ويكمّل أسبوع ورا أسبوع.','Each stop shows the step that’s due. If you skip one without ticking it, the same step waits for the next stop, week after week.')],
+    ['calendar',T('يمشي بالتاريخ','Follow the calendar'),T('كل مرة بتاخد الخطوة اللي بعدها حتى لو مخلّصتش، ويكمّل الأسبوع الجاي من مكان ما وقف.','Each stop takes the next step even if you didn’t finish, and continues next week where it stopped.')],
+    ['weekly',T('يبدأ من الأول كل أسبوع','Restart every week'),T('كل أسبوع بيبدأ من نفس الخطوة.','Every week starts again from the same step.')]];
+  const scopeRadio=`<div class="fld"><span>${T('التعديل يتطبق على','Apply this change to')}</span><div class="radio-seg"><label><input type="radio" name="cscope" value="master" ${ui.scope!=='week'?'checked':''}>${T('الأسبوع ده وكل الأسابيع اللي بعده','This week and every week after it')}</label><label><input type="radio" name="cscope" value="week" ${ui.scope==='week'?'checked':''}>${T('الأسبوع ده بس','This week only')}</label></div></div>`;
   modal(`${DAYS[day]} — ${T('تعديل الخانة','Edit cell')}`,`<div class="form">
     <label>${T('المادة / النشاط','Subject / activity')}<input type="text" id="fT" value="${esc(c.t)}"></label>
     <label>${T('القسم','Category')}<select id="fC">${state.cats.map(x=>`<option value="${x.id}" ${x.id===c.c?'selected':''}>${esc(C(x.name))}</option>`).join('')}</select></label>
@@ -1118,37 +1511,45 @@ function openCell(slotId,day){
     <div class="fld"><span>${T('التفاصيل','Details')}</span>
       <div class="radio-seg"><label><input type="radio" name="dmode" value="same" ${isSeq?'':'checked'}>${T('نفس التفاصيل كل مرة','Same details every time')}</label>
       <label><input type="radio" name="dmode" value="seq" ${isSeq?'checked':''}>${T('خطوات بتلف بالترتيب (تراك)','Steps in a loop (track)')}</label></div></div>
-    <div id="sameBox" ${isSeq?'hidden':''}><input type="text" id="fS" value="${esc(cv.s||'')}" aria-label="${T('التفاصيل','Details')}" style="width:100%"></div>
+    <div id="sameBox" ${isSeq?'hidden':''}><input type="text" id="fS" value="${esc(isSeq?'':cv.s||'')}" aria-label="${T('التفاصيل','Details')}" style="width:100%"></div>
     <div id="seqBox" class="seqbox" ${isSeq?'':'hidden'}>
-      <div class="fld"><span>${T('الخطوات بالترتيب، كل يوم من الأيام المختارة بياخد الخطوة اللي بعدها، ولما الخطوات تخلص بترجع للأولى','Steps in order — each chosen day takes the next step, and after the last step it loops back to the first')}</span>
+      ${used.size?`<label>${T('التراك','Track')}<select id="seqPick"><option value="new" ${trk==='new'?'selected':''}>${T('تراك جديد','A new track')}</option>${[...used].map(id=>`<option value="${id}" ${trk===id?'selected':''}>${esc(trName(id))}</option>`).join('')}</select>
+        <span class="hint">${T('اختار تراك موجود عشان الخانة دي تبقى محطة في نفس الدورة: أي مكان تحطه فيه بيكمّل من نفس النقطة.','Pick an existing track to make this cell another stop on the same cycle — wherever you place it, it continues from the same point.')}</span></label>`:''}
+      <div class="fld"><span>${T('الخطوات بالترتيب','Steps in order')}</span>
         <div id="seqSteps"></div><button type="button" class="btn sm" id="sAdd" style="align-self:flex-start">${ICON.plus} ${T('إضافة خطوة','Add step')}</button></div>
-      <label>${T('أول يوم متختار في الأسبوع ده يبدأ من','First chosen day this week starts at')}<select id="seqStart"></select></label>
-      <div class="radio-seg"><label><input type="radio" name="scont" value="1" ${cont0?'checked':''}>${T('يكمّل الأسبوع الجاي من مكان ما وقف','Continue next week where it stopped')}</label>
-        <label><input type="radio" name="scont" value="0" ${cont0?'':'checked'}>${T('يبدأ من الأول كل أسبوع','Start over every week')}</label></div>
+      <label>${T('أول مرة التراك يظهر الأسبوع ده تبقى','The track’s first stop this week is')}<select id="seqStart"></select></label>
+      <div class="fld"><span>${T('بعد آخر خطوة بيرجع للأولى، والأسابيع اللي بعد كده','After the last step it loops back to the first; in the following weeks it')}</span>
+        <div class="radio-seg" id="modeSeg">${MODES.map(m=>`<label><input type="radio" name="smode" value="${m[0]}" ${(isSeq?modeOf(trk):'progress')===m[0]?'checked':''}>${m[1]}</label>`).join('')}</div>
+        <p class="hint" id="modeHint"></p></div>
       <div class="seqprev" id="seqPrev"></div>
     </div>
-    <p class="hint" style="margin:0">${scopeTxt}</p></div>`,
+    ${scopeRadio}</div>`,
   [{label:T('إلغاء','Cancel')},
-   {label:T('مسح الخانة','Clear cell'),cls:'danger',fn:()=>{const ds=selDays();const p=editablePlan();const r=p.cells[slotId]=p.cells[slotId]||Array(7).fill(null);
-      (ds.length?ds:[day]).forEach(i=>r[i]=null);save();render()}},
+   {label:T('مسح الخانة','Clear cell'),cls:'danger',fn:()=>{const ds=selDays();ui.scope=B.querySelector('[name=cscope]:checked').value;
+      targetPlans().forEach(p=>{if(!p.cells[slotId])return;const r=p.cells[slotId];(ds.length?ds:[day]).forEach(i=>r[i]=null)});save();render()}},
    {label:T('حفظ','Save'),cls:'primary',fn:()=>{
       const t=document.getElementById('fT').value.trim(),cat=document.getElementById('fC').value,star=document.getElementById('fStar').checked;
       if(!t){toast(T('اكتب اسم المادة الأول','Enter the subject name first'));return false}
-      let ds=selDays();if(!ds.length){toast(T('اختار يوم واحد على الأقل','Pick at least one day'));return false}
-      const mode=B.querySelector('[name=dmode]:checked').value;
-      const p=editablePlan(),r=p.cells[slotId]=p.cells[slotId]||Array(7).fill(null);
-      if(c.seq)for(let i=0;i<7;i++)if(r[i]&&r[i].seq===c.seq&&!ds.includes(i))r[i]=null;  /* days unticked from an existing track */
+      const ds=selDays();if(!ds.length){toast(T('اختار يوم واحد على الأقل','Pick at least one day'));return false}
+      const mode=B.querySelector('[name=dmode]:checked').value;let cell;
       if(mode==='seq'){
         const st=readSteps().map(x=>x.trim()).filter(Boolean);if(!st.length){toast(T('اكتب خطوة واحدة على الأقل','Enter at least one step'));return false}
-        const id='sq_'+uid();state.seqs=state.seqs||{};
-        state.seqs[id]={steps:st,days:ds,aW:ui.week,aStep:Math.min(+document.getElementById('seqStart').value||0,st.length-1),cont:B.querySelector('[name=scont]:checked').value==='1'};
-        ds.forEach(i=>r[i]={t,s:'',c:cat,star,seq:id});
-      }else{const sv=document.getElementById('fS').value.trim();ds.forEach(i=>r[i]={t,s:sv,c:cat,star})}
+        const sm=B.querySelector('[name=smode]:checked').value,id=trk==='new'?'sq_'+uid():trk,old=seqOf(id);
+        state.seqs=state.seqs||{};
+        const q={...(old||{}),name:(old&&old.name)||t,steps:st,mode:sm};
+        /* re-anchor at this week from the step shown, so nothing jumps unless you changed it */
+        q.aD=iso(weekStart(ui.week));q.aStep=Math.min(Math.max(curStart,0),st.length-1);
+        if(old&&!startTouched&&old.mode===sm&&old.steps.length===st.length){q.aD=old.aD;q.aStep=old.aStep}
+        state.seqs[id]=q;cell={t,s:'',c:cat,star,seq:id};
+      }else cell={t,s:document.getElementById('fS').value.trim(),c:cat,star};
+      ui.scope=B.querySelector('[name=cscope]:checked').value;
+      targetPlans().forEach(p=>{if(!ensureSlot(p,slotId))return;const r=p.cells[slotId]=p.cells[slotId]||Array(7).fill(null);
+        if(c.seq)for(let i=0;i<7;i++)if(r[i]&&r[i].seq===c.seq&&!ds.includes(i))r[i]=null;   /* days unticked from the track */
+        ds.forEach(i=>r[i]={...cell})});
       save();render();toast(ds.length>1?T(`اتحفظ في ${ds.length} أيام`,`Saved on ${ds.length} days`):T('اتحفظ','Saved'))}}],true);
   const B=document.getElementById('dlgB');
   const selDays=()=>[...B.querySelectorAll('[data-dpick]:checked')].map(x=>+x.value).sort((a,b)=>a-b);
   const readSteps=()=>[...B.querySelectorAll('[data-step]')].map(x=>x.value);
-  let curStart=start0;
   function drawSteps(st){
     B.querySelector('#seqSteps').innerHTML=st.map((v,k)=>`<div class="srow"><span class="snum">${k+1}</span><input type="text" data-step="${k}" value="${esc(v)}" placeholder="${T('مثلاً: Watch Video & Absorb','e.g. Watch Video & Absorb')}" aria-label="${T('خطوة','Step')} ${k+1}">
       <span class="sact"><button type="button" class="xbtn" data-smove="${k}|-1" ${k===0?'disabled':''} aria-label="${T('لفوق','Move up')}">↑</button><button type="button" class="xbtn" data-smove="${k}|1" ${k===st.length-1?'disabled':''} aria-label="${T('لتحت','Move down')}">↓</button><button type="button" class="xbtn" data-sdel="${k}" ${st.length<2?'disabled':''} aria-label="${T('حذف الخطوة','Delete step')}">✕</button></span></div>`).join('');
@@ -1160,20 +1561,22 @@ function openCell(slotId,day){
     const ds=selDays(),dh=B.querySelector('#dHint'),mode=B.querySelector('[name=dmode]:checked').value;
     dh.textContent=ds.length>1?T(`هيتحفظ في ${ds.length} أيام في نفس الفترة.`,`Will be saved on ${ds.length} days in this time slot.`)+(c.seq?' '+T('اليوم اللي تشيل علامته هيتشال منه التراك.','Unticking a day removes the track from it.'):''):T('علّم أي أيام تانية عاوز نفس الحاجة تتكرر فيها.','Tick any other days you want this repeated on.');
     if(mode!=='seq')return;
-    const raw=readSteps(),st=raw.map(x=>x.trim()),valid=st.filter(Boolean);
-    const box=B.querySelector('#seqPrev');if(!valid.length||!ds.length){box.innerHTML='';return}
-    const cont=B.querySelector('[name=scont]:checked').value==='1';
-    const map=st.map((v,k)=>[k,v]).filter(x=>x[1]),qq={steps:map.map(x=>x[1]),days:ds,aW:ui.week,aStep:Math.max(map.findIndex(x=>x[0]>=curStart),0),cont};
-    const wk=(n,lbl)=>`<div><h4>${lbl}</h4>${ds.map(i=>{const k=seqIdx(qq,n,i);return `<p><span>${DAYS[i]}</span><span><b>${k+1}</b>${esc(qq.steps[k])}</span></p>`}).join('')}</div>`;
-    box.innerHTML=wk(ui.week,T(`أسبوع ${ui.week} (ده)`,`Week ${ui.week} (this one)`))+(ui.week<state.weeksCount?wk(ui.week+1,T(`أسبوع ${ui.week+1}`,`Week ${ui.week+1}`)):'');
+    const sm=B.querySelector('[name=smode]:checked').value;B.querySelector('#modeHint').textContent=(MODES.find(m=>m[0]===sm)||MODES[0])[2];
+    const st=readSteps().map(x=>x.trim()).filter(Boolean),box=B.querySelector('#seqPrev');if(!st.length||!ds.length){box.innerHTML='';return}
+    const a=Math.min(curStart,st.length-1),N=st.length,mk=(off,lbl)=>`<div><h4>${lbl}</h4>${ds.map((i,k)=>{const x=(a+off+k)%N;return `<p><span>${DAYS[i]}</span><span><b>${x+1}</b>${esc(st[x])}</span></p>`}).join('')}</div>`;
+    box.innerHTML=mk(0,T(`أسبوع ${ui.week} (ده)`,`Week ${ui.week} (this one)`))+(ui.week<state.weeksCount?mk(sm==='weekly'?0:ds.length,sm==='progress'?T(`أسبوع ${ui.week+1} لو خلّصت كل اللي قبله`,`Week ${ui.week+1} if you finish everything before it`):T(`أسبوع ${ui.week+1}`,`Week ${ui.week+1}`)):'');
   }
-  drawSteps(steps0);drawPrev();
+  drawSteps(isSeq?seqOf(trk).steps.slice():[cv.s||'','']);
   B.oninput=e=>{if(e.target.dataset.step!=null)drawStart()};
   B.onchange=e=>{const t=e.target;
     if(t.name==='dmode'){B.querySelector('#sameBox').hidden=t.value==='seq';B.querySelector('#seqBox').hidden=t.value!=='seq';
-      if(t.value==='seq'){const st=readSteps();if(!st.some(x=>x.trim())){const s0=document.getElementById('fS').value.trim();drawSteps([s0,''])}}
+      if(t.value==='seq'){if(!readSteps().some(x=>x.trim())){const s0=document.getElementById('fS').value.trim();drawSteps([s0,''])}}
       else{const fs=document.getElementById('fS');if(!fs.value.trim())fs.value=(readSteps().find(x=>x.trim())||'').trim()}}
-    if(t.id==='seqStart')curStart=+t.value;
+    if(t.id==='seqPick'){trk=t.value;startTouched=false;
+      if(trk==='new'){curStart=0;drawSteps(['',''])}
+      else{const q=seqOf(trk);curStart=curOf(trk);drawSteps(q.steps.slice());const r=B.querySelector(`[name=smode][value="${q.mode||'progress'}"]`);if(r)r.checked=true;
+        const nm=document.getElementById('fT');if(!nm.value.trim()&&q.name)nm.value=q.name}}
+    if(t.id==='seqStart'){curStart=+t.value;startTouched=true}
     drawPrev()};
   B.onclick=e=>{
     const mv=e.target.closest('[data-smove]');if(mv){const [k,d]=mv.dataset.smove.split('|').map(Number),st=readSteps(),j=k+d;if(j<0||j>=st.length)return;[st[k],st[j]]=[st[j],st[k]];drawSteps(st);return}
@@ -1187,9 +1590,9 @@ function openSlot(id){
   const s=getPlan(ui.week).slots.find(x=>x.id===id);if(!s)return;
   modal(T('تعديل وقت الفترة','Edit slot time'),`<div class="form"><label>${T('من','From')}<input type="time" id="fA" value="${s.start}"></label><label>${T('إلى','To')}<input type="time" id="fB" value="${s.end}"></label></div>`,
   [{label:T('إلغاء','Cancel')},
-   {label:T('حذف الفترة','Delete slot'),cls:'danger',fn:()=>{if(!confirm(T('تحذف الفترة دي بكل خاناتها؟','Delete this slot and all its cells?')))return false;const p=editablePlan();p.slots=p.slots.filter(x=>x.id!==id);delete p.cells[id];save();render()}},
+   {label:T('حذف الفترة','Delete slot'),cls:'danger',fn:()=>{if(!confirm(T('تحذف الفترة دي بكل خاناتها؟','Delete this slot and all its cells?')))return false;targetPlans().forEach(p=>{p.slots=p.slots.filter(x=>x.id!==id);delete p.cells[id]});save();render()}},
    {label:T('حفظ','Save'),cls:'primary',fn:()=>{const a=document.getElementById('fA').value,b=document.getElementById('fB').value;if(!a||!b)return false;
-      const p=editablePlan(),x=p.slots.find(z=>z.id===id);x.start=a;x.end=b;save();render()}}]);
+      targetPlans().forEach(p=>{const x=p.slots.find(z=>z.id===id);if(x){x.start=a;x.end=b}});save();render()}}]);
 }
 
 
@@ -1206,10 +1609,17 @@ document.addEventListener('click',e=>{
   const cell=e.target.closest('[data-cell]');
   if(cell&&cell.closest('#main')){const [sid,d]=cell.dataset.cell.split('|');
     if(ui.edit){openCell(sid,+d);return}
-    if(cell.classList.contains('slot')){const w=getWeek(ui.week,true),k=sid+'_'+d;if(w.done[k])delete w.done[k];else w.done[k]=true;save();render()}return}
+    if(cell.classList.contains('slot')){const before=game(),w=getWeek(ui.week,true),k=sid+'_'+d;if(w.done[k])delete w.done[k];else w.done[k]=true;save();render();const cc=(getPlan(ui.week).cells[sid]||[])[+d],cv=rc(cc,ui.week,+d,sid);cheer(before,e,cv?(cv.s?`${cv.t}: ${cv.s}`:cv.t):'')}return}
   const ds=e.target.closest('[data-delslot]');if(ds){const id=ds.dataset.delslot,k=doneInSlot(ui.week,id);
-    if(!confirm(T(`تحذف الفترة دي من ${ui.scope==='week'?'الأسبوع ده':'الجدول الأساسي من الأسبوع ده ورايح'}؟\n\nسجل الأسابيع اللي فاتت محفوظ ومش هيتأثر.${k?`\nتنبيه: في ${k} جلسة متعلّمة في الفترة دي الأسبوع ده، هتتشال من حساب الأسبوع ده بس.`:''}`,`Delete this slot from ${ui.scope==='week'?'this week':'the master schedule from this week onward'}?\n\nPast weeks’ records are kept and won’t be affected.${k?`\nNote: ${k} session(s) marked done in this slot this week will be removed from this week’s totals only.`:''}`)))return;const p=editablePlan();p.slots=p.slots.filter(x=>x.id!==id);delete p.cells[id];save();render();return}
+    if(!confirm(T(`تحذف الفترة دي من ${ui.scope==='week'?'الأسبوع ده':'الجدول الأساسي من الأسبوع ده ورايح'}؟\n\nسجل الأسابيع اللي فاتت محفوظ ومش هيتأثر.${k?`\nتنبيه: في ${k} جلسة متعلّمة في الفترة دي الأسبوع ده، هتتشال من حساب الأسبوع ده بس.`:''}`,`Delete this slot from ${ui.scope==='week'?'this week':'the master schedule from this week onward'}?\n\nPast weeks’ records are kept and won’t be affected.${k?`\nNote: ${k} session(s) marked done in this slot this week will be removed from this week’s totals only.`:''}`)))return;targetPlans().forEach(p=>{p.slots=p.slots.filter(x=>x.id!==id);delete p.cells[id]});save();render();return}
   const dq=e.target.closest('[data-delquote]');if(dq){if(!confirm(T('تحذف الوصية دي؟','Delete this advice?')))return;state.quotes.splice(+dq.dataset.delquote,1);save();render();return}
+  const rd=e.target.closest('[data-redeem]');if(rd){const it=state.rewards.items.find(x=>x.id===rd.dataset.redeem),G=game();if(!it)return;
+    if(G.coins<it.cost){toast(T('العملات مش كفاية لسه','Not enough coins yet'));return}
+    if(!confirm(T(`تشتري "${it.name}" بـ ${it.cost} عملة؟`,`Redeem "${C(it.name)}" for ${it.cost} coins?`)))return;
+    state.rewards.log.push({id:uid(),name:it.name,cost:it.cost,at:iso(new Date())});save();render();
+    celebrate([{ic:'🎉',t:T(`استمتع بـ "${it.name}"`,`Enjoy "${C(it.name)}"`),s:T('إنت تستاهلها، كسبتها بشغلك.','You earned it with your work.')}]);return}
+  const dr=e.target.closest('[data-delreward]');if(dr){if(!confirm(T('تشيل الجايزة دي من المتجر؟','Remove this reward from the shop?')))return;state.rewards.items=state.rewards.items.filter(x=>x.id!==dr.dataset.delreward);save();render();return}
+  const ur=e.target.closest('[data-undoreward]');if(ur){if(!confirm(T('ترجّع العملات بتاعة الجايزة دي؟','Refund the coins for this reward?')))return;state.rewards.log=state.rewards.log.filter(x=>x.id!==ur.dataset.undoreward);save();render();toast(T('العملات رجعت','Coins refunded'));return}
   const dt=e.target.closest('[data-deltodo]');if(dt){const w=getWeek(ui.week,true);w.todos=(w.todos||[]).filter(t=>t.id!==dt.dataset.deltodo);save();render();return}
   const b=e.target.closest('[data-act]');if(!b)return;const act=b.dataset.act;
   switch(act){
@@ -1219,18 +1629,15 @@ document.addEventListener('click',e=>{
     case 'next':ui.qOff=0;ui.week=Math.min(state.weeksCount,ui.week+1);ui.day=isThisWeek(ui.week)?todayIdx():0;break;
     case 'today':ui.week=currentWeek();ui.day=isThisWeek(ui.week)?todayIdx():0;break;
     case 'edit':ui.edit=!ui.edit;break;
-    case 'addrow':{const p=editablePlan(),last=[...p.slots].sort((a,b)=>toMin(b.end)-toMin(a.end))[0];const st=last?last.end:'18:00',m=(toMin(st)+60)%1440;
-      const id=uid();p.slots.push({id,start:st,end:`${pad(Math.floor(m/60))}:${pad(m%60)}`});p.cells[id]=Array(7).fill(null);toast(T('اتضافت فترة جديدة، عدّل وقتها وخاناتها','New slot added — set its time and cells'));break}
+    case 'addrow':{const cp=getPlan(ui.week),last=[...cp.slots].sort((a,b)=>toMin(b.end)-toMin(a.end))[0];const st=last?last.end:'18:00',m=(toMin(st)+60)%1440;
+      const id=uid();targetPlans().forEach(p=>{p.slots.push({id,start:st,end:`${pad(Math.floor(m/60))}:${pad(m%60)}`});p.cells[id]=Array(7).fill(null)});toast(T('اتضافت فترة جديدة، عدّل وقتها وخاناتها','New slot added — set its time and cells'));break}
     case 'copyprev':{if(!confirm(T(`تستبدل خطة أسبوع ${ui.week} بخطة أسبوع ${ui.week-1}؟`,`Replace week ${ui.week}’s plan with week ${ui.week-1}’s?`)))return;getWeek(ui.week,true).plan=clone(getPlan(ui.week-1));toast(T('اتنسخت','Copied'));break}
     case 'revert':{if(!confirm(T('ترجّع الأسبوع ده للجدول الأساسي؟ التعديلات الخاصة بيه هتتمسح.','Revert this week to the master schedule? Its custom changes will be erased.')))return;getWeek(ui.week,true).plan=null;toast(T('رجع للجدول الأساسي','Reverted to master schedule'));break}
     case 'promote':{if(!confirm(T('تخلي خطة الأسبوع ده هي الجدول الأساسي من الأسبوع ده ورايح؟','Make this week’s plan the master schedule from this week onward?')))return;freezePast(ui.week);state.template=clone(getPlan(ui.week));getWeek(ui.week,true).plan=null;toast(T('اتعمدت كجدول أساسي','Set as master schedule'));break}
-    case 'addhabit':{const n=document.getElementById('nhName').value.trim();if(!n){toast(T('اكتب اسم العادة','Enter the habit name'));return}
-      state.habits.push({id:uid(),name:n,desc:document.getElementById('nhDesc').value.trim(),from:ui.week});toast(T('العادة اتضافت','Habit added'));break}
-    case 'edithabit':{const x=state.habits.find(z=>z.id===b.dataset.id);
-      modal(T('تعديل العادة','Edit habit'),`<div class="form"><label>${T('الاسم','Name')}<input type="text" id="hN" value="${esc(x.name)}"></label><label>${T('الوصف','Description')}<input type="text" id="hD" value="${esc(x.desc||'')}"></label></div>`,
-        [{label:T('إلغاء','Cancel')},{label:T('حفظ','Save'),cls:'primary',fn:()=>{const v=document.getElementById('hN').value.trim();if(!v)return false;x.name=v;x.desc=document.getElementById('hD').value.trim();save();render()}}]);return}
-    case 'delhabit':{const x=state.habits.find(z=>z.id===b.dataset.id);if(!confirm(T(`توقف "${x.name}" من أسبوع ${ui.week} ورايح؟ المتابعة القديمة هتفضل في الداشبورد.`,`Stop "${C(x.name)}" from week ${ui.week} onward? Past tracking stays in the dashboard.`)))return;
-      if((x.from||1)>=ui.week)state.habits=state.habits.filter(z=>z.id!==x.id);else x.to=ui.week-1;toast(T('العادة اتوقفت','Habit stopped'));break}
+    case 'rebase':applyStart((document.getElementById('wkStartD')||{}).value);return;
+    case 'addreward':{const n=document.getElementById('rwName').value.trim(),c=parseInt(document.getElementById('rwCost').value);
+      if(!n||!(c>0)){toast(T('اكتب اسم الجايزة وسعرها','Enter the reward name and cost'));return}
+      state.rewards.items.push({id:uid(),name:n,cost:c});toast(T('الجايزة اتضافت للمتجر','Reward added to the shop'));break}
     case 'addtodo':{const t=document.getElementById('tdText').value.trim();if(!t){toast(T('اكتب المهمة الأول','Enter the task first'));return}
       const dv=document.getElementById('tdDay').value,w=getWeek(ui.week,true);(w.todos=w.todos||[]).push({id:uid(),t,day:dv===''?null:+dv,done:false});save();render();document.getElementById('tdText').focus();return}
     case 'carrytodo':{const w=getWeek(ui.week,true),nx=getWeek(ui.week+1,true),left=(w.todos||[]).filter(t=>!t.done);
@@ -1240,7 +1647,7 @@ document.addEventListener('click',e=>{
     case 'addcat':state.cats.push({id:uid(),name:L()==='en'?'New category':'قسم جديد',color:'#B88A2C'});break;
     case 'delcat':{if(!confirm(T('تحذف القسم ده؟ الخانات اللي عليه هتبقى "بدون تصنيف".','Delete this category? Its cells will become "Uncategorized".')))return;state.cats=state.cats.filter(c=>c.id!==b.dataset.id);break}
     case 'export':{const blob=new Blob([JSON.stringify(state,null,1)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`weekly-planner-backup-${iso(new Date())}.json`;document.body.appendChild(a);a.click();a.remove();return}
-    case 'resetall':{if(!confirm(T('هتمسح كل الجداول والمتابعة والعادات. متأكد؟','This erases all schedules, tracking and habits. Are you sure?')))return;const keepLang=state.lang;state=defaults();state.lang=keepLang;ui.week=currentWeek();toast(T('اتمسح كل حاجة','Everything erased'));break}
+    case 'resetall':{if(!confirm(T('هتمسح كل الجداول والمتابعة والجوائز. متأكد؟','This erases all schedules, tracking and rewards. Are you sure?')))return;const keepLang=state.lang;state=defaults();state.lang=keepLang;ui.week=currentWeek();toast(T('اتمسح كل حاجة','Everything erased'));break}
     case 'synccon':connectSync(document.getElementById('ghTok').value);return;
     case 'syncnow':pull();return;
     case 'syncoff':disconnectSync();return;
@@ -1252,20 +1659,23 @@ document.addEventListener('click',e=>{
 document.addEventListener('change',e=>{
   const t=e.target;
   if(t.id==='weekSel'){ui.week=+t.value;ui.day=isThisWeek(ui.week)?todayIdx():0;render();return}
-  if(t.dataset.tslot){const p=editablePlan(),x=p.slots.find(z=>z.id===t.dataset.tslot);if(x&&t.value){x[t.dataset.tf]=t.value;save();render();toast(T('الوقت اتعدل','Time updated'))}return}
-  if(t.dataset.todo){const w=getWeek(ui.week,true),x=(w.todos||[]).find(z=>z.id===t.dataset.todo);if(x){x.done=t.checked;save();render()}return}
+  if(t.dataset.tslot){if(!t.value)return;targetPlans().forEach(p=>{const x=p.slots.find(z=>z.id===t.dataset.tslot);if(x)x[t.dataset.tf]=t.value});save();render();toast(T('الوقت اتعدل','Time updated'));return}
+  if(t.dataset.todo){const w=getWeek(ui.week,true),x=(w.todos||[]).find(z=>z.id===t.dataset.todo);if(x){const before=game(),r=t.getBoundingClientRect();x.done=t.checked;save();render();cheer(before,{clientX:r.left+r.width/2,clientY:r.top},x.t)}return}
   if(t.name==='scope'){ui.scope=t.value;return}
-  if(t.dataset.habit){const w=getWeek(ui.week,true);if(t.checked)w.habits[t.dataset.habit]=true;else delete w.habits[t.dataset.habit];save();render();return}
+  if(t.id==='wkDow'){const sd=document.getElementById('wkStartD');sd.innerHTML=startOpts(+t.value,state.start);document.getElementById('wkPrev').textContent=wkPrevText(sd.value);return}
+  if(t.id==='wkStartD'){document.getElementById('wkPrev').textContent=wkPrevText(t.value);return}
+  if(t.dataset.gamebool){state.game=state.game||{};state.game[t.dataset.gamebool]=t.value==='1';save();render();toast(T('اتحفظ','Saved'));return}
+  if(t.dataset.game){state.game=state.game||{};state.game[t.dataset.game]=+t.value;save();render();toast(T('اتحفظ','Saved'));return}
   if(t.dataset.quote!=null){const v=t.value.trim();if(v){state.quotes[+t.dataset.quote]=v;save();toast(T('الوصية اتحفظت','Advice saved'))}return}
   if(t.id==='weekNote'){getWeek(ui.week,true).note=t.value;save();toast(T('الملاحظات اتحفظت','Notes saved'));return}
   if(t.id==='rFrom'){ui.from=+t.value;if(ui.to<ui.from)ui.to=ui.from;render();return}
   if(t.id==='rTo'){ui.to=+t.value;if(ui.from>ui.to)ui.from=ui.to;render();return}
   if(t.id==='cmpA'){ui.cmpA=+t.value;render();return}
   if(t.id==='cmpB'){ui.cmpB=+t.value;render();return}
-  if(t.dataset.set){const k=t.dataset.set;let v=t.value;if(k==='weeksCount'){v=Math.min(Math.max(parseInt(v)||52,1),60);ui.week=Math.min(ui.week,v)}if(k==='start'&&!v)return;state[k]=v;save();render();toast(T('اتحفظ','Saved'));return}
+  if(t.dataset.set){const k=t.dataset.set;let v=t.value;if(k==='weeksCount'){v=Math.min(Math.max(parseInt(v)||52,1),60);ui.week=Math.min(ui.week,v)}if(k==='start'){applyStart(v);return}state[k]=v;save();render();toast(T('اتحفظ','Saved'));return}
   if(t.dataset.cat){const c=state.cats.find(x=>x.id===t.dataset.cat);c[t.dataset.f]=t.value;save();render();return}
   if(t.id==='importFile'&&t.files[0]){const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.template||!d.weeks)throw 0;
-      if(!confirm(T('النسخة دي هتستبدل كل البيانات الحالية. تكمل؟','This backup will replace all current data. Continue?')))return;state={...defaults(),...d};save();ui.week=currentWeek();render();toast(T('النسخة اترجعت','Backup restored'))}catch(err){toast(T('الملف ده مش نسخة احتياطية من الجدول','This file is not a backup of this planner'))}};r.readAsText(t.files[0])}
+      if(!confirm(T('النسخة دي هتستبدل كل البيانات الحالية. تكمل؟','This backup will replace all current data. Continue?')))return;state={...defaults(),...d};migrateLayout(state);migrateV4(state);migrateStart();save();ui.week=currentWeek();render();toast(T('النسخة اترجعت','Backup restored'))}catch(err){toast(T('الملف ده مش نسخة احتياطية من الجدول','This file is not a backup of this planner'))}};r.readAsText(t.files[0])}
 });
 
 document.addEventListener('keydown',e=>{
@@ -1285,7 +1695,7 @@ document.addEventListener('focusout',e=>{
 
 
 /* ============ print ============ */
-function printOpts(){const d={o:'landscape',fit:'one',table:true,quote:true,todos:true,habits:false,notes:true};state.print={...d,...(state.print||{})};return state.print}
+function printOpts(){const d={o:'landscape',fit:'one',table:true,quote:true,todos:true,notes:true};state.print={...d,...(state.print||{})};return state.print}
 function printDialog(kind){
   const o=printOpts(),wk=kind==='week';
   const rad=(name,val,cur,lbl)=>`<label><input type="radio" name="${name}" value="${val}" ${cur===val?'checked':''}>${lbl}</label>`;
@@ -1296,16 +1706,16 @@ function printDialog(kind){
     <div class="fld"><span>${T('الورق','Paper')}</span><div class="radio-seg"><label><input type="radio" checked disabled>A4 (210 × 297 mm)</label></div></div>
     <div class="fld"><span>${T('اتجاه الصفحة','Orientation')}</span><div class="radio-seg">${rad('pO','landscape',o.o,T('عرضي','Landscape'))}${rad('pO','portrait',o.o,T('طولي','Portrait'))}</div></div>
     ${wk?`<div class="fld"><span>${T('عدد الصفحات','Pages')}</span><div class="radio-seg">${rad('pF','one',o.fit,T('صفحة واحدة (بيصغّر تلقائي)','One page (auto-fit)'))}${rad('pF','multi',o.fit,T('أكتر من صفحة (حجم مريح)','Multiple pages (comfortable size)'))}</div></div>
-    <div class="fld"><span>${T('يظهر في الطباعة','Include in the print')}</span><div class="radio-seg">${ck('pTb',o.table,T('الجدول','Schedule'))}${ck('pQ',o.quote,T('الوصية','Advice'))}${ck('pTd',o.todos,T('حاجات لازم أعملها','Must-do tasks'))}${ck('pN',o.notes,T('ملاحظات الأسبوع','Week notes'))}${ck('pH',o.habits,T('العادات','Habits'))}</div></div>`:''}
+    <div class="fld"><span>${T('يظهر في الطباعة','Include in the print')}</span><div class="radio-seg">${ck('pTb',o.table,T('الجدول','Schedule'))}${ck('pQ',o.quote,T('الوصية','Advice'))}${ck('pTd',o.todos,T('حاجات لازم أعملها','Must-do tasks'))}${ck('pN',o.notes,T('ملاحظات الأسبوع','Week notes'))}</div></div>`:''}
     <p class="hint" style="margin:0">${TP('في نافذة الطباعة خلي المقاس A4 والهوامش Default، وفعّل Background graphics عشان الألوان تظهر.','In the print window keep the size A4 and margins Default, and turn on Background graphics so colors print.')}</p></div>`,
   [{label:T('إلغاء','Cancel')},{label:T('اطبع','Print'),cls:'primary',fn:()=>{
     const v=document.getElementById('ownN').value.trim(),keep=document.getElementById('ownS').checked;
     if(keep&&v)state.owner=v;else if(!keep&&state.owner)state.owner='';ui.printOwner=v;
     const B=document.getElementById('dlgB');o.o=B.querySelector('[name=pO]:checked').value;
     if(wk){const g=id=>B.querySelector(id).checked,w=state.weeks[ui.week]||{};
-      const any=g('#pTb')||(g('#pQ')&&(state.quotes||[]).length)||(g('#pTd')&&(w.todos||[]).length)||(g('#pN')&&w.note)||(g('#pH')&&habitsFor(ui.week).length);
+      const any=g('#pTb')||(g('#pQ')&&(state.quotes||[]).length)||(g('#pTd')&&(w.todos||[]).length)||(g('#pN')&&w.note);
       if(!any){toast(T('اختار حاجة واحدة على الأقل فيها محتوى عشان تتطبع','Pick at least one section that has content to print'));return false}
-      o.table=g('#pTb');o.fit=B.querySelector('[name=pF]:checked').value;o.quote=B.querySelector('#pQ').checked;o.todos=B.querySelector('#pTd').checked;o.notes=B.querySelector('#pN').checked;o.habits=B.querySelector('#pH').checked}
+      o.table=g('#pTb');o.fit=B.querySelector('[name=pF]:checked').value;o.quote=B.querySelector('#pQ').checked;o.todos=B.querySelector('#pTd').checked;o.notes=B.querySelector('#pN').checked}
     save();setTimeout(()=>doPrint(kind),50)}}],true);
 }
 function printTodos(n){
@@ -1342,7 +1752,6 @@ function doPrint(kind){
         ${showT?`<div><h2 class="pr-h2">${T('حاجات لازم أعملها','Must-do tasks')}</h2><div class="card pr-todos">${printTodos(ui.week)}</div></div>`:''}
         ${showN?`<div><h2 class="pr-h2">${T('ملاحظات الأسبوع','Week notes')}</h2><div class="card">${esc(w.note).replace(/\n/g,'<br>')}</div></div>`:''}
       </div>`:''}
-      ${o.habits?`<div class="pr-habits"><h2 class="pr-h2">${T('العادات','Habits')}</h2><div class="board">${habitsTable(ui.week,false)}</div></div>`:''}
       ${foot}`;
   }else{
     const A=aggregate(ui.from,ui.to);
@@ -1394,7 +1803,7 @@ async function readRemote(){
   return JSON.parse(txt);
 }
 function adopt(remote){
-  state={...defaults(),...remote};if(migrateLayout(state)){state._t=Date.now();setTimeout(()=>schedulePush(),0)}
+  state={...defaults(),...remote};if(migrateLayout(state)|migrateV4(state)|migrateStart()){state._t=Date.now();setTimeout(()=>schedulePush(),0)}
   try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}
   ui.week=Math.min(Math.max(ui.week,1),state.weeksCount);
   const a=document.activeElement;if(a&&(a.tagName==='INPUT'||a.tagName==='TEXTAREA'||a.isContentEditable))return; // don't wipe what you're typing
